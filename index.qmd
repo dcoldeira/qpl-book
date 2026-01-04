@@ -74,4 +74,8 @@ Found a typo? Have a suggestion? Contributions are welcome!
 
 ---
 
-**Let's begin!** Start with [Chapter 1: Quantum Mechanics Basics](chapters/01-quantum-basics.qmd) or jump straight to hands-on tutorials in [Chapter 7: Your First Bell State](chapters/07-first-bell-state.qmd).
+**Let's begin!** Jump straight to hands-on tutorials:
+- [Chapter 7: Your First Bell State](chapters/07-first-bell-state.qmd)
+- [Chapter 8: Understanding GHZ States](chapters/08-ghz-states.qmd)
+
+(Foundational chapters 1-6 coming soon!)

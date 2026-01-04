@@ -145,4 +145,4 @@ Congratulations! You've just:
 
 ---
 
-**Next:** [Chapter 8: Understanding GHZ States](08-placeholder.qmd) - Scale to 3+ qubits
+**Next:** [Chapter 8: Understanding GHZ States](08-ghz-states.qmd) - Scale to 3+ qubits
