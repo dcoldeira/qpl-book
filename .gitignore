@@ -1,1 +1,4 @@
 /.quarto/
+/_book/
+*.qmd.bak
+index.tex
