@@ -1,0 +1,72 @@
+# The QPL Book
+
+**Learn Quantum Computing and MBQC with the Quantum Process Language**
+
+📚 **Read online:** [dcoldeira.github.io/qpl-book](https://dcoldeira.github.io/qpl-book/)
+
+## About
+
+This book teaches quantum computing from first principles using QPL (Quantum Process Language) - a relations-first approach to quantum programming that compiles directly to Measurement-Based Quantum Computing (MBQC).
+
+## Contents
+
+- **Part I: Quantum Foundations** - Qubits, entanglement, n-qubit systems
+- **Part II: MBQC Theory** - Cluster states, graph states, measurement patterns
+- **Part III: QPL Programming** - Hands-on tutorials with working code
+- **Part IV: Advanced Topics** - Tensor networks, categorical QM, fault-tolerance
+
+## Building Locally
+
+### Prerequisites
+
+- [Quarto](https://quarto.org/docs/get-started/) 1.4+
+
+### Preview
+
+```bash
+quarto preview
+```
+
+### Build HTML
+
+```bash
+quarto render --to html
+```
+
+### Build PDF
+
+```bash
+# Install TinyTeX (one-time)
+quarto install tinytex
+
+# Render PDF
+quarto render --to pdf
+```
+
+## Contributing
+
+Contributions welcome! Please:
+
+1. Fork this repository
+2. Create a feature branch
+3. Make your changes
+4. Submit a pull request
+
+Found a typo? [Open an issue](https://github.com/dcoldeira/qpl-book/issues)
+
+## Related Projects
+
+- [Quantum Process Language](https://github.com/dcoldeira/quantum-process-language) - The QPL implementation
+- [David's Blog](https://dcoldeira.github.io) - Development journey and technical posts
+
+## Author
+
+**David Coldeira**
+- Email: dcoldeira@gmail.com
+- GitHub: [@dcoldeira](https://github.com/dcoldeira)
+- Blog: [dcoldeira.github.io](https://dcoldeira.github.io)
+
+## License
+
+- **Text**: [Creative Commons BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/)
+- **Code examples**: [MIT License](LICENSE)

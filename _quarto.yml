@@ -1,0 +1,73 @@
+project:
+  type: book
+  output-dir: _book
+
+book:
+  title: "The QPL Book"
+  subtitle: "Learn Quantum Computing and MBQC with the Quantum Process Language"
+  author: "David Coldeira"
+  date: today
+
+  repo-url: https://github.com/dcoldeira/qpl-book
+  repo-actions: [edit, issue]
+
+  chapters:
+    - index.qmd
+
+    - part: "Part I: Quantum Foundations"
+      chapters:
+        - chapters/01-placeholder.qmd
+        - chapters/02-placeholder.qmd
+        - chapters/03-placeholder.qmd
+
+    - part: "Part II: Measurement-Based Quantum Computing"
+      chapters:
+        - chapters/04-placeholder.qmd
+        - chapters/05-placeholder.qmd
+        - chapters/06-placeholder.qmd
+
+    - part: "Part III: QPL Programming"
+      chapters:
+        - chapters/07-first-bell-state.qmd
+        - chapters/08-placeholder.qmd
+        - chapters/09-placeholder.qmd
+        - chapters/10-placeholder.qmd
+        - chapters/11-placeholder.qmd
+
+    - part: "Part IV: Advanced Topics"
+      chapters:
+        - chapters/12-placeholder.qmd
+        - chapters/13-placeholder.qmd
+        - chapters/14-placeholder.qmd
+        - chapters/15-placeholder.qmd
+
+    - part: "Appendices"
+      chapters:
+        - appendix/installation.qmd
+        - appendix/api-reference.qmd
+        - references.qmd
+
+bibliography: references.bib
+
+format:
+  html:
+    theme:
+      light: [cosmo, custom.scss]
+      dark: [cosmo, custom.scss]
+    code-copy: true
+    code-fold: false
+    number-sections: true
+    toc: true
+    toc-depth: 3
+
+  pdf:
+    documentclass: scrbook
+    toc: true
+    number-sections: true
+    colorlinks: true
+
+execute:
+  enabled: false  # Disable execution for now - just show code
+  freeze: auto
+  echo: true
+  warning: false

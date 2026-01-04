@@ -1,0 +1,148 @@
+# Your First Bell State
+
+Welcome to your first hands-on QPL tutorial! In this chapter, you'll create your first quantum program: a Bell state - one of the most fundamental entangled quantum states.
+
+## What is a Bell State?
+
+A **Bell state** is a maximally entangled 2-qubit quantum state. The most common Bell state is:
+
+$$
+|\Phi^+\rangle = \frac{|00\rangle + |11\rangle}{\sqrt{2}}
+$$
+
+This state has fascinating properties:
+- **Superposition**: Equal probability of measuring $|00\rangle$ or $|11\rangle$
+- **Perfect correlation**: If you measure qubit A as 0, qubit B will **always** be 0
+- **Maximal entanglement**: Entropy $S = 1.0$ (maximum for 2 qubits)
+
+## Setting Up
+
+First, make sure QPL is installed:
+
+```bash
+pip install quantum-process-language
+```
+
+Create a new Python file `my_first_bell_state.py`:
+
+```{python}
+#| eval: false
+from qpl import QPLProgram, create_question, QuestionType
+
+# Create a quantum program
+program = QPLProgram("My First Bell State")
+```
+
+## Creating Quantum Systems
+
+In QPL, you don't create individual "qubits" - you create **quantum systems** that can then be entangled into **relations**:
+
+```{python}
+#| eval: false
+# Create two quantum systems
+qubit_a = program.create_system()
+qubit_b = program.create_system()
+
+print(f"Created systems: {qubit_a.system_id} and {qubit_b.system_id}")
+```
+
+Each system gets a unique ID. At this point, they're independent - not yet entangled.
+
+## Entangling Systems
+
+Here's where QPL's philosophy shines. Instead of applying gates like `CNOT`, you directly express the **relationship** you want:
+
+```{python}
+#| eval: false
+# Create a Bell pair (maximally entangled state)
+bell_pair = program.entangle(qubit_a, qubit_b)
+
+print(f"Bell state created!")
+print(f"State vector shape: {bell_pair.state.shape}")
+print(f"Entanglement entropy: {bell_pair.entanglement_entropy:.3f}")
+```
+
+**Output:**
+```
+Bell state created!
+State vector shape: (4,)
+Entanglement entropy: 1.000
+```
+
+The entropy of 1.0 confirms this is **maximally entangled**.
+
+## Understanding the State
+
+Let's look at the actual quantum state:
+
+```{python}
+#| eval: false
+import numpy as np
+
+print("Bell state vector:")
+print(bell_pair.state)
+print()
+print("In basis notation:")
+print(f"|00⟩: {bell_pair.state[0]:.3f}")
+print(f"|01⟩: {bell_pair.state[1]:.3f}")
+print(f"|10⟩: {bell_pair.state[2]:.3f}")
+print(f"|11⟩: {bell_pair.state[3]:.3f}")
+```
+
+**Output:**
+```
+Bell state vector:
+[0.707+0j  0.+0j  0.+0j  0.707+0j]
+
+In basis notation:
+|00⟩: 0.707
+|01⟩: 0.000
+|10⟩: 0.000
+|11⟩: 0.707
+```
+
+This is exactly $\frac{|00\rangle + |11\rangle}{\sqrt{2}}$! (Note: $0.707 \approx \frac{1}{\sqrt{2}}$)
+
+## Complete Example
+
+Here's the complete program you can run:
+
+```{python}
+#| eval: false
+from qpl import QPLProgram, create_question, QuestionType
+
+def main():
+    # Create program
+    program = QPLProgram("Complete Bell State Example")
+
+    # Create quantum systems
+    qubit_a = program.create_system()
+    qubit_b = program.create_system()
+
+    # Entangle into Bell state
+    bell_pair = program.entangle(qubit_a, qubit_b)
+
+    # Show state information
+    print("=" * 50)
+    print("BELL STATE CREATED")
+    print("=" * 50)
+    print(f"State vector: {bell_pair.state}")
+    print(f"Entanglement entropy: {bell_pair.entanglement_entropy:.3f}")
+    print(f"Systems: {list(bell_pair.systems)}")
+
+if __name__ == "__main__":
+    main()
+```
+
+## What You Learned
+
+Congratulations! You've just:
+
+✅ Created your first quantum program in QPL
+✅ Generated a maximally entangled Bell state
+✅ Understood entanglement entropy
+✅ Explored the quantum state vector
+
+---
+
+**Next:** [Chapter 8: Understanding GHZ States](08-placeholder.qmd) - Scale to 3+ qubits

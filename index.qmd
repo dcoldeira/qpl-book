@@ -1,0 +1,77 @@
+# Welcome to The QPL Book {.unnumbered}
+
+Learn quantum computing and Measurement-Based Quantum Computing (MBQC) using the **Quantum Process Language** (QPL) - a relations-first approach to quantum programming.
+
+## What You'll Learn
+
+This book teaches quantum computing from first principles, building up to advanced topics in MBQC and photonic quantum computing:
+
+- **Part I: Quantum Foundations** - Understand qubits, entanglement, and n-qubit systems
+- **Part II: MBQC Theory** - Learn cluster states, graph states, and measurement patterns
+- **Part III: QPL Programming** - Write quantum programs with hands-on tutorials
+- **Part IV: Advanced Topics** - Explore tensor networks, categorical quantum mechanics, and fault-tolerant QC
+
+## Why QPL?
+
+Unlike gate-based quantum languages (Qiskit, Cirq, Q#), QPL treats **quantum entanglement as a first-class primitive**, making it natural to express:
+
+- Cluster states for MBQC
+- Measurement patterns for photonic quantum computers
+- Relations-first quantum algorithms
+- Graph state compilation
+
+## Prerequisites
+
+- **Mathematics**: Linear algebra, complex numbers, basic probability
+- **Programming**: Python basics (QPL is implemented in Python)
+- **Physics**: Helpful but not required - we explain quantum mechanics from scratch
+
+## How to Use This Book
+
+### For Learners
+Start with Part I to build quantum foundations, then move through hands-on tutorials in Part III.
+
+### For Researchers
+Jump to Part II for MBQC theory or Part IV for advanced topics like tensor networks.
+
+### For Programmers
+Install QPL and dive into Part III tutorials - learn by doing!
+
+## Installation
+
+```bash
+pip install quantum-process-language
+```
+
+See [Appendix: Installation](appendix/installation.qmd) for detailed setup instructions.
+
+## Code Examples
+
+All code in this book is:
+- **Executable** - Run examples directly in your Python environment
+- **Open source** - Available at [github.com/dcoldeira/quantum-process-language](https://github.com/dcoldeira/quantum-process-language)
+- **Tested** - Every example is verified to work with the latest QPL release
+
+## About the Author
+
+**David Coldeira** is a scientific software engineer with a BSc in Physics, specializing in quantum programming languages and MBQC. He developed QPL to explore relations-first approaches to quantum computing.
+
+- Email: dcoldeira@gmail.com
+- GitHub: [@dcoldeira](https://github.com/dcoldeira)
+- Blog: [dcoldeira.github.io](https://dcoldeira.github.io)
+
+## Contributing
+
+Found a typo? Have a suggestion? Contributions are welcome!
+
+- **Issues**: [github.com/dcoldeira/qpl-book/issues](https://github.com/dcoldeira/qpl-book/issues)
+- **Pull requests**: [github.com/dcoldeira/qpl-book](https://github.com/dcoldeira/qpl-book)
+
+## License
+
+- **Text**: Creative Commons BY-SA 4.0
+- **Code**: MIT License (same as QPL)
+
+---
+
+**Let's begin!** Start with [Chapter 1: Quantum Mechanics Basics](chapters/01-quantum-basics.qmd) or jump straight to hands-on tutorials in [Chapter 7: Your First Bell State](chapters/07-first-bell-state.qmd).
