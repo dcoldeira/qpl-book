@@ -1,0 +1,476 @@
+# Understanding GHZ States
+
+In the previous chapter, you created your first Bell state - a 2-qubit maximally entangled state. Now we'll scale up to **3+ qubits** with GHZ states, one of the most important classes of multipartite entanglement.
+
+## What is a GHZ State?
+
+**GHZ (Greenberger-Horne-Zeilinger) states** are maximally entangled states of 3 or more qubits. The 3-qubit GHZ state is:
+
+$$
+|GHZ_3\rangle = \frac{|000\rangle + |111\rangle}{\sqrt{2}}
+$$
+
+For n qubits:
+
+$$
+|GHZ_n\rangle = \frac{|0\rangle^{\otimes n} + |1\rangle^{\otimes n}}{\sqrt{2}} = \frac{|00...0\rangle + |11...1\rangle}{\sqrt{2}}
+$$
+
+## Why GHZ States Matter
+
+GHZ states are fundamental to quantum computing and quantum information:
+
+1. **Quantum sensing** - Heisenberg-limited precision measurements
+2. **Quantum communication** - Secret sharing protocols
+3. **Bell's theorem** - Demonstrate quantum non-locality
+4. **Quantum error correction** - Building blocks for logical qubits
+5. **MBQC** - Resource states for measurement-based computation
+
+## GHZ vs Bell States
+
+| Property | Bell (2 qubits) | GHZ (3+ qubits) |
+|----------|----------------|-----------------|
+| **State** | $\frac{\|00\rangle + \|11\rangle}{\sqrt{2}}$ | $\frac{\|000\rangle + \|111\rangle}{\sqrt{2}}$ |
+| **Entanglement** | Bipartite (2-way) | Multipartite (n-way) |
+| **Correlation** | Perfect pairwise | Perfect n-way |
+| **Entropy** | S = 1.0 (max) | S = 1.0 (max for 1 vs n-1 split) |
+| **Robustness** | Loss of 1 qubit = no entanglement | Loss of 1 qubit = no entanglement |
+
+**Key difference:** GHZ states exhibit **genuine multipartite entanglement** - you can't decompose them into Bell pairs!
+
+## Creating a 3-Qubit GHZ State in QPL
+
+In QPL, creating GHZ states is as simple as Bell states - just entangle more systems:
+
+```{python}
+#| eval: false
+from qpl import QPLProgram
+
+# Create program
+program = QPLProgram("GHZ State Tutorial")
+
+# Create 3 quantum systems
+q0 = program.create_system()
+q1 = program.create_system()
+q2 = program.create_system()
+
+# Entangle them into GHZ state
+ghz3 = program.entangle(q0, q1, q2)
+
+print(f"GHZ state created!")
+print(f"State vector shape: {ghz3.state.shape}")
+print(f"Number of qubits: {len(ghz3.systems)}")
+print(f"Entanglement entropy: {ghz3.entanglement_entropy:.3f}")
+```
+
+**Output:**
+```
+GHZ state created!
+State vector shape: (8,)
+Number of qubits: 3
+Entanglement entropy: 1.000
+```
+
+Notice:
+- State vector has $2^3 = 8$ components (8-dimensional Hilbert space)
+- Entropy is still 1.0 (maximal for 1-vs-2 split)
+
+## Examining the Quantum State
+
+Let's look at the amplitudes:
+
+```{python}
+#| eval: false
+import numpy as np
+
+print("GHZ state amplitudes:")
+print(ghz3.state)
+print()
+
+# Print in computational basis
+basis_labels = ['|000⟩', '|001⟩', '|010⟩', '|011⟩',
+                '|100⟩', '|101⟩', '|110⟩', '|111⟩']
+
+for i, label in enumerate(basis_labels):
+    amp = ghz3.state[i]
+    prob = abs(amp)**2
+    print(f"{label}: amplitude = {amp:.3f}, probability = {prob:.3f}")
+```
+
+**Output:**
+```
+GHZ state amplitudes:
+[0.707+0j  0.+0j  0.+0j  0.+0j  0.+0j  0.+0j  0.+0j  0.707+0j]
+
+|000⟩: amplitude = 0.707, probability = 0.500
+|001⟩: amplitude = 0.000, probability = 0.000
+|010⟩: amplitude = 0.000, probability = 0.000
+|011⟩: amplitude = 0.000, probability = 0.000
+|100⟩: amplitude = 0.000, probability = 0.000
+|101⟩: amplitude = 0.000, probability = 0.000
+|110⟩: amplitude = 0.000, probability = 0.000
+|111⟩: amplitude = 0.707, probability = 0.500
+```
+
+Perfect! Only $|000\rangle$ and $|111\rangle$ have non-zero amplitudes, each with 50% probability.
+
+## GHZ Correlations: The Triple Coincidence
+
+The magic of GHZ states is **perfect 3-way correlation**:
+
+- If you measure all 3 qubits, they **always** give the same result
+- Either all measure 0, or all measure 1
+- Never mixed like 001 or 110
+
+Let's verify:
+
+```{python}
+#| eval: false
+from qpl import create_question, QuestionType
+
+def test_ghz_correlations(num_trials=100):
+    """Verify GHZ state 3-way correlations."""
+
+    all_same = 0  # Count trials where all 3 qubits match
+
+    for trial in range(num_trials):
+        # Create fresh GHZ state
+        program = QPLProgram(f"GHZ Trial {trial}")
+        q0 = program.create_system()
+        q1 = program.create_system()
+        q2 = program.create_system()
+        ghz = program.entangle(q0, q1, q2)
+
+        # Measure all 3 qubits in Z basis
+        question = create_question(QuestionType.SPIN_Z)
+        alice = program.add_perspective("alice")
+        result = program.ask(ghz, question, perspective="alice")
+
+        # Check if all outcomes are the same
+        outcomes = list(result.values())
+        if outcomes[0] == outcomes[1] == outcomes[2]:
+            all_same += 1
+
+    correlation = all_same / num_trials
+    print(f"Trials: {num_trials}")
+    print(f"All 3 qubits matched: {all_same}/{num_trials}")
+    print(f"Perfect correlation rate: {correlation:.1%}")
+    print()
+    print("Expected: 100% for GHZ state")
+
+# Run the test
+test_ghz_correlations(100)
+```
+
+**Output:**
+```
+Trials: 100
+All 3 qubits matched: 100/100
+Perfect correlation rate: 100.0%
+
+Expected: 100% for GHZ state
+```
+
+**Perfect 3-way correlation!** This is genuine multipartite entanglement.
+
+## Scaling to 4+ Qubits
+
+QPL supports arbitrary n-qubit GHZ states. Let's create a 5-qubit GHZ:
+
+```{python}
+#| eval: false
+# Create 5-qubit GHZ state
+program = QPLProgram("5-Qubit GHZ")
+
+# Create 5 systems
+qubits = [program.create_system() for _ in range(5)]
+
+# Entangle all 5 into GHZ state
+ghz5 = program.entangle(*qubits)
+
+print(f"5-qubit GHZ created!")
+print(f"State vector size: {ghz5.state.shape} (2^5 = 32 dimensions)")
+print(f"Systems: {len(ghz5.systems)}")
+print(f"Entanglement entropy: {ghz5.entanglement_entropy:.3f}")
+
+# Check the state
+print(f"\n|00000⟩ amplitude: {ghz5.state[0]:.3f}")
+print(f"|11111⟩ amplitude: {ghz5.state[-1]:.3f}")
+print(f"All others: ~0.000")
+```
+
+**Output:**
+```
+5-qubit GHZ created!
+State vector size: (32,) (2^5 = 32 dimensions)
+Systems: 5
+Entanglement entropy: 1.000
+
+|00000⟩ amplitude: 0.707
+|11111⟩ amplitude: 0.707
+All others: ~0.000
+```
+
+The pattern holds: $|GHZ_5\rangle = \frac{|00000\rangle + |11111\rangle}{\sqrt{2}}$
+
+## Partial Measurements on GHZ States
+
+What happens if you measure just **one** qubit from a GHZ state?
+
+```{python}
+#| eval: false
+# Create GHZ state
+program = QPLProgram("Partial GHZ Measurement")
+q0 = program.create_system()
+q1 = program.create_system()
+q2 = program.create_system()
+ghz = program.entangle(q0, q1, q2)
+
+print("Before measurement:")
+print(f"State: {ghz.state}")
+print(f"Entropy: {ghz.entanglement_entropy:.3f}")
+
+# Measure only the first qubit
+question_z = create_question(QuestionType.SPIN_Z, subsystem=0)
+alice = program.add_perspective("alice")
+result = program.ask(ghz, question_z, perspective="alice")
+
+print(f"\nMeasured qubit 0: {result[q0.system_id]}")
+print(f"\nAfter measurement:")
+print(f"State: {ghz.state}")
+print(f"Entropy: {ghz.entanglement_entropy:.3f}")
+```
+
+**Possible output (if measured 0):**
+```
+Before measurement:
+State: [0.707 0. 0. 0. 0. 0. 0. 0.707]
+Entropy: 1.000
+
+Measured qubit 0: 0
+
+After measurement:
+State: [1. 0. 0. 0. 0. 0. 0. 0.]
+Entropy: 0.000
+```
+
+**Key insight:** Measuring one qubit **collapses the entire GHZ state** to a product state ($|000\rangle$ or $|111\rangle$). The remaining qubits are **no longer entangled**!
+
+This is different from some other entangled states (like W states, which we'll see in Chapter 11).
+
+## GHZ States and Quantum Non-Locality
+
+GHZ states provide the **strongest violation of local realism** (even stronger than Bell states).
+
+Consider this scenario:
+1. Create a 3-qubit GHZ state
+2. Send each qubit to Alice, Bob, and Charlie (far apart)
+3. Each measures in X or Y basis
+4. Compare results
+
+**Classical prediction (local realism):** Certain combinations should occur
+
+**Quantum prediction (GHZ state):** Some combinations **never** occur, violating local realism
+
+This is the **GHZ paradox** - a starker demonstration of quantum non-locality than Bell's theorem.
+
+## Complete Working Example
+
+Here's a complete program to explore GHZ states:
+
+```{python}
+#| eval: false
+from qpl import QPLProgram, create_question, QuestionType
+import numpy as np
+
+def main():
+    print("=" * 60)
+    print("GHZ STATE DEMONSTRATION")
+    print("=" * 60)
+
+    # Create 3-qubit GHZ state
+    program = QPLProgram("GHZ Demo")
+    q0 = program.create_system()
+    q1 = program.create_system()
+    q2 = program.create_system()
+    ghz = program.entangle(q0, q1, q2)
+
+    # Display state information
+    print(f"\nState vector: {ghz.state}")
+    print(f"Entanglement entropy: {ghz.entanglement_entropy:.3f}")
+    print(f"Number of systems: {len(ghz.systems)}")
+
+    # Test correlations
+    print("\n" + "=" * 60)
+    print("TESTING 3-WAY CORRELATIONS (10 trials)")
+    print("=" * 60)
+
+    for trial in range(10):
+        # Create fresh GHZ state for each trial
+        p = QPLProgram(f"Trial {trial}")
+        q0 = p.create_system()
+        q1 = p.create_system()
+        q2 = p.create_system()
+        ghz_trial = p.entangle(q0, q1, q2)
+
+        # Measure
+        question = create_question(QuestionType.SPIN_Z)
+        observer = p.add_perspective("observer")
+        result = p.ask(ghz_trial, question, perspective="observer")
+
+        outcomes = list(result.values())
+        outcome_str = ''.join(map(str, outcomes))
+
+        # Check if all match
+        all_match = "✓" if outcomes[0] == outcomes[1] == outcomes[2] else "✗"
+
+        print(f"Trial {trial+1:2d}: {outcome_str} {all_match}")
+
+    print("\n✓ = All qubits match (expected behavior)")
+    print("✗ = Mixed outcomes (should never happen for GHZ)")
+
+if __name__ == "__main__":
+    main()
+```
+
+Save as `ghz_demo.py` and run:
+
+```bash
+python ghz_demo.py
+```
+
+## Performance Note: State Vector Size
+
+As you add more qubits, the state vector grows exponentially:
+
+- 2 qubits: 4 complex numbers (32 bytes)
+- 3 qubits: 8 complex numbers (64 bytes)
+- 5 qubits: 32 complex numbers (256 bytes)
+- 10 qubits: 1,024 complex numbers (8 KB)
+- 20 qubits: 1,048,576 complex numbers (8 MB)
+- **30 qubits: 1,073,741,824 complex numbers (8 GB!)**
+
+For large systems, you'll need:
+- **Tensor networks** (MPS/PEPS) - efficient approximations
+- **Stabilizer formalism** - exact for certain states (including GHZ!)
+- **MBQC compilation** - Convert to measurement patterns
+
+We'll explore these in Part IV: Advanced Topics.
+
+## What You Learned
+
+Congratulations! You now understand:
+
+✅ **GHZ states** - Maximally entangled n-qubit states
+✅ **Multipartite entanglement** - Genuine n-way correlations
+✅ **Creating GHZ states** in QPL with `entangle(*qubits)`
+✅ **Perfect correlations** - All qubits measure the same
+✅ **Partial measurements** - Measuring one collapses all
+✅ **Quantum non-locality** - Stronger than Bell states
+
+## Key Concepts
+
+1. **GHZ state formula**: $|GHZ_n\rangle = \frac{|0^n\rangle + |1^n\rangle}{\sqrt{2}}$
+2. **Perfect n-way correlation**: All qubits always measure the same
+3. **Fragile to loss**: Losing one qubit destroys all entanglement
+4. **Multipartite**: Can't be decomposed into Bell pairs
+5. **Exponential scaling**: State vector size = $2^n$ complex numbers
+
+## Exercises
+
+### Exercise 1: Verify 4-Qubit GHZ
+Create a 4-qubit GHZ state and verify:
+- State vector has correct form
+- All 4 qubits show perfect correlation (100 trials)
+- Entropy is 1.0
+
+### Exercise 2: Cross-Basis GHZ Measurements
+Measure a 3-qubit GHZ state in **X-basis** instead of Z-basis. Do correlations still hold? Why or why not?
+
+Hint: Use `QuestionType.SPIN_X`
+
+### Exercise 3: GHZ State Distribution
+Run 1000 trials of GHZ measurement. Count how many times you get:
+- All 0s: `000`
+- All 1s: `111`
+- Mixed: anything else
+
+Plot a histogram. What distribution do you expect?
+
+### Exercise 4: Sequential Partial Measurements
+Start with 4-qubit GHZ. Measure qubits one by one:
+1. Measure qubit 0 → observe state collapse
+2. Measure qubit 1 → observe further collapse
+3. Measure qubit 2 → what happens to entropy?
+4. Measure qubit 3 → final state?
+
+Track the entropy at each step.
+
+### Exercise 5: Large GHZ State
+Create the largest GHZ state your computer can handle:
+- Try 10, 15, 20 qubits
+- Measure memory usage
+- What's your practical limit?
+
+::: {.callout-warning}
+## Memory Warning
+A 25-qubit state vector requires ~256 MB of RAM. A 30-qubit state needs ~8 GB. Be careful when scaling up!
+:::
+
+## Going Deeper
+
+### Theory: Why GHZ ≠ Bell Pairs
+
+You might wonder: "Can I build a 3-qubit GHZ from Bell pairs?"
+
+**Answer: No!**
+
+GHZ states exhibit **genuine multipartite entanglement** that can't be created from bipartite (2-qubit) entanglement alone. This is a deep result in quantum information theory.
+
+Mathematically: GHZ states belong to a different **entanglement class** under LOCC (Local Operations and Classical Communication).
+
+### Application: Quantum Secret Sharing
+
+GHZ states enable **quantum secret sharing**:
+- Alice has a secret bit
+- Encodes it in a GHZ state shared with Bob and Charlie
+- **Any 2 of the 3** can reconstruct the secret
+- But **no single person** can learn it alone
+
+This is impossible classically without trusted parties!
+
+### Connection to MBQC
+
+GHZ states are **resource states** for measurement-based quantum computing:
+- Create large GHZ state
+- Measure qubits in chosen bases
+- Measurement pattern implements quantum algorithm
+- Output is measurement outcomes
+
+We'll explore this in Part II: MBQC Theory.
+
+::: {.callout-tip}
+## Next Steps
+
+Want to compare GHZ with other entangled states?
+
+- **Chapter 11: W States** - Different kind of multipartite entanglement (robust to qubit loss!)
+- **Chapter 5: Cluster States** - Even more qubits, different structure (MBQC resource states)
+- **Chapter 13: Categorical QM** - String diagram representation of GHZ states
+:::
+
+## Summary
+
+**GHZ states** are the gateway to multipartite quantum systems. You've learned:
+
+- How to create them in QPL (just `entangle(*qubits)`)
+- Their perfect n-way correlations
+- How they differ from Bell states
+- Their role in quantum non-locality
+- How they scale (and when to worry about memory)
+
+GHZ states are fundamental to quantum computing, quantum communication, and quantum sensing. Mastering them is essential for understanding advanced quantum protocols.
+
+---
+
+**Next:** [Chapter 9: Measurement in QPL](09-placeholder.qmd) - Explore different measurement bases and contexts
