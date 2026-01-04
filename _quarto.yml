@@ -29,7 +29,7 @@ book:
     - part: "Part III: QPL Programming"
       chapters:
         - chapters/07-first-bell-state.qmd
-        - chapters/08-placeholder.qmd
+        - chapters/08-ghz-states.qmd
         - chapters/09-placeholder.qmd
         - chapters/10-placeholder.qmd
         - chapters/11-placeholder.qmd
