@@ -1,0 +1,360 @@
+# MBQC Foundations
+
+Measurement-Based Quantum Computing (MBQC) represents a radical departure from the circuit model. Instead of applying gates to qubits, we prepare a highly entangled resource state and perform the computation entirely through **measurements**.
+
+This is not just a theoretical curiosity—it's the foundation of QPL's design philosophy and the native model for photonic quantum computers.
+
+## The Circuit Model vs MBQC
+
+### Traditional Circuit Model
+
+In the gate-based (circuit) model:
+
+1. **Initialize** qubits to $|0\rangle$
+2. **Apply gates** sequentially: $H$, $CNOT$, $R_z(\theta)$, etc.
+3. **Measure** at the end to get results
+
+**Representation:**
+```
+|0⟩ ——[H]——●——[Rz]——[M]
+           │
+|0⟩ ———————⊕————————[M]
+```
+
+This is how Qiskit, Cirq, and Q# work.
+
+### Measurement-Based Quantum Computing
+
+In MBQC:
+
+1. **Prepare** a large entangled state (cluster state) upfront
+2. **Measure** individual qubits in specific bases
+3. **Adapt** subsequent measurement bases based on earlier results
+4. **Read out** final qubits for the answer
+
+**Key insight:** Computation happens through *measurement choices*, not gate applications!
+
+## The One-Way Quantum Computer
+
+Proposed by Raussendorf and Briegel (2001), the one-way quantum computer operates in three steps:
+
+::: {.callout-note icon=false appearance="simple"}
+## One-Way QC Protocol
+
+**Step 1: Preparation**
+- Create a **cluster state** - a specific highly-entangled state on a lattice of qubits
+
+**Step 2: Measurement**
+- Measure qubits one-by-one in bases determined by:
+  - The computation you want to perform
+  - Outcomes of previous measurements (adaptive)
+
+**Step 3: Readout**
+- The remaining unmeasured qubits contain the result
+- Apply classical post-processing (Pauli corrections) based on measurement record
+
+:::
+
+**Why "one-way"?** The entangled resource state is consumed by measurement - you can't reverse the process. Computation flows in one direction.
+
+## Cluster States: The Universal Resource
+
+### Definition
+
+A **cluster state** is defined on a graph $G = (V, E)$ where:
+- Each vertex represents a qubit
+- Edges define entanglement
+
+**Preparation:**
+
+1. Initialize all qubits to $|+\rangle = \frac{1}{\sqrt{2}}(|0\rangle + |1\rangle)$:
+   $$
+   |\psi_0\rangle = |+\rangle^{\otimes n} = \frac{1}{\sqrt{2^n}} \sum_{x \in \{0,1\}^n} |x\rangle
+   $$
+
+2. Apply $CZ$ gate (controlled-Z) to each edge:
+   $$
+   |\text{Cluster}_G\rangle = \prod_{(i,j) \in E} CZ_{ij} \cdot |\psi_0\rangle
+   $$
+
+where $CZ|a\rangle|b\rangle = (-1)^{ab}|a\rangle|b\rangle$.
+
+### Example: 3-Qubit Chain
+
+For a linear graph: $1 — 2 — 3$
+
+**Preparation:**
+$$
+|+\rangle^{\otimes 3} \xrightarrow{CZ_{12}} \xrightarrow{CZ_{23}} |\text{Cluster}\rangle
+$$
+
+**Explicit state:**
+$$
+|\text{Cluster}\rangle = \frac{1}{2\sqrt{2}}(|000\rangle + |001\rangle + |010\rangle - |011\rangle + |100\rangle - |101\rangle - |110\rangle + |111\rangle)
+$$
+
+This looks complicated, but has a beautiful structure when viewed through stabilizers (Chapter 5).
+
+### Cluster State Properties
+
+1. **Highly entangled:** Every qubit is entangled with its neighbors
+
+2. **Translation invariant:** For infinite lattices, the state looks the same everywhere
+
+3. **Universal:** Any quantum computation can be performed on a 2D cluster state
+
+4. **Deterministic:** Creating cluster states is straightforward (unlike creating GHZ states, which require post-selection)
+
+## Measurement Patterns
+
+A **measurement pattern** specifies how to perform computation on a cluster state.
+
+### Pattern Specification
+
+A pattern consists of:
+
+1. **Graph** $G$ - defines the cluster state
+2. **Measurement angles** $\{\theta_i\}$ - basis for measuring each qubit
+3. **Dependencies** - which measurements depend on previous outcomes
+4. **Corrections** - Pauli corrections to apply based on measurement record
+
+### Measurement Bases
+
+Qubits are typically measured in the **XY-plane** of the Bloch sphere:
+
+$$
+|\pm_\theta\rangle = \frac{1}{\sqrt{2}}(|0\rangle \pm e^{i\theta}|1\rangle)
+$$
+
+**Special cases:**
+- $\theta = 0$: X-basis ($|+\rangle, |-\rangle$)
+- $\theta = \frac{\pi}{2}$: Y-basis ($|+i\rangle, |-i\rangle$)
+- $\theta = \pi$: $-X$-basis
+
+The choice of $\theta$ encodes the operation being performed.
+
+### Adaptive Measurements
+
+Crucially, measurement angles can depend on previous outcomes:
+
+$$
+\theta_i' = \theta_i + \pi \cdot f(s_1, s_2, \ldots, s_{i-1})
+$$
+
+where $s_j \in \{0,1\}$ is the outcome of measuring qubit $j$, and $f$ is a Boolean function.
+
+This **feed-forward** is what allows MBQC to simulate any quantum circuit.
+
+## Example: Single-Qubit Rotation
+
+Let's see how MBQC implements a rotation gate $R_z(\theta)$ on a logical qubit.
+
+### Setup
+
+**Cluster:** 3-qubit chain: $1 — 2 — 3$
+
+**Goal:** Apply $R_z(\theta)$ to the state encoded in qubit 1, output in qubit 3
+
+### Protocol
+
+1. **Encode input:**
+   - Initialize cluster with input state on qubit 1
+
+2. **Measure qubit 1:**
+   - Basis: X ($\theta = 0$)
+   - Outcome: $s_1 \in \{0,1\}$
+
+3. **Measure qubit 2:**
+   - Basis: $|\pm_\theta\rangle$ where $\theta$ is the rotation angle
+   - Adaptive angle: $\theta' = \theta + \pi s_1$ (depends on $s_1$!)
+   - Outcome: $s_2 \in \{0,1\}$
+
+4. **Correct qubit 3:**
+   - Apply Pauli $X^{s_1} Z^{s_2}$ to qubit 3
+   - Qubit 3 now contains $R_z(\theta)|\psi_{\text{in}}\rangle$
+
+**Result:** The rotation $R_z(\theta)$ has been performed entirely by measurements!
+
+## Universality of MBQC
+
+::: {.callout-important icon=false appearance="simple"}
+## Theorem: MBQC is Universal (Raussendorf & Briegel, 2001)
+
+Any quantum circuit can be simulated on a 2D cluster state by choosing appropriate measurement angles and feed-forward rules.
+
+More precisely: The one-way quantum computer is **computationally equivalent** to the circuit model.
+:::
+
+### Why This Matters
+
+1. **Alternative computation model:** Not just a different implementation, but a fundamentally different way to think about quantum computing
+
+2. **Hardware-native for photonics:** Photonic qubits are easier to create entangled than to gate directly - MBQC is their natural model
+
+3. **Fault-tolerance:** Topological quantum computing (surface codes) is essentially MBQC
+
+4. **QPL foundation:** Relations-first programming maps naturally to MBQC
+
+## Gate Teleportation
+
+A key technique in MBQC is **gate teleportation** - implementing gates by teleporting through entangled resource states.
+
+### Bell Measurement Teleportation
+
+Recall quantum teleportation:
+
+1. Share Bell pair $|\Phi^+\rangle_{23}$ between Alice and Bob
+2. Alice performs Bell measurement on qubits 1-2
+3. Bob applies Pauli corrections to qubit 3
+4. Result: State of qubit 1 is now on qubit 3
+
+### Teleportation with Rotated Basis
+
+If Alice measures in a **rotated** Bell basis, she effectively applies a gate during teleportation:
+
+**Modified protocol:**
+1. Bell pair $|\Phi^+\rangle_{23}$
+2. Alice rotates qubit 2 by $R(\theta)$ before Bell measurement
+3. Bob applies corrections
+4. Result: $R(\theta)|\psi\rangle$ appears on qubit 3
+
+This is the core principle behind MBQC: **measurements in rotated bases implement gates**.
+
+## Measurement Calculus
+
+MBQC has a formal calculus for reasoning about measurement patterns.
+
+### Commands
+
+**Preparation:**
+```
+N_i    # Create qubit i in state |+⟩
+E_ij   # Entangle qubits i and j with CZ
+```
+
+**Measurement:**
+```
+M_i^θ  # Measure qubit i in basis |±_θ⟩
+```
+
+**Corrections:**
+```
+X_i^s  # Apply Pauli X to i if signal s = 1
+Z_i^s  # Apply Pauli Z to i if signal s = 1
+```
+
+### Example Pattern
+
+Single-qubit rotation $R_z(\theta)$:
+
+```
+N_1  N_2  N_3       # Prepare 3 qubits
+E_12 E_23           # Create chain
+M_1^0 → s_1         # Measure in X-basis
+M_2^θ → s_2         # Measure at angle θ
+X_3^s_1 Z_3^s_2     # Apply corrections
+```
+
+Output: Qubit 3 contains $R_z(\theta)|\psi\rangle$
+
+## Advantages of MBQC
+
+### For Photonic Quantum Computing
+
+**Why photonics loves MBQC:**
+
+1. **Easy entanglement generation:** Fusion gates create cluster states efficiently
+2. **No photon-photon gates needed:** All operations are single-qubit measurements
+3. **Loss tolerance:** Can teleport around lost photons
+4. **Scalability:** Massively parallel cluster state generation
+
+This is why companies like **PsiQuantum** and **Xanadu** are pursuing MBQC.
+
+### For Quantum Programming
+
+**Why QPL uses MBQC:**
+
+1. **Relations-first:** Entanglement is prepared upfront, not derived from gates
+2. **Declarative:** Specify what you want, not how to implement it
+3. **Composable:** Measurement patterns compose naturally
+4. **Graph-based:** Visual intuition through cluster state graphs
+
+## MBQC vs Circuits: Complexity Comparison
+
+| Aspect | Circuit Model | MBQC |
+|--------|--------------|------|
+| **Initialization** | $n$ qubits in $|0\rangle$ | $m \gg n$ qubits in cluster state |
+| **Computation** | $O(poly)$ gates | $O(poly)$ measurements |
+| **Entanglement** | Created by gates | Pre-existing in resource state |
+| **Space overhead** | 1x | ~5x (ancilla qubits) |
+| **Time overhead** | 1x | 1x (same circuit depth) |
+| **Classical processing** | Minimal | Feed-forward required |
+
+**Key tradeoff:** MBQC uses more qubits but may be easier to implement in certain hardware.
+
+## Why MBQC Matters for Theory
+
+MBQC reveals deep connections between:
+
+1. **Entanglement and Computation:**
+   - Computational power is "stored" in entanglement
+   - Measurement "releases" this power
+
+2. **Information Flow:**
+   - Quantum information flows through the cluster via measurement
+   - Classical information flows back via feed-forward
+
+3. **Quantum Contextuality:**
+   - Measurement basis choice determines the computation
+   - Same state, different measurements = different algorithms
+
+## Summary
+
+In this chapter, you learned:
+
+✅ MBQC performs computation through measurement, not gates
+✅ Cluster states are universal resource states for quantum computing
+✅ Measurement patterns specify computations on cluster states
+✅ Adaptive measurements enable universal quantum computation
+✅ Gate teleportation is the key technique for implementing operations
+✅ MBQC is the natural model for photonic quantum computers
+✅ QPL is built on MBQC principles (relations-first)
+
+## Exercises
+
+### Exercise 4.1: Cluster State Preparation
+
+For a 2-qubit cluster state on graph $1 — 2$:
+
+**(a)** Write the initial state $|+\rangle^{\otimes 2}$ as a sum over computational basis states.
+
+**(b)** Apply $CZ_{12}$ and write the resulting cluster state.
+
+**(c)** Verify this state is entangled by attempting to factor it.
+
+### Exercise 4.2: Measurement Outcomes
+
+For the 3-qubit chain cluster state, if you measure qubit 1 in the X-basis and get outcome 0, what is the state of qubits 2-3?
+
+### Exercise 4.3: Gate Teleportation
+
+Explain how measuring Alice's qubit in the Hadamard basis (instead of computational basis) during teleportation effectively applies a Hadamard gate to the teleported state.
+
+### Exercise 4.4: Pattern Design
+
+Design a measurement pattern to implement a Hadamard gate on a 3-qubit chain cluster state. Specify:
+- Which qubit to measure first
+- Measurement basis
+- Any corrections needed
+
+### Exercise 4.5: Resource Scaling
+
+A circuit with depth $d$ and width $n$ requires approximately $d \cdot n$ qubits in MBQC (due to ancillas). For Grover's algorithm on $n$ qubits with $O(\sqrt{2^n})$ gates, estimate the cluster state size needed.
+
+### Exercise 4.6: Advantage Analysis
+
+List three scenarios where MBQC might have a practical advantage over the circuit model, and three where the circuit model might be preferable.
+
+---
+
+**Next:** [Chapter 5: Cluster States](05-cluster-states.qmd) - Deep dive into graph states and stabilizer formalism

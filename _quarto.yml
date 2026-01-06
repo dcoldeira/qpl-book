@@ -22,7 +22,7 @@ book:
 
     - part: "Part II: Measurement-Based Quantum Computing"
       chapters:
-        - chapters/04-placeholder.qmd
+        - chapters/04-mbqc-foundations.qmd
         - chapters/05-placeholder.qmd
         - chapters/06-placeholder.qmd
 
