@@ -1,0 +1,500 @@
+# Measurement Patterns
+
+The power of MBQC lies in its ability to simulate any quantum circuit using only measurements. In this chapter, we'll see exactly how to **compile** quantum circuits into measurement patterns—the bridge from gate-based algorithms to measurement-based execution.
+
+## From Circuits to Patterns
+
+### The Compilation Problem
+
+**Given:** A quantum circuit with gates $U_1, U_2, \ldots, U_d$ acting on $n$ qubits
+
+**Goal:** Find a measurement pattern that:
+1. Prepares a cluster state
+2. Measures qubits in specific bases
+3. Applies corrections
+4. Produces the same output as the circuit
+
+**Key challenge:** Gates are deterministic, but measurements are probabilistic. How do we ensure the correct output?
+
+**Answer:** **Adaptive measurements** and **Pauli corrections**.
+
+## Gate Teleportation: The Core Technique
+
+Every gate in MBQC is implemented via **gate teleportation** - a generalization of quantum teleportation where the gate is "encoded" in the measurement basis.
+
+### Standard Teleportation Recap
+
+**Setup:** Alice and Bob share $|\Phi^+\rangle_{23} = \frac{1}{\sqrt{2}}(|00\rangle + |11\rangle)$
+
+**Protocol:**
+1. Alice has input $|\psi\rangle_1$
+2. Alice performs Bell measurement on qubits 1-2 → outcomes $(s_x, s_z)$
+3. Bob applies $X^{s_x} Z^{s_z}$ to qubit 3
+4. Qubit 3 now contains $|\psi\rangle$
+
+**Key insight:** The state is transferred, but **no gate** is applied.
+
+### Teleporting Through a Gate
+
+**Modified setup:** Alice and Bob share a modified entangled state:
+$$
+|\text{resource}\rangle = (I \otimes U) |\Phi^+\rangle
+$$
+
+where $U$ is the gate we want to apply.
+
+**Protocol:**
+1. Alice performs Bell measurement → outcomes $(s_x, s_z)$
+2. Bob applies corrections $X^{s_x} Z^{s_z}$
+3. Result: $U|\psi\rangle$ appears on Bob's qubit!
+
+::: {.callout-tip icon=false appearance="minimal"}
+## Proof: Gate Teleportation
+
+**Claim:** Teleporting through $(I \otimes U)|\Phi^+\rangle$ applies gate $U$.
+
+**Proof sketch:**
+
+Initial state:
+$$
+|\psi\rangle_1 \otimes (I \otimes U) |\Phi^+\rangle_{23}
+$$
+
+After Bell measurement (outcome $|s_x s_z\rangle$):
+$$
+|s_x s_z\rangle_{12} \otimes X^{s_x} Z^{s_z} U |\psi\rangle_3
+$$
+
+After corrections:
+$$
+|s_x s_z\rangle_{12} \otimes U|\psi\rangle_3 \quad \checkmark
+$$
+
+The gate $U$ has been applied! $\square$
+:::
+
+## Compilation Rules for Single-Qubit Gates
+
+### Rotations via Measurement Angles
+
+For rotation gates $R_\alpha(\theta) = e^{-i\theta \alpha/2}$ where $\alpha \in \{X, Y, Z\}$:
+
+**MBQC implementation:**
+1. Add ancilla qubit in state $|+\rangle$
+2. Entangle with $CZ$
+3. Measure ancilla in basis $|\pm_\theta\rangle = \frac{1}{\sqrt{2}}(|0\rangle \pm e^{i\theta}|1\rangle)$
+4. Apply Pauli correction based on outcome
+
+**Measurement basis determines the rotation angle!**
+
+### Pauli Gates
+
+**$X$ gate:**
+- Measure in Z-basis ($\theta = \pi$)
+- Always apply $X$ correction (deterministic)
+
+**$Z$ gate:**
+- Measure in X-basis ($\theta = 0$)
+- Always apply $Z$ correction (deterministic)
+
+**$Y$ gate:**
+- Measure in basis at $\theta = \frac{\pi}{2}$
+- Apply both $X$ and $Z$ corrections
+
+### Hadamard Gate
+
+**Circuit:** $H$
+
+**MBQC pattern:**
+1. Measure in X-basis ($\theta = 0$)
+2. If outcome is 1, apply $Z$ correction
+
+**Result:** Hadamard gate implemented!
+
+### Phase Gate ($S = R_Z(\pi/2)$)
+
+**Circuit:** $S = \begin{pmatrix} 1 & 0 \\ 0 & i \end{pmatrix}$
+
+**MBQC pattern:**
+1. Measure in basis $|\pm_{\pi/4}\rangle$
+2. Apply $Z$ correction based on outcome
+
+### General Single-Qubit Unitary
+
+Any single-qubit gate can be decomposed as:
+$$
+U = e^{i\alpha} R_Z(\beta) R_Y(\gamma) R_Z(\delta)
+$$
+
+**MBQC implementation:**
+- 3 ancilla qubits (one per rotation)
+- Measure each at appropriate angle
+- Chain corrections through the pattern
+
+## Compilation Rules for Two-Qubit Gates
+
+### CNOT Gate
+
+The CNOT gate is the workhorse of quantum circuits.
+
+**Circuit:** $CNOT_{c,t}$ (control $c$, target $t$)
+
+**MBQC implementation:**
+
+**Pattern:**
+```
+Cluster:  c' — a — t'
+          |       |
+          c       t
+```
+
+where:
+- $c, t$ are input qubits (control, target)
+- $c', t'$ are output qubits
+- $a$ is ancilla
+
+**Measurements:**
+1. Measure $c$ in X-basis → outcome $s_c$
+2. Measure $a$ in X-basis → outcome $s_a$
+3. Measure $t$ in X-basis → outcome $s_t$
+
+**Corrections:**
+- Apply $Z^{s_c}$ to $c'$
+- Apply $X^{s_a}$ to $t'$
+- Apply $Z^{s_t}$ to $t'$
+
+**Result:** $CNOT_{c',t'}$ applied to the initial state.
+
+### CZ Gate (Controlled-Z)
+
+**Simpler in MBQC!** Since cluster states are built from $CZ$ gates, this is native.
+
+**Pattern:**
+```
+c' — t'
+|    |
+c    t
+```
+
+**Measurements:**
+1. Measure $c$ in X-basis → outcome $s_c$
+2. Measure $t$ in X-basis → outcome $s_t$
+
+**Corrections:**
+- Apply $Z^{s_c}$ to $t'$
+- Apply $Z^{s_t}$ to $c'$
+
+**Note:** $CZ$ is symmetric (no control/target distinction).
+
+## Full Circuit Compilation
+
+### Step-by-Step Process
+
+**Input:** Quantum circuit on $n$ qubits with $d$ layers of gates
+
+**Step 1: Circuit Decomposition**
+- Decompose all gates into: $\{H, R_Z(\theta), CNOT\}$ (universal gate set)
+- Organize into layers (gates that can be applied in parallel)
+
+**Step 2: Graph Construction**
+- Create linear cluster for each qubit: $n$ chains of length $d+1$
+- Add connections between chains for CNOT gates
+- Result: 2D cluster state of size $\sim n \times d$
+
+**Step 3: Assign Measurement Angles**
+- For each gate, assign measurement basis to corresponding ancilla
+- Single-qubit rotations → measurement angle = rotation angle
+- Hadamard → X-basis measurement
+- CNOT → X-basis measurements with appropriate corrections
+
+**Step 4: Determine Dependencies**
+- Identify feed-forward: which measurements depend on previous outcomes
+- Chain corrections: later measurements depend on earlier outcomes
+
+**Step 5: Generate Pattern**
+- Output: List of measurements with angles and dependencies
+- Corrections specified as functions of previous outcomes
+
+### Example: Simple Circuit
+
+**Circuit:**
+```
+|ψ⟩ —[H]—●—— (output)
+         |
+|0⟩ ————⊕—— (output)
+```
+
+**Step 1: Decomposition**
+- Already in $\{H, CNOT\}$
+
+**Step 2: Cluster Graph**
+```
+1a — 1b — 1c
+      |    |
+      2a — 2b
+```
+
+where:
+- 1a: input qubit 1 ($|\psi\rangle$)
+- 2a: input qubit 2 ($|0\rangle$)
+- 1b: ancilla for $H$
+- 1c, 2b: ancillas for $CNOT$
+
+**Step 3: Measurements**
+- Measure 1a in X-basis (for $H$) → $s_1$
+- Measure 1b in X-basis → $s_2$ (depends on $s_1$)
+- Measure 2a in X-basis → $s_3$
+
+**Step 4: Corrections**
+- On 1c: apply $Z^{s_1} X^{s_2}$
+- On 2b: apply $Z^{s_3}$
+
+**Output:** Qubits 1c and 2b contain the circuit output.
+
+## Adaptive Measurement
+
+The power of MBQC comes from **adapting** measurement bases based on previous outcomes.
+
+### Feed-Forward Rules
+
+For measurement $i$ with nominal angle $\theta_i$, the actual measurement basis is:
+
+$$
+\theta_i' = \theta_i + \pi \cdot f_i(s_1, \ldots, s_{i-1})
+$$
+
+where $f_i$ is a Boolean function (returns 0 or 1) of previous outcomes.
+
+**Example:**
+$$
+\theta_3' = \theta_3 + \pi(s_1 \oplus s_2)
+$$
+
+If $s_1 \oplus s_2 = 1$ (odd parity), flip the measurement angle by $\pi$.
+
+### Why This Works
+
+Adaptive bases compensate for the randomness of earlier measurements:
+
+- Measurement outcomes are random ($s_i \in \{0,1\}$ with equal probability)
+- But correlations between outcomes are deterministic
+- Adapt later bases to maintain correct overall computation
+
+This is analogous to error correction: adapt to "errors" (random outcomes) as you go.
+
+## Pauli Corrections
+
+After all measurements, apply **Pauli corrections** to output qubits based on the full measurement record.
+
+### Correction Functions
+
+For each output qubit $j$, the correction is:
+
+$$
+\sigma_j = X^{f_j^X(s_1, \ldots, s_m)} Z^{f_j^Z(s_1, \ldots, s_m)}
+$$
+
+where $f_j^X, f_j^Z$ are Boolean functions of all measurement outcomes.
+
+**Example:**
+$$
+\sigma_2 = X^{s_1 \oplus s_3} Z^{s_2}
+$$
+
+### Classical Post-Processing
+
+These corrections can be applied:
+1. **Physically:** Apply actual $X$ and $Z$ gates at the end
+2. **Classically:** Track corrections and flip interpretation of final measurement outcomes
+
+**Option 2 is often preferred:** No need for physical gates, just classical logic.
+
+## Optimization Techniques
+
+### Minimizing Cluster Size
+
+**Goal:** Use fewest qubits possible
+
+**Techniques:**
+1. **Gate cancellation:** Simplify circuit before compilation
+2. **Parallel gates:** Merge gates acting on different qubits
+3. **Native gates:** Use $CZ$ instead of $CNOT$ when possible (saves ancillas)
+
+**Example:** A depth-$d$ circuit on $n$ qubits naively requires $n \times (d+1)$ qubits, but can often be reduced to $\sim n \times d/2$ with optimization.
+
+### Minimizing Measurement Depth
+
+**Measurement depth:** Maximum number of measurements that must be performed sequentially (feed-forward dependencies).
+
+**Goal:** Minimize measurement depth to reduce latency
+
+**Techniques:**
+1. **Parallelize independent measurements**
+2. **Reorder circuit layers** to reduce dependencies
+3. **Trade space for time:** Use more qubits to enable parallel measurements
+
+### Deterministic Patterns
+
+Some gates can be implemented **deterministically** (no corrections needed):
+
+- **Pauli gates:** Always require specific corrections, but outcome is known
+- **$\pi/2$ rotations:** Can be made deterministic with clever basis choices
+
+Maximizing deterministic gates reduces classical processing overhead.
+
+## From Patterns to QPL
+
+In the Quantum Process Language, these patterns are **automatically generated** from high-level relational specifications.
+
+### QPL Abstraction Levels
+
+**Level 1: Relations** (user writes this)
+```python
+ghz = program.entangle(q0, q1, q2)  # GHZ relation
+```
+
+**Level 2: Graph Extraction** (QPL infers)
+```
+Graph: q0 — ancilla1 — ancilla2
+             |         |
+            q1        q2
+```
+
+**Level 3: Measurement Pattern** (QPL compiles)
+```
+Measure ancilla1 at θ=0 → s1
+Measure ancilla2 at θ=π/4 → s2
+Correct q0 with X^s1 Z^s2
+```
+
+**Level 4: Photonic Backend** (QPL targets)
+```
+Strawberry Fields operations:
+- Fusion gates to create cluster
+- Homodyne measurements at angles
+- Classical feed-forward
+```
+
+This **layered compilation** is the essence of QPL's design.
+
+## Measurement Pattern Language
+
+Formally, patterns can be specified in a domain-specific language:
+
+### Commands
+
+**Entanglement:**
+```
+N_i        # New qubit i in state |+⟩
+E_ij       # Entangle qubits i and j with CZ
+```
+
+**Measurement:**
+```
+M_i^α      # Measure qubit i in basis |±_α⟩
+[M_i^α]^s  # Adaptive measurement (α depends on signal s)
+```
+
+**Corrections:**
+```
+X_i^s      # Apply X to i if signal s = 1
+Z_i^s      # Apply Z to i if signal s = 1
+```
+
+### Example Pattern
+
+**Hadamard gate:**
+```
+N_1  N_2        # Two qubits
+E_12            # Entangle them
+M_1^0 → s       # Measure qubit 1 in X-basis
+Z_2^s           # Correct qubit 2
+```
+
+Output: Qubit 2 contains $H|\psi\rangle$ where $|\psi\rangle$ was the input on qubit 1.
+
+## Equivalence to Circuit Model
+
+::: {.callout-important icon=false appearance="simple"}
+## Computational Equivalence Theorem
+
+The MBQC model with measurement patterns is **computationally equivalent** to the quantum circuit model:
+
+1. Any quantum circuit can be compiled to a measurement pattern
+2. Any measurement pattern can be converted to a circuit
+3. Both models have the same computational power (BQP)
+:::
+
+**Implication:** MBQC is not just an implementation strategy - it's a fundamentally equivalent model of quantum computation.
+
+## Summary
+
+In this chapter, you learned:
+
+✅ Gate teleportation implements gates via measurement basis choices
+✅ Single-qubit rotations compiled to measurement angles
+✅ CNOT compiled using 2D cluster structure
+✅ Full circuits compiled to 2D cluster states of size $O(n \times d)$
+✅ Adaptive measurements enable deterministic computation despite random outcomes
+✅ Pauli corrections fix up the final result based on measurement record
+✅ Optimization reduces cluster size and measurement depth
+✅ MBQC and circuits are computationally equivalent
+
+**Part II complete!** You now understand the MBQC foundations that power QPL.
+
+## Exercises
+
+### Exercise 6.1: Hadamard Compilation
+
+Write out the complete measurement pattern for implementing a Hadamard gate, including:
+- Cluster preparation commands
+- Measurement command with basis
+- Correction commands
+
+### Exercise 6.2: Rotation Angle
+
+A rotation $R_Z(\theta)$ is implemented by measuring in basis $|\pm_\alpha\rangle$. What is the relationship between $\theta$ and $\alpha$?
+
+### Exercise 6.3: CNOT Pattern
+
+Draw the cluster graph for implementing $CNOT$ followed by Hadamard on the target qubit:
+```
+|ψ⟩ ——●——— (output)
+      |
+|0⟩ ——⊕—[H]— (output)
+```
+
+Specify all measurement bases.
+
+### Exercise 6.4: Adaptive Measurement
+
+For a circuit with gates $H$, then $R_Z(\theta)$, if the first measurement (for $H$) gives outcome $s_1 = 1$, should the second measurement angle be $\theta$ or $\theta + \pi$? Justify your answer.
+
+### Exercise 6.5: Pattern Optimization
+
+A depth-10 circuit on 5 qubits would naively compile to a $5 \times 11 = 55$ qubit cluster. Describe two techniques to reduce this cluster size.
+
+### Exercise 6.6: Deterministic Gates
+
+Prove that the Pauli $X$ gate can be implemented deterministically in MBQC (meaning the correction is always the same, independent of measurement outcome).
+
+### Exercise 6.7: Circuit to Pattern
+
+Compile this circuit to a measurement pattern:
+```
+|ψ⟩ —[H]—●—[S]— (output)
+         |
+|0⟩ ————⊕———— (output)
+```
+
+where $S = R_Z(\pi/2)$ is the phase gate.
+
+---
+
+**Congratulations!** You've completed Parts I and II - the full theoretical foundation for quantum computing and MBQC.
+
+**Next steps:**
+- Revisit **[Part III: QPL Programming](../index.qmd#part-iii-qpl-programming)** with your new theoretical understanding
+- Explore **Part IV: Advanced Topics** (Chapters 12-15) when ready
+
+**You're now equipped to understand QPL's relations-first, MBQC-native approach to quantum programming!**

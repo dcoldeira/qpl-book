@@ -24,7 +24,7 @@ book:
       chapters:
         - chapters/04-mbqc-foundations.qmd
         - chapters/05-cluster-states.qmd
-        - chapters/06-placeholder.qmd
+        - chapters/06-measurement-patterns.qmd
 
     - part: "Part III: QPL Programming"
       chapters:
