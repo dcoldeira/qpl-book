@@ -1,0 +1,356 @@
+# Quantum Mechanics Basics
+
+Welcome to the quantum world. In this chapter, we'll build the mathematical foundation you need to understand quantum computing—from first principles, with rigorous proofs and no hand-waving.
+
+## The Quantum State
+
+In classical physics, a bit is either 0 or 1. In quantum mechanics, a **qubit** (quantum bit) can exist in a **superposition** of both states simultaneously.
+
+### Mathematical Representation
+
+A quantum state is represented as a **vector** in a complex vector space called a **Hilbert space**. For a single qubit, this is a 2-dimensional space.
+
+The computational basis states are:
+
+$$
+|0\rangle = \begin{pmatrix} 1 \\ 0 \end{pmatrix}, \quad |1\rangle = \begin{pmatrix} 0 \\ 1 \end{pmatrix}
+$$
+
+**Notation:** We use **Dirac notation** (or "bra-ket" notation):
+- $|0\rangle$ is pronounced "ket zero" - represents a column vector
+- $\langle 0|$ is pronounced "bra zero" - represents a row vector (conjugate transpose)
+
+### General Qubit State
+
+The most general state of a qubit is a **superposition**:
+
+$$
+|\psi\rangle = \alpha|0\rangle + \beta|1\rangle = \begin{pmatrix} \alpha \\ \beta \end{pmatrix}
+$$
+
+where $\alpha, \beta \in \mathbb{C}$ (complex numbers) and $|\alpha|^2 + |\beta|^2 = 1$.
+
+**Key insight:** The state exists in *both* $|0\rangle$ and $|1\rangle$ simultaneously until measured.
+
+## The Superposition Principle
+
+One of the foundational principles of quantum mechanics:
+
+::: {.callout-note icon=false appearance="simple"}
+## Superposition Principle
+
+If $|\psi_1\rangle$ and $|\psi_2\rangle$ are valid quantum states, then any linear combination:
+
+$$
+|\psi\rangle = \alpha|\psi_1\rangle + \beta|\psi_2\rangle
+$$
+
+is also a valid quantum state (provided it's normalized: $|\alpha|^2 + |\beta|^2 = 1$).
+:::
+
+### Example: The Hadamard State
+
+One of the most important quantum states is:
+
+$$
+|+\rangle = \frac{1}{\sqrt{2}}(|0\rangle + |1\rangle) = \frac{1}{\sqrt{2}}\begin{pmatrix} 1 \\ 1 \end{pmatrix}
+$$
+
+This is an **equal superposition** of $|0\rangle$ and $|1\rangle$.
+
+Similarly, we can define:
+
+$$
+|-\rangle = \frac{1}{\sqrt{2}}(|0\rangle - |1\rangle) = \frac{1}{\sqrt{2}}\begin{pmatrix} 1 \\ -1 \end{pmatrix}
+$$
+
+Together, $\{|+\rangle, |-\rangle\}$ form an alternative **basis** for the qubit's Hilbert space (the **X-basis** or **Hadamard basis**).
+
+## Measurement and the Born Rule
+
+When we measure a quantum state, something dramatic happens: the superposition **collapses** to one of the basis states.
+
+### The Born Rule
+
+::: {.callout-important icon=false appearance="simple"}
+## Born Rule (Measurement Postulate)
+
+Given a quantum state $|\psi\rangle = \alpha|0\rangle + \beta|1\rangle$, when measured in the computational (Z) basis:
+
+- Probability of measuring $|0\rangle$: $P(0) = |\alpha|^2$
+- Probability of measuring $|1\rangle$: $P(1) = |\beta|^2$
+
+After measurement, the state **collapses** to the measured outcome.
+:::
+
+### Example: Measuring $|+\rangle$
+
+Consider the state $|+\rangle = \frac{1}{\sqrt{2}}(|0\rangle + |1\rangle)$.
+
+When measured in the Z-basis:
+- $P(0) = \left|\frac{1}{\sqrt{2}}\right|^2 = \frac{1}{2}$
+- $P(1) = \left|\frac{1}{\sqrt{2}}\right|^2 = \frac{1}{2}$
+
+**Interpretation:** We get 0 or 1 with equal probability (50/50), and the state becomes either $|0\rangle$ or $|1\rangle$ after measurement.
+
+## Normalization Condition
+
+The probabilities must sum to 1. This gives us the **normalization condition**:
+
+$$
+|\alpha|^2 + |\beta|^2 = 1
+$$
+
+Let's prove this is required.
+
+::: {.callout-tip icon=false appearance="minimal"}
+## Proof: Normalization Ensures Valid Probabilities
+
+**Claim:** For a quantum state to yield valid probabilities, it must satisfy $|\alpha|^2 + |\beta|^2 = 1$.
+
+**Proof:**
+
+By the axioms of probability, the sum of all possible outcomes must equal 1:
+
+$$
+P(0) + P(1) = 1
+$$
+
+By the Born rule:
+
+$$
+P(0) = |\alpha|^2, \quad P(1) = |\beta|^2
+$$
+
+Therefore:
+
+$$
+|\alpha|^2 + |\beta|^2 = 1 \quad \square
+$$
+
+This is called the **normalization condition**. Any valid quantum state must be normalized.
+:::
+
+### Inner Product and Normalization
+
+We can express normalization using the **inner product** (or dot product) in Hilbert space:
+
+$$
+\langle\psi|\psi\rangle = 1
+$$
+
+where $\langle\psi| = (\alpha^* \quad \beta^*)$ is the conjugate transpose of $|\psi\rangle$.
+
+**Calculation:**
+
+$$
+\langle\psi|\psi\rangle = (\alpha^* \quad \beta^*) \begin{pmatrix} \alpha \\ \beta \end{pmatrix} = \alpha^*\alpha + \beta^*\beta = |\alpha|^2 + |\beta|^2 = 1
+$$
+
+## Measurement in Different Bases
+
+The Born rule applies to **any** orthonormal basis, not just the computational basis.
+
+### Z-Basis vs X-Basis
+
+**Z-basis (computational basis):**
+$$
+\{|0\rangle, |1\rangle\}
+$$
+
+**X-basis (Hadamard basis):**
+$$
+\{|+\rangle, |-\rangle\} = \left\{\frac{1}{\sqrt{2}}(|0\rangle + |1\rangle), \frac{1}{\sqrt{2}}(|0\rangle - |1\rangle)\right\}
+$$
+
+### Example: Measuring $|0\rangle$ in X-Basis
+
+To measure $|0\rangle$ in the X-basis, we first **express it in that basis**:
+
+$$
+|0\rangle = \frac{1}{\sqrt{2}}|+\rangle + \frac{1}{\sqrt{2}}|-\rangle
+$$
+
+**Verification:**
+$$
+\frac{1}{\sqrt{2}}|+\rangle + \frac{1}{\sqrt{2}}|-\rangle = \frac{1}{\sqrt{2}} \cdot \frac{1}{\sqrt{2}}(|0\rangle + |1\rangle) + \frac{1}{\sqrt{2}} \cdot \frac{1}{\sqrt{2}}(|0\rangle - |1\rangle)
+$$
+
+$$
+= \frac{1}{2}(|0\rangle + |1\rangle) + \frac{1}{2}(|0\rangle - |1\rangle) = \frac{1}{2}(2|0\rangle) = |0\rangle \quad \checkmark
+$$
+
+Now applying Born rule:
+- $P(+) = \left|\frac{1}{\sqrt{2}}\right|^2 = \frac{1}{2}$
+- $P(-) = \left|\frac{1}{\sqrt{2}}\right|^2 = \frac{1}{2}$
+
+**Key insight:** The state $|0\rangle$ is a **superposition** when viewed in the X-basis! This is called **basis-dependent measurement** or **contextuality**.
+
+## Global Phase and Physical Equivalence
+
+Consider two states:
+
+$$
+|\psi\rangle = \alpha|0\rangle + \beta|1\rangle
+$$
+
+$$
+|\psi'\rangle = e^{i\theta}(\alpha|0\rangle + \beta|1\rangle) = e^{i\theta}|\psi\rangle
+$$
+
+where $\theta \in \mathbb{R}$ and $e^{i\theta}$ is a **global phase factor**.
+
+**Claim:** These states are **physically indistinguishable**.
+
+**Why?** Measurement probabilities are unchanged:
+
+$$
+P(0) = |e^{i\theta}\alpha|^2 = |e^{i\theta}|^2|\alpha|^2 = |\alpha|^2
+$$
+
+since $|e^{i\theta}| = 1$ for any real $\theta$.
+
+::: {.callout-note icon=false appearance="simple"}
+## Global Phase Irrelevance
+
+States that differ only by a global phase factor are **physically equivalent**:
+
+$$
+|\psi\rangle \equiv e^{i\theta}|\psi\rangle
+$$
+
+However, **relative phases** (phases between different components) *are* observable and physically meaningful.
+:::
+
+### Example: Relative Phase Matters
+
+These two states are **different**:
+
+$$
+|+\rangle = \frac{1}{\sqrt{2}}(|0\rangle + |1\rangle)
+$$
+
+$$
+|-\rangle = \frac{1}{\sqrt{2}}(|0\rangle - |1\rangle)
+$$
+
+The relative phase between $|0\rangle$ and $|1\rangle$ components ($+1$ vs $-1$) is observable when measured in the X-basis!
+
+## Quantum State Space: The Bloch Sphere
+
+For a single qubit, we can visualize the state space geometrically.
+
+Any single-qubit state can be written as:
+
+$$
+|\psi\rangle = \cos\frac{\theta}{2}|0\rangle + e^{i\phi}\sin\frac{\theta}{2}|1\rangle
+$$
+
+where $\theta \in [0, \pi]$ and $\phi \in [0, 2\pi)$.
+
+This parameterization maps quantum states to points on a **unit sphere** in 3D space called the **Bloch sphere**.
+
+**Key points on the Bloch sphere:**
+- **North pole** ($\theta=0$): $|0\rangle$
+- **South pole** ($\theta=\pi$): $|1\rangle$
+- **Equator** ($\theta=\pi/2$):
+  - $\phi=0$: $|+\rangle = \frac{1}{\sqrt{2}}(|0\rangle + |1\rangle)$
+  - $\phi=\pi$: $|-\rangle = \frac{1}{\sqrt{2}}(|0\rangle - |1\rangle)$
+  - $\phi=\pi/2$: $|+i\rangle = \frac{1}{\sqrt{2}}(|0\rangle + i|1\rangle)$
+  - $\phi=3\pi/2$: $|-i\rangle = \frac{1}{\sqrt{2}}(|0\rangle - i|1\rangle)$
+
+::: {.callout-note icon=false}
+## Why the Bloch Sphere Matters
+
+The Bloch sphere gives us geometric intuition about quantum states. Antipodal points (opposite ends of a diameter) represent **orthogonal states** - states that are maximally distinguishable by measurement.
+:::
+
+## Pure States vs Mixed States
+
+So far we've discussed **pure states** - states with definite (though possibly superposed) quantum information.
+
+In reality, quantum systems often exist in **mixed states** due to:
+- Incomplete knowledge about the system
+- Interaction with the environment (decoherence)
+- Entanglement with other systems
+
+Mixed states are described by **density matrices** (we'll cover this in later chapters).
+
+## Summary
+
+In this chapter, you learned:
+
+✅ Quantum states are vectors in complex Hilbert space
+✅ Superposition: $|\psi\rangle = \alpha|0\rangle + \beta|1\rangle$
+✅ Born rule: Measurement probabilities $P(i) = |\alpha_i|^2$
+✅ Normalization: $|\alpha|^2 + |\beta|^2 = 1$ ensures valid probabilities
+✅ Basis-dependent measurement: States look different in different bases
+✅ Global phase is irrelevant, relative phase is observable
+✅ Bloch sphere: Geometric representation of qubit states
+
+## Exercises
+
+### Exercise 1.1: Normalization
+
+Given the (unnormalized) state:
+
+$$
+|\psi\rangle = 2|0\rangle + 2i|1\rangle
+$$
+
+**(a)** Calculate $\langle\psi|\psi\rangle$.
+
+**(b)** Normalize the state to obtain $|\psi_{\text{norm}}\rangle$.
+
+**(c)** Verify that $\langle\psi_{\text{norm}}|\psi_{\text{norm}}\rangle = 1$.
+
+### Exercise 1.2: Measurement Probabilities
+
+Consider the state:
+
+$$
+|\psi\rangle = \frac{1}{2}|0\rangle + \frac{\sqrt{3}}{2}|1\rangle
+$$
+
+**(a)** Calculate $P(0)$ and $P(1)$ when measured in the Z-basis.
+
+**(b)** Verify that $P(0) + P(1) = 1$.
+
+**(c)** After measuring and obtaining outcome 1, what is the post-measurement state?
+
+### Exercise 1.3: Basis Transformation
+
+Express the state $|1\rangle$ in the X-basis (i.e., as a linear combination of $|+\rangle$ and $|-\rangle$).
+
+**Hint:** Use the inverse relations:
+$$
+|0\rangle = \frac{1}{\sqrt{2}}(|+\rangle + |-\rangle), \quad |1\rangle = \frac{1}{\sqrt{2}}(|+\rangle - |-\rangle)
+$$
+
+### Exercise 1.4: Cross-Basis Measurement
+
+Consider the state $|+\rangle = \frac{1}{\sqrt{2}}(|0\rangle + |1\rangle)$.
+
+**(a)** What are $P(0)$ and $P(1)$ when measured in the Z-basis?
+
+**(b)** What are $P(+)$ and $P(-)$ when measured in the X-basis?
+
+**(c)** Explain why the probabilities differ between the two bases.
+
+### Exercise 1.5: Global Phase
+
+Show that the states $|\psi\rangle = |0\rangle$ and $|\psi'\rangle = -|0\rangle = e^{i\pi}|0\rangle$ are physically equivalent by proving they yield identical measurement probabilities in both Z-basis and X-basis.
+
+### Exercise 1.6: Bloch Sphere Coordinates
+
+A qubit is in the state:
+
+$$
+|\psi\rangle = \frac{1}{\sqrt{2}}|0\rangle + \frac{e^{i\pi/4}}{\sqrt{2}}|1\rangle
+$$
+
+Determine the Bloch sphere angles $\theta$ and $\phi$ for this state.
+
+---
+
+**Next:** [Chapter 2: Entanglement](02-entanglement.qmd) - Where quantum mechanics gets truly strange

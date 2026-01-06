@@ -16,7 +16,7 @@ book:
 
     - part: "Part I: Quantum Foundations"
       chapters:
-        - chapters/01-placeholder.qmd
+        - chapters/01-quantum-basics.qmd
         - chapters/02-placeholder.qmd
         - chapters/03-placeholder.qmd
 

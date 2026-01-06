@@ -1,0 +1,455 @@
+# Entanglement
+
+Entanglement is the most profoundly non-classical phenomenon in quantum mechanics. Einstein called it "spooky action at a distance." It's the foundation of quantum computing's power—and the core primitive in QPL.
+
+## Two-Qubit Systems
+
+Before diving into entanglement, we need to understand how to describe multiple qubits mathematically.
+
+### Tensor Product
+
+When we have two independent quantum systems, we combine them using the **tensor product** (denoted $\otimes$).
+
+**Example:** System A in state $|0\rangle_A$ and system B in state $|1\rangle_B$ combine to:
+
+$$
+|0\rangle_A \otimes |1\rangle_B = |01\rangle
+$$
+
+**Shorthand notation:** We often write $|01\rangle$ instead of $|0\rangle_A \otimes |1\rangle_B$.
+
+### Computational Basis for Two Qubits
+
+The 4 basis states for a 2-qubit system:
+
+$$
+|00\rangle, \quad |01\rangle, \quad |10\rangle, \quad |11\rangle
+$$
+
+As vectors in $\mathbb{C}^4$:
+
+$$
+|00\rangle = \begin{pmatrix} 1 \\ 0 \\ 0 \\ 0 \end{pmatrix}, \quad
+|01\rangle = \begin{pmatrix} 0 \\ 1 \\ 0 \\ 0 \end{pmatrix}, \quad
+|10\rangle = \begin{pmatrix} 0 \\ 0 \\ 1 \\ 0 \end{pmatrix}, \quad
+|11\rangle = \begin{pmatrix} 0 \\ 0 \\ 0 \\ 1 \end{pmatrix}
+$$
+
+### General Two-Qubit State
+
+The most general 2-qubit state is:
+
+$$
+|\psi\rangle = \alpha_{00}|00\rangle + \alpha_{01}|01\rangle + \alpha_{10}|10\rangle + \alpha_{11}|11\rangle
+$$
+
+with normalization: $|\alpha_{00}|^2 + |\alpha_{01}|^2 + |\alpha_{10}|^2 + |\alpha_{11}|^2 = 1$.
+
+## Separable vs Entangled States
+
+Not all 2-qubit states are created equal. There's a fundamental distinction:
+
+### Separable States
+
+A state is **separable** (or **product state**) if it can be written as:
+
+$$
+|\psi\rangle = |\phi\rangle_A \otimes |\chi\rangle_B
+$$
+
+where $|\phi\rangle_A$ is a single-qubit state for system A and $|\chi\rangle_B$ is a single-qubit state for system B.
+
+**Example:**
+
+$$
+|\psi\rangle = |0\rangle_A \otimes |+\rangle_B = |0\rangle_A \otimes \frac{1}{\sqrt{2}}(|0\rangle + |1\rangle)_B = \frac{1}{\sqrt{2}}(|00\rangle + |01\rangle)
+$$
+
+This state is **separable** - the two qubits are independent.
+
+### Entangled States
+
+A state is **entangled** if it **cannot** be written as a tensor product of single-qubit states.
+
+::: {.callout-important icon=false appearance="simple"}
+## Definition: Entanglement
+
+A 2-qubit state $|\psi\rangle$ is **entangled** if and only if it cannot be expressed as:
+
+$$
+|\psi\rangle = |\phi\rangle_A \otimes |\chi\rangle_B
+$$
+
+for any single-qubit states $|\phi\rangle_A$ and $|\chi\rangle_B$.
+:::
+
+## Bell States: Maximally Entangled Pairs
+
+The four **Bell states** are the most important entangled states in quantum computing:
+
+$$
+\begin{align*}
+|\Phi^+\rangle &= \frac{1}{\sqrt{2}}(|00\rangle + |11\rangle) \\[1em]
+|\Phi^-\rangle &= \frac{1}{\sqrt{2}}(|00\rangle - |11\rangle) \\[1em]
+|\Psi^+\rangle &= \frac{1}{\sqrt{2}}(|01\rangle + |10\rangle) \\[1em]
+|\Psi^-\rangle &= \frac{1}{\sqrt{2}}(|01\rangle - |10\rangle)
+\end{align*}
+$$
+
+### Why Can't Bell States Be Factored?
+
+Let's prove that $|\Phi^+\rangle$ cannot be written as a product state.
+
+::: {.callout-tip icon=false appearance="minimal"}
+## Proof: $|\Phi^+\rangle$ Is Entangled
+
+**Claim:** $|\Phi^+\rangle = \frac{1}{\sqrt{2}}(|00\rangle + |11\rangle)$ cannot be written as $|\phi\rangle_A \otimes |\chi\rangle_B$.
+
+**Proof by contradiction:**
+
+Assume $|\Phi^+\rangle = |\phi\rangle_A \otimes |\chi\rangle_B$ where:
+
+$$
+|\phi\rangle_A = \alpha|0\rangle + \beta|1\rangle, \quad |\chi\rangle_B = \gamma|0\rangle + \delta|1\rangle
+$$
+
+Then:
+
+$$
+|\phi\rangle_A \otimes |\chi\rangle_B = (\alpha|0\rangle + \beta|1\rangle) \otimes (\gamma|0\rangle + \delta|1\rangle)
+$$
+
+$$
+= \alpha\gamma|00\rangle + \alpha\delta|01\rangle + \beta\gamma|10\rangle + \beta\delta|11\rangle
+$$
+
+Comparing with $|\Phi^+\rangle = \frac{1}{\sqrt{2}}|00\rangle + 0|01\rangle + 0|10\rangle + \frac{1}{\sqrt{2}}|11\rangle$:
+
+$$
+\alpha\gamma = \frac{1}{\sqrt{2}}, \quad \alpha\delta = 0, \quad \beta\gamma = 0, \quad \beta\delta = \frac{1}{\sqrt{2}}
+$$
+
+From $\alpha\delta = 0$: either $\alpha = 0$ or $\delta = 0$.
+
+- If $\alpha = 0$: then $\alpha\gamma = 0 \neq \frac{1}{\sqrt{2}}$ ⚡ contradiction
+- If $\delta = 0$: then $\beta\delta = 0 \neq \frac{1}{\sqrt{2}}$ ⚡ contradiction
+
+Therefore, $|\Phi^+\rangle$ cannot be factored. $\square$
+:::
+
+## Physical Meaning of Entanglement
+
+When two qubits are entangled in the state $|\Phi^+\rangle = \frac{1}{\sqrt{2}}(|00\rangle + |11\rangle)$:
+
+1. **Before measurement:** Neither qubit has a definite state. They exist in a **correlated superposition**.
+
+2. **Measuring qubit A:**
+   - 50% chance of measuring 0 → qubit B **instantly** becomes $|0\rangle$
+   - 50% chance of measuring 1 → qubit B **instantly** becomes $|1\rangle$
+
+3. **Perfect correlation:** The measurement outcomes are perfectly correlated, *even if the qubits are separated by light-years*.
+
+This is what troubled Einstein - the "spooky action at a distance." However, no information travels faster than light (you can't control which outcome you get).
+
+## Schmidt Decomposition
+
+Every bipartite pure state can be expressed in a special canonical form.
+
+::: {.callout-note icon=false appearance="simple"}
+## Schmidt Decomposition Theorem
+
+Any pure state $|\psi\rangle$ of a bipartite system A-B can be written as:
+
+$$
+|\psi\rangle = \sum_{i=1}^{r} \lambda_i |u_i\rangle_A \otimes |v_i\rangle_B
+$$
+
+where:
+- $\{|u_i\rangle_A\}$ is an orthonormal basis for system A
+- $\{|v_i\rangle_B\}$ is an orthonormal basis for system B
+- $\lambda_i > 0$ are real numbers (Schmidt coefficients) with $\sum_i \lambda_i^2 = 1$
+- $r$ is the **Schmidt rank** (number of non-zero terms)
+
+This decomposition is unique (up to reordering and degeneracies).
+:::
+
+### Schmidt Rank and Entanglement
+
+The Schmidt rank tells us about entanglement:
+
+- **$r = 1$:** State is separable (product state)
+- **$r > 1$:** State is entangled
+- **$r = \min(\dim A, \dim B)$:** State is **maximally entangled**
+
+### Example: Schmidt Decomposition of $|\Phi^+\rangle$
+
+The Bell state $|\Phi^+\rangle = \frac{1}{\sqrt{2}}(|00\rangle + |11\rangle)$ is already in Schmidt form:
+
+$$
+|\Phi^+\rangle = \frac{1}{\sqrt{2}}|0\rangle_A \otimes |0\rangle_B + \frac{1}{\sqrt{2}}|1\rangle_A \otimes |1\rangle_B
+$$
+
+Schmidt coefficients: $\lambda_1 = \lambda_2 = \frac{1}{\sqrt{2}}$
+
+Schmidt rank: $r = 2$ (maximal for 2 qubits)
+
+### Example: Separable State
+
+Consider $|\psi\rangle = \frac{1}{\sqrt{2}}(|00\rangle + |01\rangle) = |0\rangle_A \otimes \frac{1}{\sqrt{2}}(|0\rangle + |1\rangle)_B$.
+
+Schmidt decomposition:
+
+$$
+|\psi\rangle = 1 \cdot |0\rangle_A \otimes |+\rangle_B
+$$
+
+Schmidt rank: $r = 1$ (separable)
+
+## Entanglement Entropy
+
+How do we quantify *how much* entanglement a state has?
+
+### Reduced Density Matrix
+
+For a bipartite state $|\psi\rangle_{AB}$, the **reduced density matrix** for system A is:
+
+$$
+\rho_A = \text{Tr}_B(|\psi\rangle\langle\psi|)
+$$
+
+where $\text{Tr}_B$ means "trace out system B" (sum over all states of B).
+
+For a state in Schmidt form $|\psi\rangle = \sum_i \lambda_i |u_i\rangle_A \otimes |v_i\rangle_B$:
+
+$$
+\rho_A = \sum_i \lambda_i^2 |u_i\rangle\langle u_i|
+$$
+
+The eigenvalues of $\rho_A$ are the **Schmidt coefficients squared**: $\{\lambda_1^2, \lambda_2^2, \ldots\}$.
+
+### Von Neumann Entropy
+
+The **entanglement entropy** is the von Neumann entropy of the reduced density matrix:
+
+$$
+S(\rho_A) = -\text{Tr}(\rho_A \log_2 \rho_A) = -\sum_i \lambda_i^2 \log_2(\lambda_i^2)
+$$
+
+::: {.callout-important icon=false appearance="simple"}
+## Properties of Entanglement Entropy
+
+- **$S = 0$:** State is separable (no entanglement)
+- **$S > 0$:** State is entangled
+- **$S = \log_2 d$:** State is maximally entangled (for $d$-dimensional subsystems)
+- **For 2 qubits:** $S_{\max} = \log_2 2 = 1$ bit
+:::
+
+### Example: Entropy of $|\Phi^+\rangle$
+
+For $|\Phi^+\rangle = \frac{1}{\sqrt{2}}(|00\rangle + |11\rangle)$:
+
+Schmidt coefficients: $\lambda_1 = \lambda_2 = \frac{1}{\sqrt{2}}$
+
+Eigenvalues of $\rho_A$: $\frac{1}{2}, \frac{1}{2}$
+
+Entropy:
+
+$$
+S = -\frac{1}{2}\log_2\left(\frac{1}{2}\right) - \frac{1}{2}\log_2\left(\frac{1}{2}\right) = -\frac{1}{2}(-1) - \frac{1}{2}(-1) = 1
+$$
+
+**Result:** $S = 1$ bit - maximally entangled! ✅
+
+::: {.callout-tip icon=false appearance="minimal"}
+## Proof: Bell States Have Maximal Entropy
+
+**Claim:** All four Bell states have entanglement entropy $S = 1$ bit.
+
+**Proof:**
+
+All Bell states have Schmidt decomposition with coefficients $\lambda_1 = \lambda_2 = \frac{1}{\sqrt{2}}$.
+
+For example:
+- $|\Phi^+\rangle = \frac{1}{\sqrt{2}}|0\rangle|0\rangle + \frac{1}{\sqrt{2}}|1\rangle|1\rangle$
+- $|\Psi^+\rangle = \frac{1}{\sqrt{2}}|0\rangle|1\rangle + \frac{1}{\sqrt{2}}|1\rangle|0\rangle$
+
+For all: $\lambda_1^2 = \lambda_2^2 = \frac{1}{2}$
+
+Therefore:
+
+$$
+S = -\frac{1}{2}\log_2\frac{1}{2} - \frac{1}{2}\log_2\frac{1}{2} = 1 \text{ bit} \quad \square
+$$
+:::
+
+### Example: Partially Entangled State
+
+Consider:
+
+$$
+|\psi\rangle = \frac{\sqrt{3}}{2}|00\rangle + \frac{1}{2}|11\rangle
+$$
+
+Schmidt coefficients: $\lambda_1 = \frac{\sqrt{3}}{2}, \lambda_2 = \frac{1}{2}$
+
+Entropy:
+
+$$
+S = -\frac{3}{4}\log_2\frac{3}{4} - \frac{1}{4}\log_2\frac{1}{4} \approx 0.811 \text{ bits}
+$$
+
+This is **partially entangled** ($0 < S < 1$).
+
+## Bell's Theorem and Non-Locality
+
+Entanglement leads to correlations that cannot be explained by any local hidden variable theory.
+
+### EPR Paradox
+
+In 1935, Einstein, Podolsky, and Rosen (EPR) argued that quantum mechanics must be incomplete. They believed:
+
+1. Elements of reality exist for unmeasured properties
+2. Locality: Measuring one particle can't instantly affect a distant particle
+
+These assumptions lead to **local hidden variable theories**.
+
+### Bell's Inequality
+
+In 1964, John Bell proved that local hidden variable theories predict:
+
+$$
+|E(a,b) - E(a,c)| \le 1 + E(b,c)
+$$
+
+where $E(x,y)$ is the correlation between measurements in directions $x$ and $y$.
+
+**Quantum mechanics violates this inequality!**
+
+For Bell states measured in appropriate bases:
+
+$$
+|E(a,b) - E(a,c)| = 2\sqrt{2} \approx 2.83 > 1 + E(b,c)
+$$
+
+This has been experimentally verified countless times. Nature is **non-local** - entanglement is real.
+
+::: {.callout-note icon=false}
+## Implications for Quantum Computing
+
+Bell's theorem proves that quantum correlations are fundamentally different from classical correlations. This is the source of quantum computing's power:
+
+- Quantum algorithms exploit entanglement for exponential speedups
+- Classical computers cannot efficiently simulate entangled systems
+- QPL makes entanglement a first-class primitive to harness this power
+:::
+
+## Measurement of Entangled States
+
+When we measure one qubit of an entangled pair, the entire state collapses.
+
+### Example: Measuring $|\Phi^+\rangle$
+
+Start with: $|\Phi^+\rangle = \frac{1}{\sqrt{2}}(|00\rangle + |11\rangle)$
+
+**Measure qubit A in Z-basis:**
+
+- **Outcome 0** (probability $\frac{1}{2}$):
+  - State collapses to $|00\rangle$
+  - Qubit B is now in state $|0\rangle$
+
+- **Outcome 1** (probability $\frac{1}{2}$):
+  - State collapses to $|11\rangle$
+  - Qubit B is now in state $|1\rangle$
+
+**Key observation:** Measuring qubit A **instantaneously** determines the state of qubit B, regardless of distance!
+
+### Partial Measurement Formula
+
+For a general state $|\psi\rangle = \sum_{ij} c_{ij}|i\rangle_A|j\rangle_B$:
+
+Measuring qubit A and getting outcome $i$:
+
+$$
+|\psi\rangle \xrightarrow{\text{measure A}=i} \frac{1}{\sqrt{P(i)}} \sum_j c_{ij}|i\rangle_A|j\rangle_B = |i\rangle_A \otimes \left(\frac{1}{\sqrt{P(i)}} \sum_j c_{ij}|j\rangle_B\right)
+$$
+
+where $P(i) = \sum_j |c_{ij}|^2$ is the probability of outcome $i$.
+
+## Summary
+
+In this chapter, you learned:
+
+✅ Tensor product combines multiple quantum systems
+✅ Separable states can be factored: $|\phi\rangle_A \otimes |\chi\rangle_B$
+✅ Entangled states cannot be factored
+✅ Bell states are maximally entangled 2-qubit states
+✅ Schmidt decomposition is the canonical form for bipartite states
+✅ Entanglement entropy quantifies entanglement: $S = -\sum_i \lambda_i^2 \log_2 \lambda_i^2$
+✅ Bell's theorem proves quantum non-locality
+✅ Measuring one qubit collapses the entangled partner
+
+## Exercises
+
+### Exercise 2.1: Identifying Entanglement
+
+Which of the following states are entangled? Prove your answer.
+
+**(a)** $|\psi\rangle = \frac{1}{\sqrt{2}}(|00\rangle + |01\rangle)$
+
+**(b)** $|\psi\rangle = \frac{1}{\sqrt{2}}(|00\rangle + |10\rangle)$
+
+**(c)** $|\psi\rangle = \frac{1}{2}(|00\rangle + |01\rangle + |10\rangle + |11\rangle)$
+
+### Exercise 2.2: Schmidt Decomposition
+
+Find the Schmidt decomposition for:
+
+$$
+|\psi\rangle = \frac{1}{2}|00\rangle + \frac{1}{2}|01\rangle + \frac{1}{2}|10\rangle + \frac{1}{2}|11\rangle
+$$
+
+Calculate the Schmidt rank and entanglement entropy.
+
+### Exercise 2.3: Entanglement Entropy
+
+Calculate the entanglement entropy for:
+
+$$
+|\psi\rangle = \frac{2}{\sqrt{5}}|00\rangle + \frac{1}{\sqrt{5}}|11\rangle
+$$
+
+Is this state maximally entangled?
+
+### Exercise 2.4: Bell State Transformations
+
+Prove that all four Bell states can be transformed into each other using single-qubit gates (Pauli gates):
+
+$$
+\begin{align*}
+X|0\rangle = |1\rangle, \quad X|1\rangle = |0\rangle \\
+Z|0\rangle = |0\rangle, \quad Z|1\rangle = -|1\rangle
+\end{align*}
+$$
+
+**Hint:** Start with $|\Phi^+\rangle$ and apply $X$ or $Z$ gates to derive the others.
+
+### Exercise 2.5: Partial Measurement
+
+Given the state $|\Psi^+\rangle = \frac{1}{\sqrt{2}}(|01\rangle + |10\rangle)$:
+
+**(a)** If qubit A is measured in the Z-basis and outcome 0 is obtained, what is the post-measurement state?
+
+**(b)** What is the probability of measuring qubit B as 1 after the measurement in part (a)?
+
+### Exercise 2.6: Creating Bell States
+
+In a quantum circuit, a Bell state $|\Phi^+\rangle$ is created from $|00\rangle$ using:
+
+1. Hadamard gate on qubit A: $H|0\rangle_A = \frac{1}{\sqrt{2}}(|0\rangle + |1\rangle)_A$
+2. CNOT gate with A as control and B as target
+
+Verify that this produces $|\Phi^+\rangle = \frac{1}{\sqrt{2}}(|00\rangle + |11\rangle)$.
+
+---
+
+**Next:** [Chapter 3: n-Qubit Systems](03-n-qubit-systems.qmd) - Scaling to many qubits
