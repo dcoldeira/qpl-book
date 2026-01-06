@@ -1,0 +1,420 @@
+# n-Qubit Systems
+
+Moving beyond 2 qubits unlocks the full richness of quantum entanglement. With 3 or more qubits, we encounter genuinely different classes of entanglement—states that cannot be converted to each other using local operations.
+
+## Tensor Products for n Qubits
+
+### The n-Qubit Hilbert Space
+
+An $n$-qubit system lives in a Hilbert space of dimension $2^n$.
+
+**Computational basis:** $\{|b_1b_2\cdots b_n\rangle : b_i \in \{0,1\}\}$
+
+For 3 qubits: $|000\rangle, |001\rangle, |010\rangle, |011\rangle, |100\rangle, |101\rangle, |110\rangle, |111\rangle$ (8 states)
+
+For $n$ qubits: $2^n$ basis states
+
+### General n-Qubit State
+
+$$
+|\psi\rangle = \sum_{b_1,\ldots,b_n \in \{0,1\}} c_{b_1\cdots b_n} |b_1\cdots b_n\rangle
+$$
+
+with normalization: $\sum_{b_1,\ldots,b_n} |c_{b_1\cdots b_n}|^2 = 1$
+
+**Note:** The number of complex amplitudes grows exponentially: $2^n$ complex numbers!
+
+- 10 qubits: 1,024 amplitudes
+- 20 qubits: 1,048,576 amplitudes
+- 50 qubits: $\sim 10^{15}$ amplitudes (more than can be stored classically!)
+
+This exponential growth is both the **power** and the **challenge** of quantum computing.
+
+## GHZ States: Maximal Multipartite Entanglement
+
+### Definition
+
+The **GHZ state** (Greenberger-Horne-Zeilinger) for $n$ qubits is:
+
+$$
+|\text{GHZ}_n\rangle = \frac{1}{\sqrt{2}}(|0\rangle^{\otimes n} + |1\rangle^{\otimes n}) = \frac{1}{\sqrt{2}}(|00\cdots0\rangle + |11\cdots1\rangle)
+$$
+
+**Examples:**
+- $n=2$: $|\text{GHZ}_2\rangle = \frac{1}{\sqrt{2}}(|00\rangle + |11\rangle) = |\Phi^+\rangle$ (Bell state)
+- $n=3$: $|\text{GHZ}_3\rangle = \frac{1}{\sqrt{2}}(|000\rangle + |111\rangle)$
+- $n=4$: $|\text{GHZ}_4\rangle = \frac{1}{\sqrt{2}}(|0000\rangle + |1111\rangle)$
+
+### Properties of GHZ States
+
+1. **Perfectly correlated:** Measuring any qubit in the Z-basis gives 0 or 1, and all other qubits will have the same value.
+
+2. **Fragile:** Measuring even one qubit completely destroys the multipartite entanglement, leaving a product state.
+
+3. **Maximal bipartite entanglement:** For any bipartition (splitting qubits into two groups), the entanglement entropy is maximal.
+
+### GHZ Correlations
+
+For $|\text{GHZ}_3\rangle = \frac{1}{\sqrt{2}}(|000\rangle + |111\rangle)$:
+
+**Measuring all qubits in Z-basis:**
+- $P(000) = \frac{1}{2}$ - all measure 0
+- $P(111) = \frac{1}{2}$ - all measure 1
+- $P(\text{any other outcome}) = 0$ - impossible!
+
+This perfect 3-way correlation has no classical analogue.
+
+### Entanglement Entropy of GHZ
+
+For a bipartition $A|B$ where $A$ has $k$ qubits and $B$ has $n-k$ qubits:
+
+$$
+S_{A|B} = 1 \text{ bit}
+$$
+
+regardless of how we partition! (as long as both groups are non-empty)
+
+::: {.callout-tip icon=false appearance="minimal"}
+## Proof: GHZ Has Maximal Bipartite Entropy
+
+**Claim:** For $|\text{GHZ}_n\rangle$, any bipartition yields $S = 1$ bit.
+
+**Proof:**
+
+Consider partition into group A (first $k$ qubits) and group B (remaining $n-k$ qubits).
+
+The GHZ state can be written:
+
+$$
+|\text{GHZ}_n\rangle = \frac{1}{\sqrt{2}}|0\rangle^{\otimes k}_A |0\rangle^{\otimes (n-k)}_B + \frac{1}{\sqrt{2}}|1\rangle^{\otimes k}_A |1\rangle^{\otimes (n-k)}_B
+$$
+
+This is in Schmidt form with coefficients $\lambda_1 = \lambda_2 = \frac{1}{\sqrt{2}}$.
+
+Therefore:
+
+$$
+S = -\frac{1}{2}\log_2\frac{1}{2} - \frac{1}{2}\log_2\frac{1}{2} = 1 \text{ bit} \quad \square
+$$
+:::
+
+## W States: Robust Entanglement
+
+### Definition
+
+The **W state** for $n$ qubits is an equal superposition of all basis states with exactly one qubit in $|1\rangle$:
+
+$$
+|W_n\rangle = \frac{1}{\sqrt{n}}(|10\cdots0\rangle + |01\cdots0\rangle + \cdots + |0\cdots01\rangle)
+$$
+
+**Examples:**
+- $n=3$: $|W_3\rangle = \frac{1}{\sqrt{3}}(|100\rangle + |010\rangle + |001\rangle)$
+- $n=4$: $|W_4\rangle = \frac{1}{2}(|1000\rangle + |0100\rangle + |0010\rangle + |0001\rangle)$
+
+### Properties of W States
+
+1. **Robust:** If you measure one qubit and get 0, the remaining qubits are still entangled in a W state with $n-1$ qubits.
+
+2. **Partial bipartite entanglement:** For bipartition $1|23\cdots n$, the entanglement is less than maximal.
+
+3. **Symmetric:** All qubits play equivalent roles (state is unchanged by permuting qubits).
+
+### W State Resilience
+
+For $|W_3\rangle = \frac{1}{\sqrt{3}}(|100\rangle + |010\rangle + |001\rangle)$:
+
+**Measuring qubit 1 in Z-basis:**
+
+- **Outcome 1** (probability $\frac{1}{3}$):
+  - State collapses to $|100\rangle$ (separable)
+
+- **Outcome 0** (probability $\frac{2}{3}$):
+  - State collapses to $\frac{1}{\sqrt{2}}(|010\rangle + |001\rangle) = |0\rangle \otimes \frac{1}{\sqrt{2}}(|10\rangle + |01\rangle)$
+  - Qubits 2 and 3 are still entangled in a Bell state!
+
+**Key difference from GHZ:** W states preserve entanglement when losing qubits.
+
+### Entanglement Entropy of W
+
+For $|W_3\rangle$ with bipartition $1|23$:
+
+The state can be written:
+
+$$
+|W_3\rangle = \frac{1}{\sqrt{3}}|1\rangle|00\rangle + \frac{\sqrt{2}}{\sqrt{3}}|0\rangle \cdot \frac{1}{\sqrt{2}}(|10\rangle + |01\rangle)
+$$
+
+Schmidt coefficients: $\lambda_1 = \frac{1}{\sqrt{3}}, \lambda_2 = \sqrt{\frac{2}{3}}$
+
+Entropy:
+
+$$
+S = -\frac{1}{3}\log_2\frac{1}{3} - \frac{2}{3}\log_2\frac{2}{3} \approx 0.918 \text{ bits}
+$$
+
+**This is less than 1 bit** - W states are not maximally entangled for bipartitions!
+
+## GHZ vs W: Different Entanglement Classes
+
+GHZ and W states represent fundamentally different types of entanglement.
+
+### LOCC Equivalence
+
+Two states are **LOCC equivalent** (Local Operations and Classical Communication) if one can be transformed into the other using:
+- Local quantum operations on individual qubits
+- Classical communication between parties
+
+::: {.callout-important icon=false appearance="simple"}
+## Theorem: GHZ and W Are LOCC-Inequivalent
+
+For $n \geq 3$ qubits, GHZ and W states belong to **different entanglement classes**. You cannot convert:
+
+$$
+|\text{GHZ}_n\rangle \not\xrightarrow{\text{LOCC}} |W_n\rangle
+$$
+
+$$
+|W_n\rangle \not\xrightarrow{\text{LOCC}} |\text{GHZ}_n\rangle
+$$
+
+These represent genuinely different types of multipartite entanglement.
+:::
+
+**Physical interpretation:**
+- **GHZ:** Fragile, maximal correlations, "all-or-nothing" entanglement
+- **W:** Robust, partial correlations, "distributed" entanglement
+
+### Summary of Differences
+
+| Property | GHZ State | W State |
+|----------|-----------|---------|
+| **Form** | $\frac{1}{\sqrt{2}}(|00\cdots0\rangle + |11\cdots1\rangle)$ | $\frac{1}{\sqrt{n}}\sum_i |0\cdots010\cdots0\rangle_i$ |
+| **Bipartite entropy** | $S = 1$ (maximal) | $S < 1$ (sub-maximal) |
+| **Robustness** | Fragile to loss | Robust to qubit loss |
+| **Correlations** | Perfect all-way | Partial pairwise |
+| **LOCC class** | Distinct | Distinct |
+
+## Multipartite Entanglement: Beyond 2 Parties
+
+### Genuine Multipartite Entanglement
+
+A state has **genuine multipartite entanglement** if it is entangled across all possible bipartitions.
+
+**Example:** $|\text{GHZ}_3\rangle$ is genuinely tripartite entangled:
+- Bipartition $1|23$: entangled ✓
+- Bipartition $2|13$: entangled ✓
+- Bipartition $3|12$: entangled ✓
+
+### Biseparable States
+
+A state is **biseparable** if it can be written as a mixture of states that are separable across some bipartition.
+
+**Example:** $|\psi\rangle = |0\rangle_1 \otimes |\Phi^+\rangle_{23}$ is biseparable (qubit 1 is separable from qubits 2-3).
+
+This has entanglement but not genuine tripartite entanglement.
+
+## Measuring n-Qubit States
+
+### Partial Measurements
+
+When measuring $k$ qubits of an $n$-qubit state, the remaining $n-k$ qubits collapse to a state determined by the measurement outcome.
+
+**General formula:** For state $|\psi\rangle = \sum_{i,j} c_{ij}|i\rangle_A|j\rangle_B$ where $A$ represents the measured qubits and $B$ the unmeasured:
+
+Measuring $A$ and getting outcome $i$:
+
+$$
+|\psi\rangle \xrightarrow{\text{measure } A=i} |i\rangle_A \otimes \frac{1}{\sqrt{P(i)}}\sum_j c_{ij}|j\rangle_B
+$$
+
+where $P(i) = \sum_j |c_{ij}|^2$.
+
+### Example: Measuring GHZ$_3$
+
+Start with: $|\text{GHZ}_3\rangle = \frac{1}{\sqrt{2}}(|000\rangle + |111\rangle)$
+
+**Measure qubit 1 in Z-basis:**
+
+- **Outcome 0** (probability $\frac{1}{2}$):
+  $$
+  |\text{GHZ}_3\rangle \to |0\rangle_1 \otimes |00\rangle_{23}
+  $$
+  Qubits 2 and 3 are now in a **product state** $|00\rangle$ (no entanglement!)
+
+- **Outcome 1** (probability $\frac{1}{2}$):
+  $$
+  |\text{GHZ}_3\rangle \to |1\rangle_1 \otimes |11\rangle_{23}
+  $$
+  Again, qubits 2 and 3 are in a product state $|11\rangle$.
+
+**Key observation:** GHZ entanglement is completely destroyed by measuring a single qubit!
+
+### Example: Measuring W$_3$
+
+Start with: $|W_3\rangle = \frac{1}{\sqrt{3}}(|100\rangle + |010\rangle + |001\rangle)$
+
+**Measure qubit 1 in Z-basis:**
+
+- **Outcome 0** (probability $\frac{2}{3}$):
+  $$
+  |W_3\rangle \to |0\rangle_1 \otimes \frac{1}{\sqrt{2}}(|10\rangle + |01\rangle)_{23} = |0\rangle_1 \otimes |\Psi^+\rangle_{23}
+  $$
+  Qubits 2 and 3 are in a **Bell state** (still entangled!)
+
+- **Outcome 1** (probability $\frac{1}{3}$):
+  $$
+  |W_3\rangle \to |1\rangle_1 \otimes |00\rangle_{23}
+  $$
+  Product state (no entanglement).
+
+**Key observation:** W entanglement survives the loss of one qubit (with probability $\frac{2}{3}$).
+
+## Tensor Network Visualization
+
+For large $n$-qubit states, we can use **tensor network diagrams** to visualize entanglement structure.
+
+### Product State
+
+```
+ |0⟩ —— |0⟩ —— |0⟩ —— |0⟩
+```
+
+No connections → no entanglement.
+
+### GHZ State
+
+```
+       ╱─────╲
+      ╱       ╲
+ |ψ⟩ ●─────────●
+      ╲       ╱
+       ╲─────╱
+```
+
+Central node connected to all qubits → maximal multipartite entanglement.
+
+### W State
+
+```
+ |ψ⟩ ───┬───┬───┬───
+        │   │   │
+       q1  q2  q3  q4
+```
+
+Distributed structure → robust, partial entanglement.
+
+(Note: These are simplified diagrams. Full tensor networks are more complex.)
+
+## Computational Complexity
+
+### State Vector Simulation
+
+Classical simulation of $n$-qubit states requires:
+- **Memory:** $O(2^n)$ complex numbers
+- **Operations:** $O(2^n)$ per gate
+
+**Limitations:**
+- **~45 qubits:** Maximum on world's best supercomputers ($\sim 35$ TB RAM)
+- **50+ qubits:** Classically intractable to simulate in general
+
+This is where quantum computers achieve advantage!
+
+### Tensor Network Methods
+
+For certain states (e.g., matrix product states), we can simulate efficiently using **tensor networks**:
+- **Memory:** $O(n \chi^2)$ where $\chi$ is bond dimension
+- **Works for:** 1D systems, weakly entangled states, ground states of local Hamiltonians
+
+**Limitation:** Highly entangled states (like GHZ, W) require exponential resources even for tensor networks.
+
+## Creating n-Qubit States in QPL
+
+In the Quantum Process Language, you can create GHZ and W states directly:
+
+```python
+from qpl import QPLProgram
+
+program = QPLProgram("n-Qubit Entanglement")
+
+# Create 4 qubits
+q0, q1, q2, q3 = [program.create_system() for _ in range(4)]
+
+# GHZ state (default)
+ghz4 = program.entangle(q0, q1, q2, q3)
+print(f"GHZ entropy: {ghz4.entanglement_entropy:.3f}")  # 1.000
+
+# W state
+w4 = program.entangle(q0, q1, q2, q3, state_type="w")
+print(f"W entropy: {w4.entanglement_entropy:.3f}")  # < 1.000
+```
+
+This **relations-first** approach treats entanglement as a primitive operation, not a derived concept!
+
+## Summary
+
+In this chapter, you learned:
+
+✅ n-qubit systems live in $2^n$-dimensional Hilbert spaces
+✅ GHZ states: maximal, fragile, all-or-nothing entanglement
+✅ W states: robust, partial, distributed entanglement
+✅ GHZ and W are LOCC-inequivalent (different entanglement classes)
+✅ Genuine multipartite entanglement involves all bipartitions
+✅ Partial measurements affect entanglement differently for GHZ vs W
+✅ Classical simulation becomes intractable beyond ~45 qubits
+
+**Part I Complete!** You now have the quantum foundations needed to understand MBQC and QPL.
+
+## Exercises
+
+### Exercise 3.1: GHZ State Verification
+
+For $|\text{GHZ}_4\rangle = \frac{1}{\sqrt{2}}(|0000\rangle + |1111\rangle)$:
+
+**(a)** Calculate the probability of measuring outcome $|0101\rangle$ in the Z-basis.
+
+**(b)** If you measure qubits 1 and 2 and get outcomes 0 and 1 respectively, what is the state of qubits 3 and 4?
+
+### Exercise 3.2: W State Properties
+
+For $|W_4\rangle = \frac{1}{2}(|1000\rangle + |0100\rangle + |0010\rangle + |0001\rangle)$:
+
+**(a)** Calculate $P(1000)$ when all qubits are measured in the Z-basis.
+
+**(b)** After measuring qubit 1 and getting 0, prove that qubits 2, 3, 4 are in state $|W_3\rangle$.
+
+### Exercise 3.3: Entanglement Entropy Calculation
+
+Calculate the bipartite entanglement entropy for $|W_3\rangle$ with partition $12|3$ (qubits 1-2 vs qubit 3).
+
+**Hint:** First find the Schmidt decomposition for this bipartition.
+
+### Exercise 3.4: LOCC Impossibility
+
+Explain intuitively why you cannot convert $|\text{GHZ}_3\rangle$ to $|W_3\rangle$ using only local operations and classical communication.
+
+### Exercise 3.5: Multipartite Correlation
+
+Consider the state:
+
+$$
+|\psi\rangle = \frac{1}{2}(|000\rangle + |011\rangle + |101\rangle + |110\rangle)
+$$
+
+**(a)** Is this state genuinely tripartite entangled? Check all bipartitions.
+
+**(b)** Calculate the entanglement entropy for partition $1|23$.
+
+### Exercise 3.6: Fragility vs Robustness
+
+Design an experiment (in words) that demonstrates the difference in robustness between GHZ and W states when qubits are lost.
+
+### Exercise 3.7: n-Qubit Generalization
+
+Generalize the formula for $|W_n\rangle$ and prove that measuring $k$ qubits (with all outcomes 0) leaves the remaining qubits in state $|W_{n-k}\rangle$ (properly normalized).
+
+---
+
+**Next:** [Part II: Measurement-Based Quantum Computing](../index.qmd#part-ii-measurement-based-quantum-computing)
+
+*Part I complete! You're now ready to explore MBQC and QPL.*
