@@ -2,3 +2,9 @@
 /_book/
 *.qmd.bak
 index.tex
+
+# Private tracking and planning documents (not for public repo)
+BOOK_UPDATE_TRACKER.md
+*_NOTES.md
+*_PLAN.md
+SESSION_*.md

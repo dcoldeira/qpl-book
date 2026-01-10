@@ -1,0 +1,442 @@
+# Graph Extraction for MBQC
+
+Now that you've created Bell states and GHZ states, it's time to see how QPL converts these quantum relations into **graph states** for measurement-based quantum computing (MBQC). This is the first step in the MBQC compilation pipeline!
+
+## What is Graph Extraction?
+
+In MBQC, quantum computations are performed by:
+1. Preparing a **cluster state** (a special kind of graph state)
+2. Measuring qubits in specific bases
+3. Applying corrections based on measurement outcomes
+
+**Graph extraction** is the process of converting a QPL `QuantumRelation` into a graph representation where:
+- **Nodes** represent qubits (prepared in $|+\rangle$ state)
+- **Edges** represent CZ (controlled-Z) entangling gates
+
+### Why Graph States Matter
+
+Graph states are the foundation of MBQC:
+
+$$
+|G\rangle = \prod_{(i,j) \in E} CZ_{ij} |+\rangle^{\otimes n}
+$$
+
+where $E$ is the set of edges in graph $G$.
+
+**Key insight:** Different entanglement structures produce different graph topologies!
+
+## Graph Topologies for Common States
+
+Different quantum states have characteristic graph structures:
+
+| State | Topology | Nodes | Edges | Description |
+|-------|----------|-------|-------|-------------|
+| **Bell** | Edge graph | 2 | 1 | Two nodes connected by a single edge |
+| **GHZ** | Star graph | n | n-1 | Central node connected to all others |
+| **W** | Ring graph | n | n | Cyclic connections forming a loop |
+
+**Visual representation:**
+
+```
+Bell State:     0 ━━━ 1
+
+GHZ₃ State:       1
+                  │
+              0 ━━┼━━ 2
+
+GHZ₄ State:     1 ━━━┓
+                     ├━━ 0
+                2 ━━━┫
+                3 ━━━┛
+
+W State:        0 ━━━ 1
+                │     │
+                2 ━━━━┘
+```
+
+## The Graph Extraction API
+
+QPL provides three main functions in the `qpl.mbqc` module:
+
+### 1. `extract_graph()` - Convert Relation to Graph
+
+```python
+from qpl.mbqc import extract_graph
+
+graph = extract_graph(relation)
+```
+
+**Returns:** A NetworkX `Graph` object with:
+- Nodes: qubit indices (0, 1, 2, ...)
+- Edges: CZ operations needed to create the cluster state
+- Metadata: state type, number of qubits, description
+
+### 2. `analyze_entanglement_structure()` - Detect State Type
+
+```python
+from qpl.mbqc import analyze_entanglement_structure
+
+info = analyze_entanglement_structure(relation)
+# Returns: {
+#   'num_qubits': 2,
+#   'state_type': 'bell',
+#   'entanglement_entropy': 1.0,
+#   'topology_hint': 'edge'
+# }
+```
+
+This function automatically detects whether you have a Bell state, GHZ state, W state, or unknown state.
+
+### 3. `visualize_graph()` - Display Graph Structure
+
+```python
+from qpl.mbqc import visualize_graph
+
+print(visualize_graph(graph))
+# Shows nodes, edges, and adjacency information
+```
+
+## Tutorial: Extract Bell State Graph
+
+Let's start with the simplest case - extracting a graph from a Bell state:
+
+```{python}
+#| eval: false
+from qpl import QPLProgram
+from qpl.mbqc import extract_graph, analyze_entanglement_structure, visualize_graph
+
+# Create Bell state
+program = QPLProgram("Bell State Graph Extraction")
+q0 = program.create_system()
+q1 = program.create_system()
+bell = program.entangle(q0, q1)
+
+print("Created Bell state:")
+print(f"State vector: {bell.state}")
+print(f"Entanglement entropy: {bell.entanglement_entropy:.3f}")
+```
+
+**Output:**
+```
+Created Bell state:
+State vector: [0.707+0j  0.+0j  0.+0j  0.707+0j]
+Entanglement entropy: 1.000
+```
+
+Now let's analyze the entanglement structure:
+
+```{python}
+#| eval: false
+# Analyze what kind of state this is
+info = analyze_entanglement_structure(bell)
+
+print("\nEntanglement analysis:")
+print(f"  Number of qubits: {info['num_qubits']}")
+print(f"  State type: {info['state_type']}")
+print(f"  Entanglement entropy: {info['entanglement_entropy']:.3f}")
+print(f"  Suggested topology: {info['topology_hint']}")
+```
+
+**Output:**
+```
+Entanglement analysis:
+  Number of qubits: 2
+  State type: bell
+  Entanglement entropy: 1.000
+  Suggested topology: edge
+```
+
+Finally, extract the graph:
+
+```{python}
+#| eval: false
+# Extract graph representation
+graph = extract_graph(bell)
+
+print("\nExtracted graph:")
+print(visualize_graph(graph))
+```
+
+**Output:**
+```
+Extracted graph:
+Graph: BELL state (2 qubits)
+Nodes (2): [0, 1]
+Edges (1): [(0, 1)]
+
+Adjacency:
+  0: [1]
+  1: [0]
+```
+
+Perfect! Our Bell state produces an **edge graph** with 2 nodes and 1 edge, exactly as expected.
+
+## Tutorial: Extract GHZ State Graph
+
+Now let's try a more complex state - a 3-qubit GHZ state:
+
+```{python}
+#| eval: false
+# Create GHZ₃ state
+program = QPLProgram("GHZ Graph Extraction")
+q0 = program.create_system()
+q1 = program.create_system()
+q2 = program.create_system()
+ghz3 = program.entangle(q0, q1, q2)
+
+# Analyze and extract
+info = analyze_entanglement_structure(ghz3)
+graph = extract_graph(ghz3)
+
+print(f"State type: {info['state_type']}")
+print(f"\n{visualize_graph(graph)}")
+```
+
+**Output:**
+```
+State type: ghz
+
+Graph: GHZ state (3 qubits)
+Nodes (3): [0, 1, 2]
+Edges (2): [(0, 1), (0, 2)]
+
+Adjacency:
+  0: [1, 2]
+  1: [0]
+  2: [0]
+```
+
+Notice the **star topology**: qubit 0 is the central node connected to both qubits 1 and 2. This is characteristic of GHZ states!
+
+## Scaling to 4+ Qubits
+
+Let's verify that GHZ₄ also produces a star graph:
+
+```{python}
+#| eval: false
+# Create GHZ₄ state
+program = QPLProgram("GHZ4 Graph")
+qubits = [program.create_system() for _ in range(4)]
+ghz4 = program.entangle(*qubits)
+
+# Extract graph
+graph = extract_graph(ghz4)
+print(visualize_graph(graph))
+```
+
+**Output:**
+```
+Graph: GHZ state (4 qubits)
+Nodes (4): [0, 1, 2, 3]
+Edges (3): [(0, 1), (0, 2), (0, 3)]
+
+Adjacency:
+  0: [1, 2, 3]
+  1: [0]
+  2: [0]
+  3: [0]
+```
+
+Perfect! Qubit 0 is connected to all others - a star with 3 edges.
+
+## Working with the NetworkX Graph
+
+The extracted graph is a standard NetworkX `Graph` object, so you can use all NetworkX functionality:
+
+```{python}
+#| eval: false
+import networkx as nx
+
+# Extract graph
+graph = extract_graph(bell)
+
+# Check if nodes are connected
+print(f"Are qubits 0 and 1 connected? {graph.has_edge(0, 1)}")
+
+# Get neighbors of a node
+print(f"Neighbors of qubit 0: {list(graph.neighbors(0))}")
+
+# Get degree of each node
+for node in graph.nodes():
+    print(f"Qubit {node} has degree {graph.degree(node)}")
+
+# Access metadata
+print(f"State type: {graph.graph['state_type']}")
+print(f"Description: {graph.graph['description']}")
+```
+
+**Output:**
+```
+Are qubits 0 and 1 connected? True
+Neighbors of qubit 0: [1]
+Qubit 0 has degree 1
+Qubit 1 has degree 1
+State type: bell
+Description: BELL state (2 qubits)
+```
+
+## Understanding the Graph State
+
+Why does a Bell state become an edge graph?
+
+**Circuit perspective:**
+```
+|+⟩ ──────●──── Measure in basis α
+          │
+|+⟩ ──────CZ─── Measure in basis β
+```
+
+**State evolution:**
+1. Start: $|+\rangle \otimes |+\rangle$
+2. Apply CZ between qubits 0-1
+3. Result: Graph state with topology `0 ━━━ 1`
+
+**Why this works:**
+$$
+CZ_{01} |+\rangle |+\rangle = \frac{|00\rangle + |11\rangle}{\sqrt{2}} = |\Phi^+\rangle
+$$
+
+The CZ gate on $|+\rangle$ states creates the Bell state! The edge in the graph represents this CZ operation.
+
+## GHZ Star Topology Explained
+
+For GHZ states, the star topology emerges from the preparation sequence:
+
+**Circuit for GHZ₃:**
+```
+|+⟩ ──────●──────●──── (central qubit)
+          │      │
+|+⟩ ──────CZ     │
+               │
+|+⟩ ────────────CZ
+```
+
+This creates edges (0,1) and (0,2) - exactly the star graph!
+
+## Complete Example: Analyze Multiple States
+
+```{python}
+#| eval: false
+from qpl import QPLProgram
+from qpl.mbqc import extract_graph, visualize_graph
+
+def analyze_state(program, name, *qubits):
+    """Helper to analyze any quantum state."""
+    relation = program.entangle(*qubits)
+    graph = extract_graph(relation)
+
+    print(f"\n{'='*50}")
+    print(f"Analysis: {name}")
+    print('='*50)
+    print(visualize_graph(graph))
+    print(f"Graph density: {len(graph.edges()) / (len(graph.nodes()) * (len(graph.nodes())-1) / 2):.2f}")
+
+# Main program
+program = QPLProgram("Multi-State Analysis")
+
+# Analyze Bell state
+q0, q1 = program.create_system(), program.create_system()
+analyze_state(program, "Bell State", q0, q1)
+
+# Analyze GHZ₃
+q2, q3, q4 = program.create_system(), program.create_system(), program.create_system()
+analyze_state(program, "GHZ₃ State", q2, q3, q4)
+
+# Analyze GHZ₄
+qubits = [program.create_system() for _ in range(4)]
+analyze_state(program, "GHZ₄ State", *qubits)
+```
+
+## What You Learned
+
+Congratulations! You now understand:
+
+✅ **Graph extraction** - Converting QPL relations to graph states
+✅ **State detection** - Automatic identification of Bell/GHZ/W states
+✅ **Graph topologies** - Edge graphs, star graphs, and their meaning
+✅ **MBQC connection** - How graphs represent cluster state preparation
+✅ **NetworkX integration** - Working with extracted graphs
+
+## Key Takeaways
+
+1. **Different states → different graphs:**
+   - Bell: edge graph (2 nodes, 1 edge)
+   - GHZ: star graph (n nodes, n-1 edges)
+   - W: ring graph (n nodes, n edges)
+
+2. **Edges = CZ gates:**
+   - Each edge represents a CZ operation
+   - Applied to qubits in $|+\rangle$ state
+   - Creates the desired entanglement
+
+3. **Automatic detection:**
+   - QPL analyzes the state vector
+   - Detects the state type
+   - Suggests appropriate topology
+
+## Exercises
+
+### Exercise 1: Bell State Verification
+Create all four Bell states and verify they all produce edge graphs:
+- $|\Phi^+\rangle = \frac{|00\rangle + |11\rangle}{\sqrt{2}}$ (default)
+- $|\Phi^-\rangle = \frac{|00\rangle - |11\rangle}{\sqrt{2}}$
+- $|\Psi^+\rangle = \frac{|01\rangle + |10\rangle}{\sqrt{2}}$
+- $|\Psi^-\rangle = \frac{|01\rangle - |10\rangle}{\sqrt{2}}$
+
+Do they all produce the same graph topology?
+
+### Exercise 2: GHZ Scaling
+Create GHZ states with 2, 3, 4, and 5 qubits. For each:
+- Extract the graph
+- Count nodes and edges
+- Verify the star topology
+- Calculate graph density
+
+**Question:** What pattern do you observe in the number of edges?
+
+### Exercise 3: Graph Properties
+For a Bell state graph:
+- Calculate the degree of each node
+- Check if the graph is connected
+- Compute the diameter of the graph
+- List all possible paths between nodes
+
+### Exercise 4: W State Graph
+Create a W state using `state_type="w"`:
+
+```python
+w3 = program.entangle(q0, q1, q2, state_type="w")
+```
+
+- Extract the graph
+- Compare its topology to GHZ₃
+- How many edges does it have?
+- What's the difference in structure?
+
+### Exercise 5: Custom Analysis
+Write a function that:
+1. Takes a `QuantumRelation` as input
+2. Extracts the graph
+3. Returns a dictionary with:
+   - Number of nodes
+   - Number of edges
+   - Average degree
+   - Graph diameter
+   - Is connected? (True/False)
+
+Test it on Bell, GHZ₃, and W states.
+
+## Next Steps
+
+You've mastered graph extraction! Next, you'll learn how to:
+- Generate **measurement patterns** from graphs (Phase 2)
+- Understand **adaptive corrections** for measurement outcomes
+- Compile complete QPL programs to MBQC
+
+---
+
+**Next:** Chapter 10: W States and Entanglement Classes (coming soon)
+
+**See also:**
+- [Chapter 5: Cluster States](05-cluster-states.qmd) - Theoretical foundation
+- [Chapter 6: Measurement Patterns](06-measurement-patterns.qmd) - What comes next
