@@ -1,0 +1,434 @@
+# Measurement Pattern Generation
+
+In the previous chapter, you learned how to extract graph states from quantum relations. Now you'll discover how to generate **measurement patterns** - the complete execution plans that tell an MBQC system what to measure and when.
+
+## What is a Measurement Pattern?
+
+A **measurement pattern** is a complete specification for executing quantum computation using MBQC. It consists of five key components:
+
+1. **Preparation:** Which qubits to prepare in $|+\rangle$ state
+2. **Entanglement:** Which CZ gates to apply (creating the cluster state)
+3. **Measurements:** What basis and angle to measure each qubit
+4. **Corrections:** Adaptive Pauli corrections based on measurement outcomes
+5. **Output:** Which qubits contain the final result
+
+### Pattern Structure
+
+```python
+from qpl.mbqc import MeasurementPattern, Measurement, Correction
+
+pattern = MeasurementPattern(
+    preparation=[0, 1],           # Prepare qubits 0 and 1 in |+⟩
+    entanglement=[(0, 1)],        # Apply CZ gate between them
+    measurements=[...],           # List of measurements
+    corrections=[...],            # List of adaptive corrections
+    output_qubits=[0, 1],        # Output on qubits 0 and 1
+    description="Pattern description"
+)
+```
+
+## The Pattern Generation API
+
+QPL provides several functions for generating measurement patterns:
+
+| Function | Purpose |
+|----------|---------|
+| `generate_bell_state_pattern()` | Bell state preparation |
+| `generate_ghz_state_pattern(n)` | n-qubit GHZ state |
+| `generate_single_qubit_gate_pattern(gate)` | H, X, Z, S, T gates |
+| `generate_rotation_pattern(axis, angle)` | Arbitrary rotations |
+| `generate_pattern_from_relation(rel)` | From QuantumRelation |
+| `combine_patterns(p1, p2)` | Sequential composition |
+
+## Tutorial: Bell State Pattern
+
+The simplest pattern is Bell state preparation:
+
+```{python}
+#| eval: false
+from qpl.mbqc import generate_bell_state_pattern
+
+# Generate pattern for Bell state
+pattern = generate_bell_state_pattern()
+
+print(pattern)
+```
+
+**Output:**
+```
+Pattern: Bell state |Φ+⟩ preparation
+Qubits: 2
+Preparation: 2 qubits in |+⟩
+Entanglement: 1 CZ gates
+Measurements: 0
+Corrections: 0
+Output qubits: [0, 1]
+Measurement depth: 0
+```
+
+### Understanding the Pattern
+
+This pattern tells us:
+- **Prepare** 2 qubits in $|+\rangle$: `preparation=[0, 1]`
+- **Apply** 1 CZ gate: `entanglement=[(0, 1)]`
+- **No measurements** needed (this IS the prepared state)
+- **Output** both qubits: `output_qubits=[0, 1]`
+
+**Physical interpretation:**
+$$
+CZ_{01} |+\rangle_0 |+\rangle_1 = \frac{|00\rangle + |11\rangle}{\sqrt{2}} = |\Phi^+\rangle
+$$
+
+## Tutorial: GHZ State Pattern
+
+Scaling to multiple qubits is straightforward:
+
+```{python}
+#| eval: false
+from qpl.mbqc import generate_ghz_state_pattern
+
+# Generate GHZ₃ pattern
+ghz3_pattern = generate_ghz_state_pattern(3)
+
+print(ghz3_pattern)
+print(f"\nEntanglement edges: {ghz3_pattern.entanglement}")
+```
+
+**Output:**
+```
+Pattern: GHZ_3 state preparation
+Qubits: 3
+Preparation: 3 qubits in |+⟩
+Entanglement: 2 CZ gates
+Measurements: 0
+Corrections: 0
+Output qubits: [0, 1, 2]
+Measurement depth: 0
+
+Entanglement edges: [(0, 1), (0, 2)]
+```
+
+The **star topology** is visible in the edges: qubit 0 is the center, connected to qubits 1 and 2.
+
+## Tutorial: Single-Qubit Gates
+
+Now we enter the realm of actual computation! Single-qubit gates are implemented via measurement:
+
+### Hadamard Gate
+
+```{python}
+#| eval: false
+from qpl.mbqc import generate_single_qubit_gate_pattern
+
+# Generate pattern for H gate
+h_pattern = generate_single_qubit_gate_pattern("H", input_qubit=0)
+
+print(h_pattern)
+print(f"\nMeasurement details:")
+for m in h_pattern.measurements:
+    print(f"  Qubit {m.qubit}: angle={m.angle:.3f}, plane={m.plane}")
+```
+
+**Output:**
+```
+Pattern: Hadamard gate
+Qubits: 2
+Preparation: 2 qubits in |+⟩
+Entanglement: 1 CZ gates
+Measurements: 1
+Corrections: 1
+Output qubits: [0]
+Measurement depth: 1
+
+Measurement details:
+  Qubit 1: angle=0.000, plane=XY
+```
+
+**Key insight:** The H gate uses an **ancilla qubit** (qubit 1) which gets measured in the XY plane at angle 0. The result appears on qubit 0!
+
+### Pauli Gates
+
+```{python}
+#| eval: false
+# X gate
+x_pattern = generate_single_qubit_gate_pattern("X", input_qubit=0)
+print(f"X gate: measure at angle π in plane {x_pattern.measurements[0].plane}")
+
+# Z gate
+z_pattern = generate_single_qubit_gate_pattern("Z", input_qubit=0)
+print(f"Z gate: measure at angle 0 in plane {z_pattern.measurements[0].plane}")
+```
+
+**Output:**
+```
+X gate: measure at angle 3.142 in plane XY
+Z gate: measure at angle 0.000 in plane XZ
+```
+
+**Pattern:** Different gates use different measurement planes and angles!
+
+## Understanding Measurement Angles
+
+The measurement angle determines the gate's action:
+
+| Gate | Plane | Angle | Effect |
+|------|-------|-------|--------|
+| **H** | XY | 0 | Superposition |
+| **X** | XY | π | Bit flip |
+| **Z** | XZ | 0 | Phase flip |
+| **S** | XZ | π/2 | √Z gate |
+| **T** | XZ | π/4 | √S gate |
+
+The angle θ determines the measurement basis:
+$$
+|\pm_\theta\rangle = \frac{1}{\sqrt{2}}(|0\rangle \pm e^{i\theta}|1\rangle)
+$$
+
+## Tutorial: Arbitrary Rotations
+
+For custom rotations, use `generate_rotation_pattern`:
+
+```{python}
+#| eval: false
+from qpl.mbqc import generate_rotation_pattern
+import numpy as np
+
+# Rotation around X axis by π/4
+rx_pattern = generate_rotation_pattern("X", np.pi/4, input_qubit=0)
+
+print(f"R_X(π/4) pattern:")
+print(rx_pattern)
+print(f"Measurement: angle={rx_pattern.measurements[0].angle:.3f}, plane={rx_pattern.measurements[0].plane}")
+```
+
+**Output:**
+```
+R_X(π/4) pattern:
+Pattern: R_X(0.785) rotation
+Qubits: 2
+Measurement: angle=0.785, plane=YZ
+```
+
+**Axis mapping:**
+- X rotation → YZ plane
+- Y rotation → XZ plane
+- Z rotation → XY plane
+
+## Tutorial: Pattern from Relation
+
+You can generate patterns directly from existing quantum relations:
+
+```{python}
+#| eval: false
+from qpl import QPLProgram
+from qpl.mbqc import generate_pattern_from_relation
+
+# Create a Bell state
+program = QPLProgram("Pattern from Relation")
+q0 = program.create_system()
+q1 = program.create_system()
+bell = program.entangle(q0, q1)
+
+# Generate pattern from the relation
+pattern = generate_pattern_from_relation(bell)
+
+print("Generated pattern:")
+print(pattern)
+```
+
+This combines graph extraction and pattern generation in one step!
+
+## Adaptive Corrections
+
+Measurement patterns include **corrections** - Pauli operations that depend on measurement outcomes:
+
+```{python}
+#| eval: false
+h_pattern = generate_single_qubit_gate_pattern("H")
+
+print(f"Number of corrections: {len(h_pattern.corrections)}")
+for corr in h_pattern.corrections:
+    print(f"  Target: qubit {corr.target}")
+    print(f"  Type: {corr.correction_type}")
+    print(f"  Depends on: {corr.depends_on}")
+```
+
+**Output:**
+```
+Number of corrections: 1
+  Target: qubit 0
+  Type: Z
+  Depends on: [1]
+```
+
+**Meaning:** If measuring qubit 1 gives outcome "1", apply Z to qubit 0.
+
+**Why needed:** Measurements are probabilistic. Corrections ensure deterministic results.
+
+## Pattern Combination
+
+Combine patterns sequentially to build circuits:
+
+```{python}
+#| eval: false
+from qpl.mbqc import combine_patterns
+
+# Create H gate followed by X gate
+h_pattern = generate_single_qubit_gate_pattern("H", 0)
+x_pattern = generate_single_qubit_gate_pattern("X", 0)
+
+# Combine them
+hx_pattern = combine_patterns(h_pattern, x_pattern)
+
+print(f"Combined pattern:")
+print(hx_pattern)
+print(f"Total qubits: {hx_pattern.num_qubits}")
+print(f"Total measurements: {len(hx_pattern.measurements)}")
+```
+
+**Output:**
+```
+Combined pattern:
+Pattern: Hadamard gate + Pauli X gate
+Total qubits: 4
+Total measurements: 2
+```
+
+The combined pattern has 4 qubits (2 from each gate) and 2 measurements.
+
+## Measurement Depth
+
+The **measurement depth** is the longest chain of dependent measurements:
+
+```{python}
+#| eval: false
+bell_pattern = generate_bell_state_pattern()
+print(f"Bell state depth: {bell_pattern.measurement_depth}")  # 0
+
+h_pattern = generate_single_qubit_gate_pattern("H")
+print(f"H gate depth: {h_pattern.measurement_depth}")  # 1
+
+combined = combine_patterns(h_pattern, generate_single_qubit_gate_pattern("X"))
+print(f"H + X depth: {combined.measurement_depth}")  # 2
+```
+
+**Lower depth = more parallelism** - measurements can happen simultaneously if independent.
+
+## Complete Example: Analyze Multiple Patterns
+
+```{python}
+#| eval: false
+from qpl.mbqc import (
+    generate_bell_state_pattern,
+    generate_ghz_state_pattern,
+    generate_single_qubit_gate_pattern,
+    generate_rotation_pattern
+)
+import numpy as np
+
+def analyze_pattern(name, pattern):
+    """Helper to analyze any measurement pattern."""
+    print(f"\n{'='*50}")
+    print(f"{name}")
+    print('='*50)
+    print(f"Qubits: {pattern.num_qubits}")
+    print(f"CZ gates: {len(pattern.entanglement)}")
+    print(f"Measurements: {len(pattern.measurements)}")
+    print(f"Corrections: {len(pattern.corrections)}")
+    print(f"Depth: {pattern.measurement_depth}")
+
+# Analyze various patterns
+analyze_pattern("Bell State", generate_bell_state_pattern())
+analyze_pattern("GHZ₃ State", generate_ghz_state_pattern(3))
+analyze_pattern("Hadamard Gate", generate_single_qubit_gate_pattern("H"))
+analyze_pattern("R_Y(π/3)", generate_rotation_pattern("Y", np.pi/3))
+```
+
+## What You Learned
+
+Congratulations! You now understand:
+
+✅ **Measurement patterns** - Complete MBQC execution plans
+✅ **Pattern components** - Preparation, entanglement, measurements, corrections
+✅ **State preparation** - Bell and GHZ patterns
+✅ **Gate implementation** - Single-qubit gates via measurement
+✅ **Rotation patterns** - Arbitrary angle rotations
+✅ **Pattern combination** - Building quantum circuits
+✅ **Measurement depth** - Parallelism analysis
+
+## Key Takeaways
+
+1. **MBQC = Preparation + Measurement:**
+   - Prepare cluster state
+   - Measure qubits in specific bases
+   - Apply corrections
+
+2. **Gates become measurements:**
+   - Each gate requires an ancilla qubit
+   - Measurement angle determines the gate
+   - Corrections ensure deterministic output
+
+3. **Patterns are composable:**
+   - Combine patterns to build circuits
+   - Sequential composition via `combine_patterns`
+   - Measurement depth shows parallelism
+
+## Exercises
+
+### Exercise 1: Pattern Analysis
+Generate patterns for all Pauli gates (X, Y, Z) and compare:
+- Measurement angles
+- Measurement planes
+- Correction types
+
+What pattern do you notice?
+
+### Exercise 2: Measurement Depth
+Create a pattern that combines three gates: H, S, T.
+- What's the measurement depth?
+- How many qubits are needed?
+- How many measurements total?
+
+### Exercise 3: Custom Rotation
+Generate a pattern for $R_Z(\pi/8)$ and verify:
+- The measurement plane is XY
+- The angle is $\pi/8$
+- There's 1 correction
+
+### Exercise 4: GHZ Scaling
+Generate GHZ patterns for n = 2, 3, 4, 5 qubits.
+For each, calculate:
+- Number of CZ gates
+- Graph density (edges / possible edges)
+- Resource efficiency (qubits vs entanglement)
+
+### Exercise 5: Pattern Composer
+Write a function that:
+1. Takes a list of gate names: `["H", "X", "S"]`
+2. Generates a pattern for each gate
+3. Combines them sequentially
+4. Returns the combined pattern
+
+Test it with different gate sequences.
+
+### Exercise 6: Pattern Validator
+Write a function that checks if a pattern is valid:
+- All measured qubits are prepared
+- All entanglement uses prepared qubits
+- No circular dependencies in measurements
+- Corrections only depend on earlier measurements
+
+## Next Steps
+
+You've mastered pattern generation! Next, you'll learn about:
+- **Adaptive corrections** - Implementing quantum teleportation (Phase 3)
+- **Pattern execution** - Simulating MBQC (Phase 4)
+- **Photonic compilation** - Real hardware backends (Future)
+
+---
+
+**Next:** Chapter 11: Adaptive Corrections and Quantum Teleportation (coming soon)
+
+**See also:**
+- [Chapter 9: Graph Extraction](09-graph-extraction.qmd) - Foundation for patterns
+- [Chapter 6: Measurement Patterns Theory](06-measurement-patterns.qmd) - Theoretical background

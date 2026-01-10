@@ -31,7 +31,7 @@ book:
         - chapters/07-first-bell-state.qmd
         - chapters/08-ghz-states.qmd
         - chapters/09-graph-extraction.qmd
-        - chapters/10-placeholder.qmd
+        - chapters/10-pattern-generation.qmd
         - chapters/11-placeholder.qmd
 
     - part: "Part IV: Advanced Topics"
