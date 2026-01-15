@@ -32,7 +32,7 @@ book:
         - chapters/08-ghz-states.qmd
         - chapters/09-graph-extraction.qmd
         - chapters/10-pattern-generation.qmd
-        - chapters/11-placeholder.qmd
+        - chapters/11-adaptive-corrections.qmd
 
     - part: "Part IV: Advanced Topics"
       chapters:

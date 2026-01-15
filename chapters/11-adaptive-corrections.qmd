@@ -1,0 +1,521 @@
+# Adaptive Corrections and Quantum Teleportation
+
+In the previous chapter, you learned how to generate measurement patterns for quantum gates. Now you'll discover **adaptive corrections** - the mechanism that makes MBQC deterministic despite probabilistic measurements. We'll use **quantum teleportation** as our key example.
+
+## Why Adaptive Corrections?
+
+In MBQC, measurements are inherently probabilistic - each measurement randomly returns 0 or 1. Without corrections, your quantum computation would give random results!
+
+**The solution:** Apply Pauli corrections (X, Z, or both) based on earlier measurement outcomes. This "feedforward" of classical information makes the computation deterministic.
+
+### The MBQC Correction Principle
+
+```
+Measurement outcome = 0  →  No correction needed
+Measurement outcome = 1  →  Apply Pauli correction
+```
+
+This is why MBQC requires **classical communication** alongside quantum operations.
+
+## The Adaptive Corrections API
+
+QPL provides functions for working with corrections:
+
+| Function | Purpose |
+|----------|---------|
+| `apply_pauli_correction(state, qubit, type)` | Apply X, Z, or XZ correction |
+| `compute_corrections(pattern, outcomes)` | Determine corrections from measurements |
+| `generate_teleportation_pattern()` | Teleportation measurement pattern |
+| `simulate_teleportation(state)` | Full teleportation simulation |
+| `verify_teleportation_fidelity(in, out)` | Check teleportation quality |
+| `correction_truth_table(n)` | All correction scenarios |
+
+## Tutorial: Pauli Corrections
+
+The three Pauli operators form the basis of all corrections:
+
+### X Correction (Bit Flip)
+
+```{python}
+#| eval: false
+import numpy as np
+from qpl.mbqc import apply_pauli_correction
+
+# |0⟩ state
+state_0 = np.array([1, 0], dtype=complex)
+
+# Apply X correction
+corrected = apply_pauli_correction(state_0, 0, "X")
+
+print(f"Before X: {state_0}")
+print(f"After X:  {corrected}")
+```
+
+**Output:**
+```
+Before X: [1.+0.j 0.+0.j]
+After X:  [0.+0.j 1.+0.j]
+```
+
+X flips $|0\rangle \leftrightarrow |1\rangle$.
+
+### Z Correction (Phase Flip)
+
+```{python}
+#| eval: false
+# |+⟩ = (|0⟩ + |1⟩)/√2
+state_plus = np.array([1, 1], dtype=complex) / np.sqrt(2)
+
+# Apply Z correction
+corrected = apply_pauli_correction(state_plus, 0, "Z")
+
+print(f"Before Z: {state_plus}")
+print(f"After Z:  {corrected}")
+```
+
+**Output:**
+```
+Before Z: [0.707+0.j 0.707+0.j]
+After Z:  [0.707+0.j -0.707+0.j]
+```
+
+Z transforms $|+\rangle \to |-\rangle$ by flipping the phase of $|1\rangle$.
+
+### Combined XZ Correction
+
+```{python}
+#| eval: false
+# Apply both X then Z
+state_0 = np.array([1, 0], dtype=complex)
+corrected = apply_pauli_correction(state_0, 0, "XZ")
+
+print(f"Before XZ: {state_0}")
+print(f"After XZ:  {corrected}")
+# X: |0⟩ → |1⟩, then Z: |1⟩ → -|1⟩
+```
+
+**Output:**
+```
+Before XZ: [1.+0.j 0.+0.j]
+After XZ:  [0.+0.j -1.+0.j]
+```
+
+## Quantum Teleportation
+
+Quantum teleportation is the **canonical example** of adaptive corrections. It transfers a quantum state using only:
+- A shared Bell pair (entanglement)
+- Two classical bits (measurement outcomes)
+- Pauli corrections
+
+### The Teleportation Protocol
+
+```
+Alice                           Bob
+  |                               |
+  |ψ⟩ ----+                       |
+          |                       |
+         CNOT                     |
+          |                       |
+  H ------+                       |
+          |                       |
+  Measure -----> m₀ (classical) --+---> Z^m₀
+          |                       |
+  Measure -----> m₁ (classical) --+---> X^m₁
+                                  |
+                                 |ψ⟩
+```
+
+**Steps:**
+1. Alice has input state $|\psi\rangle$ on qubit A
+2. Alice and Bob share Bell pair $|\Phi^+\rangle$ on qubits B, C
+3. Alice applies CNOT(A→B) then H(A)
+4. Alice measures qubits A and B, gets outcomes $m_0$ and $m_1$
+5. Bob applies $Z^{m_0} X^{m_1}$ to qubit C
+6. Bob's qubit C now contains $|\psi\rangle$!
+
+### The Teleportation Pattern
+
+```{python}
+#| eval: false
+from qpl.mbqc import generate_teleportation_pattern
+
+pattern = generate_teleportation_pattern()
+
+print(pattern)
+```
+
+**Output:**
+```
+Pattern: Quantum Teleportation
+Qubits: 3
+Preparation: 3 qubits in |+⟩
+Entanglement: 1 CZ gates
+Measurements: 2
+Corrections: 2
+Output qubits: [2]
+Measurement depth: 1
+```
+
+### Understanding the Pattern Structure
+
+```{python}
+#| eval: false
+# Examine pattern details
+print(f"Preparation: qubits {pattern.preparation}")
+print(f"Entanglement: {pattern.entanglement}")
+print(f"Output: qubit {pattern.output_qubits}")
+
+print(f"\nMeasurements:")
+for m in pattern.measurements:
+    print(f"  Qubit {m.qubit}: plane={m.plane}, angle={m.angle}")
+
+print(f"\nCorrections:")
+for c in pattern.corrections:
+    print(f"  Target qubit {c.target}: type={c.correction_type}")
+```
+
+**Output:**
+```
+Preparation: qubits [0, 1, 2]
+Entanglement: [(1, 2)]
+Output: qubit [2]
+
+Measurements:
+  Qubit 0: plane=XY, angle=0.0
+  Qubit 1: plane=XY, angle=0.0
+
+Corrections:
+  Target qubit 2: type=Z
+  Target qubit 2: type=X
+```
+
+## Tutorial: Simulating Teleportation
+
+Let's teleport actual quantum states!
+
+### Teleporting Basis States
+
+```{python}
+#| eval: false
+from qpl.mbqc import simulate_teleportation, verify_teleportation_fidelity
+
+# Teleport |0⟩
+input_state = np.array([1, 0], dtype=complex)
+output_state, outcomes, corrections = simulate_teleportation(input_state)
+
+print(f"Input:  {input_state}")
+print(f"Output: {output_state}")
+print(f"Measurements: {outcomes}")
+print(f"Corrections: {corrections}")
+
+fidelity = verify_teleportation_fidelity(input_state, output_state)
+print(f"Fidelity: {fidelity:.6f}")
+```
+
+**Output:**
+```
+Input:  [1.+0.j 0.+0.j]
+Output: [1.+0.j 0.+0.j]
+Measurements: {0: 1, 1: 0}
+Corrections: ['Z']
+Fidelity: 1.000000
+```
+
+### Teleporting Superposition States
+
+```{python}
+#| eval: false
+# Teleport |+⟩ = (|0⟩ + |1⟩)/√2
+input_plus = np.array([1, 1], dtype=complex) / np.sqrt(2)
+output, outcomes, corrections = simulate_teleportation(input_plus)
+
+print(f"Input |+⟩:  {input_plus}")
+print(f"Output:     {output}")
+print(f"Fidelity:   {verify_teleportation_fidelity(input_plus, output):.6f}")
+```
+
+**Output:**
+```
+Input |+⟩:  [0.707+0.j 0.707+0.j]
+Output:     [0.707+0.j 0.707+0.j]
+Fidelity:   1.000000
+```
+
+### Teleporting Complex States
+
+```{python}
+#| eval: false
+# Teleport |i+⟩ = (|0⟩ + i|1⟩)/√2
+input_iplus = np.array([1, 1j], dtype=complex) / np.sqrt(2)
+output, outcomes, corrections = simulate_teleportation(input_iplus)
+
+print(f"Input |i+⟩: {input_iplus}")
+print(f"Output:     {output}")
+print(f"Fidelity:   {verify_teleportation_fidelity(input_iplus, output):.6f}")
+```
+
+**Output:**
+```
+Input |i+⟩: [0.707+0.j 0.+0.707j]
+Output:     [0.707+0.j 0.+0.707j]
+Fidelity:   1.000000
+```
+
+**Key Result:** Teleportation achieves **perfect fidelity** for any input state!
+
+## The Correction Truth Table
+
+Different measurement outcomes require different corrections:
+
+```{python}
+#| eval: false
+from qpl.mbqc import correction_truth_table
+
+table = correction_truth_table(n_measurements=2)
+
+print("Teleportation Correction Truth Table")
+print("=" * 40)
+print(f"{'m₀':<6} {'m₁':<6} {'Corrections':<20}")
+print("-" * 40)
+
+for entry in table:
+    m0, m1 = entry['outcomes']
+    corr = ', '.join(entry['corrections']) if entry['corrections'] else "None"
+    print(f"{m0:<6} {m1:<6} {corr:<20}")
+```
+
+**Output:**
+```
+Teleportation Correction Truth Table
+========================================
+m₀     m₁     Corrections
+----------------------------------------
+0      0      None
+0      1      X
+1      0      Z
+1      1      Z, X
+```
+
+### Mathematical Explanation
+
+After Alice's Bell measurement, Bob's qubit is in one of four states:
+
+| Outcome | Bob's State | Correction | Result |
+|---------|-------------|------------|--------|
+| 00 | $\alpha|0\rangle + \beta|1\rangle$ | None | $|\psi\rangle$ |
+| 01 | $\alpha|1\rangle + \beta|0\rangle$ | X | $|\psi\rangle$ |
+| 10 | $\alpha|0\rangle - \beta|1\rangle$ | Z | $|\psi\rangle$ |
+| 11 | $\alpha|1\rangle - \beta|0\rangle$ | XZ | $|\psi\rangle$ |
+
+Each outcome occurs with probability 1/4, and the appropriate correction always recovers $|\psi\rangle$.
+
+## Computing Corrections from Patterns
+
+Use `compute_corrections` to determine what corrections to apply:
+
+```{python}
+#| eval: false
+from qpl.mbqc import generate_teleportation_pattern, compute_corrections
+
+pattern = generate_teleportation_pattern()
+
+# Test different measurement scenarios
+scenarios = [
+    {0: 0, 1: 0},  # Both measure 0
+    {0: 1, 1: 0},  # First measures 1
+    {0: 0, 1: 1},  # Second measures 1
+    {0: 1, 1: 1},  # Both measure 1
+]
+
+for outcomes in scenarios:
+    corrections = compute_corrections(pattern, outcomes)
+    types = [c['type'] for c in corrections]
+    print(f"Outcomes {outcomes} → Corrections: {types if types else 'None'}")
+```
+
+**Output:**
+```
+Outcomes {0: 0, 1: 0} → Corrections: None
+Outcomes {0: 1, 1: 0} → Corrections: ['Z']
+Outcomes {0: 0, 1: 1} → Corrections: ['X']
+Outcomes {0: 1, 1: 1} → Corrections: ['Z', 'X']
+```
+
+## Multi-Qubit Corrections
+
+Corrections can target specific qubits in multi-qubit systems:
+
+```{python}
+#| eval: false
+# |00⟩ state
+state_00 = np.array([1, 0, 0, 0], dtype=complex)
+
+# Apply X to second qubit only
+corrected = apply_pauli_correction(state_00, qubit_idx=1, correction_type="X")
+
+print(f"Before: {state_00}  (|00⟩)")
+print(f"After:  {corrected}  (|01⟩)")
+```
+
+**Output:**
+```
+Before: [1.+0.j 0.+0.j 0.+0.j 0.+0.j]  (|00⟩)
+After:  [0.+0.j 1.+0.j 0.+0.j 0.+0.j]  (|01⟩)
+```
+
+## Complete Example: Teleportation Analysis
+
+```{python}
+#| eval: false
+import numpy as np
+from qpl.mbqc import (
+    simulate_teleportation,
+    verify_teleportation_fidelity,
+    generate_teleportation_pattern
+)
+
+def analyze_teleportation(name, input_state):
+    """Analyze teleportation of a quantum state."""
+    print(f"\n{'='*50}")
+    print(f"Teleporting: {name}")
+    print('='*50)
+
+    # Normalize input
+    input_state = input_state / np.linalg.norm(input_state)
+
+    # Run teleportation
+    output, outcomes, corrections = simulate_teleportation(input_state)
+    fidelity = verify_teleportation_fidelity(input_state, output)
+
+    print(f"Input state:  {input_state}")
+    print(f"Output state: {output}")
+    print(f"Measurements: m₀={outcomes[0]}, m₁={outcomes[1]}")
+    print(f"Corrections:  {corrections if corrections else 'None'}")
+    print(f"Fidelity:     {fidelity:.6f}")
+
+    # Verify probabilities preserved
+    in_probs = np.abs(input_state)**2
+    out_probs = np.abs(output)**2
+    print(f"P(0): {in_probs[0]:.4f} → {out_probs[0]:.4f}")
+    print(f"P(1): {in_probs[1]:.4f} → {out_probs[1]:.4f}")
+
+    return fidelity
+
+# Test various states
+states = [
+    ("|0⟩", np.array([1, 0])),
+    ("|1⟩", np.array([0, 1])),
+    ("|+⟩", np.array([1, 1])),
+    ("|−⟩", np.array([1, -1])),
+    ("|i+⟩", np.array([1, 1j])),
+    ("custom", np.array([0.6, 0.8])),
+]
+
+fidelities = []
+for name, state in states:
+    f = analyze_teleportation(name, state.astype(complex))
+    fidelities.append(f)
+
+print(f"\n{'='*50}")
+print(f"Average Fidelity: {np.mean(fidelities):.6f}")
+print(f"All states teleported successfully!")
+print('='*50)
+```
+
+## What You Learned
+
+Congratulations! You now understand:
+
+- **Adaptive corrections** - Pauli operations conditioned on measurements
+- **X correction** - Bit flip ($|0\rangle \leftrightarrow |1\rangle$)
+- **Z correction** - Phase flip ($|+\rangle \leftrightarrow |-\rangle$)
+- **Quantum teleportation** - State transfer via entanglement + classical bits
+- **Teleportation pattern** - 3 qubits, 2 measurements, 2 corrections
+- **Perfect fidelity** - Corrections ensure exact state transfer
+- **Truth tables** - All correction scenarios mapped
+
+## Key Takeaways
+
+1. **Measurements are probabilistic, corrections make them deterministic:**
+   - Outcome 0 → usually no correction
+   - Outcome 1 → apply Pauli correction
+
+2. **Teleportation proves MBQC works:**
+   - Transfers arbitrary quantum states
+   - Uses only entanglement + classical communication
+   - Perfect fidelity with correct corrections
+
+3. **Corrections are the "feedforward" in MBQC:**
+   - Classical information flows forward
+   - Later operations depend on earlier measurements
+   - This is what makes MBQC universal
+
+4. **The correction truth table:**
+   | m₀ | m₁ | Correction |
+   |----|----|----|
+   | 0 | 0 | None |
+   | 0 | 1 | X |
+   | 1 | 0 | Z |
+   | 1 | 1 | XZ |
+
+## Exercises
+
+### Exercise 1: Pauli Algebra
+Verify these Pauli identities using `apply_pauli_correction`:
+- $X^2 = I$ (applying X twice returns to original)
+- $Z^2 = I$
+- $XZ = -ZX$ (they anti-commute)
+
+### Exercise 2: Teleportation Statistics
+Run teleportation 100 times on the same input state.
+- What fraction of runs require no correction?
+- What fraction require X only? Z only? Both?
+- Do these match the expected 25% each?
+
+### Exercise 3: Phase States
+Teleport these phase states and verify fidelity:
+- $|+i\rangle = (|0\rangle + i|1\rangle)/\sqrt{2}$
+- $|-i\rangle = (|0\rangle - i|1\rangle)/\sqrt{2}$
+- $e^{i\pi/4}|0\rangle + e^{-i\pi/4}|1\rangle$
+
+### Exercise 4: Correction Composition
+If you need to apply X then Z:
+- What single Pauli is equivalent?
+- Verify using `apply_pauli_correction`
+- Does the order matter (XZ vs ZX)?
+
+### Exercise 5: Multi-Round Teleportation
+Implement "teleportation relay":
+1. Teleport from Alice to Bob
+2. Bob teleports to Charlie
+3. Verify Charlie has the original state
+
+What's the total fidelity?
+
+### Exercise 6: Error Analysis
+What happens if corrections are applied incorrectly?
+- Apply X when you should apply Z
+- Skip a required correction
+- Apply an unnecessary correction
+
+Measure the fidelity in each case.
+
+### Exercise 7: Custom Protocol
+Design a teleportation variant that uses $|\Psi^+\rangle = (|01\rangle + |10\rangle)/\sqrt{2}$ instead of $|\Phi^+\rangle$.
+- How do the corrections change?
+- Implement and verify it works.
+
+## Next Steps
+
+You've mastered adaptive corrections! Next, you'll learn about:
+- **Pattern execution** - Simulating full MBQC patterns
+- **Pattern validation** - Cross-checking with circuit simulation
+- **Photonic backends** - Real hardware compilation
+
+---
+
+**Next:** Chapter 12: Pattern Execution and Validation (coming soon)
+
+**See also:**
+- [Chapter 10: Measurement Pattern Generation](10-pattern-generation.qmd) - Pattern basics
+- [Chapter 6: Measurement Patterns Theory](06-measurement-patterns.qmd) - Theoretical background

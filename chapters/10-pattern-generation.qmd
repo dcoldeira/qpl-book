@@ -37,6 +37,8 @@ QPL provides several functions for generating measurement patterns:
 | `generate_ghz_state_pattern(n)` | n-qubit GHZ state |
 | `generate_single_qubit_gate_pattern(gate)` | H, X, Z, S, T gates |
 | `generate_rotation_pattern(axis, angle)` | Arbitrary rotations |
+| `generate_cnot_pattern()` | CNOT (controlled-X) gate |
+| `generate_cz_pattern()` | CZ (controlled-Z) gate |
 | `generate_pattern_from_relation(rel)` | From QuantumRelation |
 | `combine_patterns(p1, p2)` | Sequential composition |
 
@@ -214,6 +216,161 @@ Measurement: angle=0.785, plane=YZ
 - Y rotation → XZ plane
 - Z rotation → XY plane
 
+## Tutorial: Two-Qubit Gates
+
+Two-qubit gates are essential for universal quantum computation. MBQC implements them using cluster states with multiple measurements.
+
+### CZ Gate (Controlled-Z)
+
+The CZ gate is **native** to MBQC - it's simply an edge in the cluster state graph!
+
+```{python}
+#| eval: false
+from qpl.mbqc import generate_cz_pattern
+
+# Generate CZ pattern
+cz_pattern = generate_cz_pattern()
+
+print(cz_pattern)
+```
+
+**Output:**
+```
+Pattern: CZ gate
+Qubits: 2
+Preparation: 2 qubits in |+⟩
+Entanglement: 1 CZ gates
+Measurements: 0
+Corrections: 0
+Output qubits: [0, 1]
+Measurement depth: 0
+```
+
+**Key insight:** CZ requires no measurements! It's just entanglement between qubits - the fundamental operation that builds cluster states.
+
+**Physical interpretation:**
+$$
+CZ_{01} |+\rangle_0 |+\rangle_1 = \frac{1}{2}(|00\rangle + |01\rangle + |10\rangle - |11\rangle)
+$$
+
+### CNOT Gate (Controlled-X)
+
+CNOT is more complex - it requires a **4-qubit linear cluster** with measurements on two ancilla qubits:
+
+```{python}
+#| eval: false
+from qpl.mbqc import generate_cnot_pattern
+
+# Generate CNOT pattern
+cnot_pattern = generate_cnot_pattern()
+
+print(cnot_pattern)
+print(f"\nEntanglement (linear cluster): {cnot_pattern.entanglement}")
+print(f"Measurements: {len(cnot_pattern.measurements)}")
+print(f"Corrections: {len(cnot_pattern.corrections)}")
+```
+
+**Output:**
+```
+Pattern: CNOT gate
+Qubits: 4
+Preparation: 4 qubits in |+⟩
+Entanglement: 3 CZ gates
+Measurements: 2
+Corrections: 3
+Output qubits: [0, 3]
+Measurement depth: 2
+
+Entanglement (linear cluster): [(0, 1), (1, 2), (2, 3)]
+Measurements: 2
+Corrections: 3
+```
+
+### CNOT Structure Explained
+
+The CNOT pattern uses this linear cluster topology:
+
+```
+control_in (0) --- ancilla_c (1) --- ancilla_t (2) --- target_in (3)
+```
+
+**How it works:**
+
+1. **Preparation:** All 4 qubits start in $|+\rangle$
+2. **Entanglement:** Apply CZ gates to create the linear cluster
+3. **Measurements:**
+   - Measure ancilla_c (qubit 1) in XY plane at angle 0
+   - Measure ancilla_t (qubit 2) in XY plane at angle 0 (adaptive)
+4. **Corrections:** Apply Pauli corrections based on measurement outcomes
+5. **Output:** Qubits 0 (control) and 3 (target) contain the result
+
+```{python}
+#| eval: false
+# Examine CNOT measurements
+for i, m in enumerate(cnot_pattern.measurements):
+    print(f"Measurement {i+1}:")
+    print(f"  Qubit: {m.qubit}")
+    print(f"  Angle: {m.angle}")
+    print(f"  Plane: {m.plane}")
+    print(f"  Adaptive: {m.adaptive}")
+    print(f"  Depends on: {m.depends_on}")
+```
+
+**Output:**
+```
+Measurement 1:
+  Qubit: 1
+  Angle: 0.0
+  Plane: XY
+  Adaptive: False
+  Depends on: []
+Measurement 2:
+  Qubit: 2
+  Angle: 0.0
+  Plane: XY
+  Adaptive: True
+  Depends on: [1]
+```
+
+**Important:** The second measurement is **adaptive** - its effective angle depends on the first measurement's outcome!
+
+### Why CNOT Needs 4 Qubits
+
+Unlike in the circuit model where CNOT acts directly on 2 qubits, MBQC uses a "teleportation-like" structure:
+
+| Gate | Circuit Qubits | MBQC Qubits | Measurements | Depth |
+|------|---------------|-------------|--------------|-------|
+| CZ | 2 | 2 | 0 | 0 |
+| CNOT | 2 | 4 | 2 | 2 |
+| H | 1 | 2 | 1 | 1 |
+
+This is the **space-time tradeoff** of MBQC: we use more qubits but can parallelize operations.
+
+### Universal Quantum Computation
+
+With CNOT and single-qubit rotations, you have a **universal gate set**! Any quantum circuit can be compiled to MBQC:
+
+```{python}
+#| eval: false
+from qpl.mbqc import (
+    generate_single_qubit_gate_pattern,
+    generate_cnot_pattern,
+    combine_patterns
+)
+
+# Build a simple quantum circuit: H on qubit 0, then CNOT
+h_pattern = generate_single_qubit_gate_pattern("H", 0)
+cnot_pattern = generate_cnot_pattern()
+
+# This creates a Bell state via circuit!
+circuit_pattern = combine_patterns(h_pattern, cnot_pattern)
+
+print(f"H + CNOT circuit:")
+print(f"  Total qubits: {circuit_pattern.num_qubits}")
+print(f"  Total measurements: {len(circuit_pattern.measurements)}")
+print(f"  Measurement depth: {circuit_pattern.measurement_depth}")
+```
+
 ## Tutorial: Pattern from Relation
 
 You can generate patterns directly from existing quantum relations:
@@ -351,9 +508,11 @@ Congratulations! You now understand:
 ✅ **Measurement patterns** - Complete MBQC execution plans
 ✅ **Pattern components** - Preparation, entanglement, measurements, corrections
 ✅ **State preparation** - Bell and GHZ patterns
-✅ **Gate implementation** - Single-qubit gates via measurement
+✅ **Single-qubit gates** - H, X, Z, S, T via measurement
+✅ **Two-qubit gates** - CZ (native) and CNOT (4-qubit cluster)
 ✅ **Rotation patterns** - Arbitrary angle rotations
 ✅ **Pattern combination** - Building quantum circuits
+✅ **Universal computation** - CNOT + rotations = any quantum circuit
 ✅ **Measurement depth** - Parallelism analysis
 
 ## Key Takeaways
@@ -364,11 +523,17 @@ Congratulations! You now understand:
    - Apply corrections
 
 2. **Gates become measurements:**
-   - Each gate requires an ancilla qubit
+   - Single-qubit gates use 1 ancilla qubit
+   - CNOT uses 2 ancilla qubits (4 total)
    - Measurement angle determines the gate
    - Corrections ensure deterministic output
 
-3. **Patterns are composable:**
+3. **Two-qubit gates:**
+   - CZ is native (just an edge in the graph)
+   - CNOT requires a linear 4-qubit cluster
+   - CNOT + single-qubit gates = universal computation
+
+4. **Patterns are composable:**
    - Combine patterns to build circuits
    - Sequential composition via `combine_patterns`
    - Measurement depth shows parallelism
@@ -417,6 +582,31 @@ Write a function that checks if a pattern is valid:
 - All entanglement uses prepared qubits
 - No circular dependencies in measurements
 - Corrections only depend on earlier measurements
+
+### Exercise 7: CNOT Analysis
+Analyze the CNOT pattern in detail:
+```python
+from qpl.mbqc import generate_cnot_pattern
+
+cnot = generate_cnot_pattern()
+```
+1. Draw the 4-qubit linear cluster graph
+2. List all corrections and what they depend on
+3. Verify: if both measurements give outcome 0, what corrections are applied?
+4. Verify: if both measurements give outcome 1, what corrections are applied?
+
+### Exercise 8: Universal Circuit
+Build the pattern for a simple quantum circuit that creates a Bell state:
+1. Apply H to qubit 0
+2. Apply CNOT with control=0, target=1
+
+Compare the total resources (qubits, measurements, depth) with `generate_bell_state_pattern()`. Why is the direct pattern more efficient?
+
+### Exercise 9: CZ vs CNOT
+Compare CZ and CNOT patterns:
+- Resource usage (qubits, measurements)
+- Why is CZ "native" but CNOT is not?
+- How would you implement CNOT using CZ and single-qubit gates?
 
 ## Next Steps
 
