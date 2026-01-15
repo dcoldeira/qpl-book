@@ -57,7 +57,7 @@ All code in this book is:
 **David Coldeira** is a scientific software engineer with a BSc in Physics, specializing in quantum programming languages and MBQC. He developed QPL to explore relations-first approaches to quantum computing.
 
 - Email: dcoldeira@gmail.com
-- GitHub: [@dcoldeira](https://github.com/dcoldeira)
+- GitHub: [dcoldeira](https://github.com/dcoldeira)
 - Blog: [dcoldeira.github.io](https://dcoldeira.github.io)
 
 ## Contributing
