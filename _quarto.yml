@@ -36,7 +36,7 @@ book:
 
     - part: "Part IV: Advanced Topics"
       chapters:
-        - chapters/12-placeholder.qmd
+        - chapters/12-circuit-compilation.qmd
         - chapters/13-placeholder.qmd
         - chapters/14-placeholder.qmd
         - chapters/15-placeholder.qmd

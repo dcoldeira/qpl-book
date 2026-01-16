@@ -1,0 +1,701 @@
+# Circuit Compilation for MBQC
+
+In the previous chapters, you learned how to generate individual gate patterns and combine them. Now you'll discover how to compile **complete quantum circuits** into MBQC measurement patterns - the bridge between familiar circuit diagrams and the cluster state model.
+
+## From Circuits to Clusters
+
+Quantum circuits and MBQC are two different computational models that achieve the same goal. Circuit compilation is the process of translating a sequence of gates into an equivalent measurement pattern.
+
+### The Circuit Model vs MBQC
+
+| Aspect | Circuit Model | MBQC |
+|--------|---------------|------|
+| **Computation** | Apply gates sequentially | Measure prepared cluster |
+| **Resources** | Qubits reused | Fresh qubits for each operation |
+| **Parallelism** | Limited by gate dependencies | Natural from graph structure |
+| **Error model** | Gate errors | Measurement errors |
+
+**Key insight:** Any quantum circuit can be compiled to MBQC, but the resulting pattern may use more qubits.
+
+## Building a Circuit Compiler
+
+Let's build a simple circuit compiler step by step.
+
+### Step 1: Define a Circuit
+
+A circuit is a sequence of gates applied to qubits:
+
+```{python}
+#| eval: false
+
+from dataclasses import dataclass
+from typing import List, Tuple
+
+@dataclass
+class Gate:
+    """Represents a quantum gate in a circuit."""
+    name: str           # Gate name: "H", "X", "CNOT", etc.
+    qubits: Tuple[int, ...]  # Qubit indices
+    params: Tuple[float, ...] = ()  # Optional parameters (angles)
+
+class QuantumCircuit:
+    """Simple quantum circuit representation."""
+
+    def __init__(self, num_qubits: int):
+        self.num_qubits = num_qubits
+        self.gates: List[Gate] = []
+
+    def h(self, qubit: int):
+        """Add Hadamard gate."""
+        self.gates.append(Gate("H", (qubit,)))
+        return self
+
+    def x(self, qubit: int):
+        """Add Pauli-X gate."""
+        self.gates.append(Gate("X", (qubit,)))
+        return self
+
+    def z(self, qubit: int):
+        """Add Pauli-Z gate."""
+        self.gates.append(Gate("Z", (qubit,)))
+        return self
+
+    def cnot(self, control: int, target: int):
+        """Add CNOT gate."""
+        self.gates.append(Gate("CNOT", (control, target)))
+        return self
+
+    def cz(self, qubit1: int, qubit2: int):
+        """Add CZ gate."""
+        self.gates.append(Gate("CZ", (qubit1, qubit2)))
+        return self
+
+    def rx(self, qubit: int, angle: float):
+        """Add X rotation."""
+        self.gates.append(Gate("RX", (qubit,), (angle,)))
+        return self
+
+    def ry(self, qubit: int, angle: float):
+        """Add Y rotation."""
+        self.gates.append(Gate("RY", (qubit,), (angle,)))
+        return self
+
+    def rz(self, qubit: int, angle: float):
+        """Add Z rotation."""
+        self.gates.append(Gate("RZ", (qubit,), (angle,)))
+        return self
+```
+
+### Step 2: The Compilation Function
+
+```{python}
+#| eval: false
+
+from qpl.mbqc import (
+    generate_single_qubit_gate_pattern,
+    generate_cnot_pattern,
+    generate_cz_pattern,
+    generate_rotation_pattern,
+    combine_patterns,
+    MeasurementPattern
+)
+
+def compile_circuit(circuit: QuantumCircuit) -> MeasurementPattern:
+    """
+    Compile a quantum circuit to an MBQC measurement pattern.
+
+    Args:
+        circuit: QuantumCircuit to compile
+
+    Returns:
+        MeasurementPattern implementing the circuit
+    """
+    if not circuit.gates:
+        # Empty circuit - just prepare qubits
+        return MeasurementPattern(
+            preparation=list(range(circuit.num_qubits)),
+            entanglement=[],
+            measurements=[],
+            corrections=[],
+            output_qubits=list(range(circuit.num_qubits)),
+            description="Empty circuit"
+        )
+
+    # Compile each gate to a pattern
+    patterns = []
+    for gate in circuit.gates:
+        pattern = compile_gate(gate)
+        patterns.append(pattern)
+
+    # Combine all patterns sequentially
+    result = patterns[0]
+    for pattern in patterns[1:]:
+        result = combine_patterns(result, pattern)
+
+    result.description = f"Compiled circuit ({len(circuit.gates)} gates)"
+    return result
+
+def compile_gate(gate: Gate) -> MeasurementPattern:
+    """Compile a single gate to a measurement pattern."""
+
+    if gate.name == "H":
+        return generate_single_qubit_gate_pattern("H", gate.qubits[0])
+
+    elif gate.name == "X":
+        return generate_single_qubit_gate_pattern("X", gate.qubits[0])
+
+    elif gate.name == "Z":
+        return generate_single_qubit_gate_pattern("Z", gate.qubits[0])
+
+    elif gate.name == "S":
+        return generate_single_qubit_gate_pattern("S", gate.qubits[0])
+
+    elif gate.name == "T":
+        return generate_single_qubit_gate_pattern("T", gate.qubits[0])
+
+    elif gate.name == "CNOT":
+        return generate_cnot_pattern(gate.qubits[0], gate.qubits[1])
+
+    elif gate.name == "CZ":
+        return generate_cz_pattern(gate.qubits[0], gate.qubits[1])
+
+    elif gate.name == "RX":
+        return generate_rotation_pattern("X", gate.params[0], gate.qubits[0])
+
+    elif gate.name == "RY":
+        return generate_rotation_pattern("Y", gate.params[0], gate.qubits[0])
+
+    elif gate.name == "RZ":
+        return generate_rotation_pattern("Z", gate.params[0], gate.qubits[0])
+
+    else:
+        raise ValueError(f"Unknown gate: {gate.name}")
+```
+
+## Tutorial: Compile a Bell State Circuit
+
+The standard circuit for creating a Bell state is:
+
+```
+q0: ─[H]─●─
+         │
+q1: ─────X─
+```
+
+Let's compile it:
+
+```{python}
+#| eval: false
+
+# Create the circuit
+circuit = QuantumCircuit(2)
+circuit.h(0)      # Hadamard on qubit 0
+circuit.cnot(0, 1)  # CNOT with control=0, target=1
+
+print(f"Circuit: {len(circuit.gates)} gates")
+for gate in circuit.gates:
+    print(f"  {gate.name} on qubits {gate.qubits}")
+
+# Compile to MBQC pattern
+pattern = compile_circuit(circuit)
+
+print(f"\nCompiled pattern:")
+print(pattern)
+```
+
+**Output:**
+```
+Circuit: 2 gates
+  H on qubits (0,)
+  CNOT on qubits (0, 1)
+
+Compiled pattern:
+Pattern: Compiled circuit (2 gates)
+Qubits: 6
+Preparation: 6 qubits in |+⟩
+Entanglement: 4 CZ gates
+Measurements: 3
+Corrections: 4
+Output qubits: [0, 5]
+Measurement depth: 3
+```
+
+### Resource Analysis
+
+Compare the compiled pattern with the direct Bell state pattern:
+
+```{python}
+#| eval: false
+
+from qpl.mbqc import generate_bell_state_pattern
+
+direct_pattern = generate_bell_state_pattern()
+compiled_pattern = compile_circuit(circuit)
+
+print("Resource Comparison:")
+print(f"{'Resource':<20} {'Direct':>10} {'Compiled':>10}")
+print("-" * 42)
+print(f"{'Qubits':<20} {direct_pattern.num_qubits:>10} {compiled_pattern.num_qubits:>10}")
+print(f"{'CZ gates':<20} {len(direct_pattern.entanglement):>10} {len(compiled_pattern.entanglement):>10}")
+print(f"{'Measurements':<20} {len(direct_pattern.measurements):>10} {len(compiled_pattern.measurements):>10}")
+print(f"{'Depth':<20} {direct_pattern.measurement_depth:>10} {compiled_pattern.measurement_depth:>10}")
+```
+
+**Output:**
+```
+Resource Comparison:
+Resource                  Direct   Compiled
+------------------------------------------
+Qubits                         2          6
+CZ gates                       1          4
+Measurements                   0          3
+Depth                          0          3
+```
+
+**Key insight:** The direct pattern is much more efficient! This is because it exploits the structure of the Bell state directly, while the compiled version naively translates each gate.
+
+## Tutorial: GHZ State via Circuit
+
+The GHZ state circuit extends the Bell pattern:
+
+```
+q0: ─[H]─●───●───
+         │   │
+q1: ─────X───┼───
+             │
+q2: ─────────X───
+```
+
+```{python}
+#| eval: false
+
+# GHZ circuit
+ghz_circuit = QuantumCircuit(3)
+ghz_circuit.h(0)
+ghz_circuit.cnot(0, 1)
+ghz_circuit.cnot(0, 2)
+
+ghz_pattern = compile_circuit(ghz_circuit)
+
+print("GHZ Circuit Compilation:")
+print(f"  Gates: {len(ghz_circuit.gates)}")
+print(f"  Compiled qubits: {ghz_pattern.num_qubits}")
+print(f"  Compiled measurements: {len(ghz_pattern.measurements)}")
+print(f"  Compiled depth: {ghz_pattern.measurement_depth}")
+
+# Compare with direct
+from qpl.mbqc import generate_ghz_state_pattern
+direct_ghz = generate_ghz_state_pattern(3)
+
+print(f"\nDirect GHZ pattern:")
+print(f"  Qubits: {direct_ghz.num_qubits}")
+print(f"  Measurements: {len(direct_ghz.measurements)}")
+print(f"  Depth: {direct_ghz.measurement_depth}")
+```
+
+**Output:**
+```
+GHZ Circuit Compilation:
+  Gates: 3
+  Compiled qubits: 10
+  Compiled measurements: 5
+  Compiled depth: 5
+
+Direct GHZ pattern:
+  Qubits: 3
+  Measurements: 0
+  Depth: 0
+```
+
+## The Compilation-Optimization Tradeoff
+
+Why is there such a big difference between compiled and direct patterns?
+
+### Naive Compilation
+
+Naive compilation treats each gate independently:
+- H gate: 2 qubits, 1 measurement
+- CNOT gate: 4 qubits, 2 measurements
+- Total: 6 qubits, 3 measurements
+
+### Direct Pattern
+
+The direct Bell state pattern recognizes that:
+- Bell state = CZ on two $|+\rangle$ qubits
+- No measurements needed!
+- Total: 2 qubits, 0 measurements
+
+### When to Use Each Approach
+
+| Approach | Use When |
+|----------|----------|
+| **Direct patterns** | Known quantum states (Bell, GHZ, W) |
+| **Compiled circuits** | General algorithms, flexibility needed |
+| **Optimized compilation** | Production systems (advanced) |
+
+## Tutorial: Quantum Teleportation Circuit
+
+Quantum teleportation is a classic algorithm. Let's compile it:
+
+```{python}
+#| eval: false
+
+import numpy as np
+
+def teleportation_circuit():
+    """
+    Quantum teleportation circuit.
+
+    Qubits:
+    - q0: State to teleport (|ψ⟩)
+    - q1: Alice's half of Bell pair
+    - q2: Bob's half of Bell pair (receives |ψ⟩)
+    """
+    circuit = QuantumCircuit(3)
+
+    # Step 1: Create Bell pair between q1 and q2
+    circuit.h(1)
+    circuit.cnot(1, 2)
+
+    # Step 2: Bell measurement on q0 and q1
+    circuit.cnot(0, 1)
+    circuit.h(0)
+
+    # Note: Classical measurement and corrections would follow
+    # In MBQC, corrections are built into the pattern
+
+    return circuit
+
+teleport_circuit = teleportation_circuit()
+teleport_pattern = compile_circuit(teleport_circuit)
+
+print("Teleportation Circuit:")
+print(f"  Gates: {len(teleport_circuit.gates)}")
+for g in teleport_circuit.gates:
+    print(f"    {g.name} on {g.qubits}")
+
+print(f"\nCompiled Pattern:")
+print(f"  Qubits: {teleport_pattern.num_qubits}")
+print(f"  Measurements: {len(teleport_pattern.measurements)}")
+print(f"  Depth: {teleport_pattern.measurement_depth}")
+```
+
+## Circuit Depth Analysis
+
+Understanding circuit depth helps optimize compilation:
+
+```{python}
+#| eval: false
+
+def analyze_circuit_depth(circuit: QuantumCircuit) -> dict:
+    """
+    Analyze the depth of a quantum circuit.
+
+    Returns dict with depth info per qubit.
+    """
+    # Track when each qubit is last used
+    qubit_depth = {i: 0 for i in range(circuit.num_qubits)}
+
+    for gate in circuit.gates:
+        # Current depth is max of all involved qubits
+        current_depth = max(qubit_depth[q] for q in gate.qubits)
+
+        # After this gate, all involved qubits have depth + 1
+        new_depth = current_depth + 1
+        for q in gate.qubits:
+            qubit_depth[q] = new_depth
+
+    return {
+        'per_qubit': qubit_depth,
+        'total': max(qubit_depth.values()),
+        'gates': len(circuit.gates)
+    }
+
+# Analyze our circuits
+bell_analysis = analyze_circuit_depth(circuit)
+ghz_analysis = analyze_circuit_depth(ghz_circuit)
+
+print("Bell Circuit Depth Analysis:")
+print(f"  Circuit depth: {bell_analysis['total']}")
+print(f"  Per qubit: {bell_analysis['per_qubit']}")
+
+print("\nGHZ Circuit Depth Analysis:")
+print(f"  Circuit depth: {ghz_analysis['total']}")
+print(f"  Per qubit: {ghz_analysis['per_qubit']}")
+```
+
+**Output:**
+```
+Bell Circuit Depth Analysis:
+  Circuit depth: 2
+  Per qubit: {0: 2, 1: 2}
+
+GHZ Circuit Depth Analysis:
+  Circuit depth: 3
+  Per qubit: {0: 3, 1: 2, 2: 3}
+```
+
+## Resource Estimation
+
+Before compiling, estimate the resources needed:
+
+```{python}
+#| eval: false
+
+def estimate_resources(circuit: QuantumCircuit) -> dict:
+    """
+    Estimate MBQC resources for a circuit without compiling.
+
+    This is faster than full compilation for resource planning.
+    """
+    # Resource costs per gate type
+    costs = {
+        'H': {'qubits': 2, 'measurements': 1, 'cz_gates': 1},
+        'X': {'qubits': 2, 'measurements': 1, 'cz_gates': 1},
+        'Z': {'qubits': 2, 'measurements': 1, 'cz_gates': 1},
+        'S': {'qubits': 2, 'measurements': 1, 'cz_gates': 1},
+        'T': {'qubits': 2, 'measurements': 1, 'cz_gates': 1},
+        'RX': {'qubits': 2, 'measurements': 1, 'cz_gates': 1},
+        'RY': {'qubits': 2, 'measurements': 1, 'cz_gates': 1},
+        'RZ': {'qubits': 2, 'measurements': 1, 'cz_gates': 1},
+        'CNOT': {'qubits': 4, 'measurements': 2, 'cz_gates': 3},
+        'CZ': {'qubits': 2, 'measurements': 0, 'cz_gates': 1},
+    }
+
+    total = {'qubits': 0, 'measurements': 0, 'cz_gates': 0}
+
+    for gate in circuit.gates:
+        cost = costs.get(gate.name, {'qubits': 2, 'measurements': 1, 'cz_gates': 1})
+        for key in total:
+            total[key] += cost[key]
+
+    return total
+
+# Estimate resources
+print("Resource Estimates (without compilation):")
+print(f"\nBell circuit:")
+est = estimate_resources(circuit)
+print(f"  Qubits: ~{est['qubits']}, Measurements: ~{est['measurements']}")
+
+print(f"\nGHZ circuit:")
+est = estimate_resources(ghz_circuit)
+print(f"  Qubits: ~{est['qubits']}, Measurements: ~{est['measurements']}")
+```
+
+## Advanced: Parallel Gate Execution
+
+MBQC naturally supports parallelism. Gates on different qubits can be measured simultaneously:
+
+```{python}
+#| eval: false
+
+def identify_parallel_gates(circuit: QuantumCircuit) -> List[List[Gate]]:
+    """
+    Group gates into parallel layers.
+
+    Gates in the same layer can be executed simultaneously.
+    """
+    if not circuit.gates:
+        return []
+
+    layers = []
+    qubit_layer = {i: -1 for i in range(circuit.num_qubits)}
+
+    for gate in circuit.gates:
+        # Find the earliest layer this gate can go in
+        min_layer = max(qubit_layer[q] for q in gate.qubits) + 1
+
+        # Ensure we have enough layers
+        while len(layers) <= min_layer:
+            layers.append([])
+
+        # Add gate to layer
+        layers[min_layer].append(gate)
+
+        # Update qubit layers
+        for q in gate.qubits:
+            qubit_layer[q] = min_layer
+
+    return layers
+
+# Analyze parallelism
+parallel_circuit = QuantumCircuit(4)
+parallel_circuit.h(0)
+parallel_circuit.h(1)  # Can run parallel with H(0)
+parallel_circuit.h(2)  # Can run parallel with H(0), H(1)
+parallel_circuit.cnot(0, 1)
+parallel_circuit.cnot(2, 3)  # Can run parallel with CNOT(0,1)
+
+layers = identify_parallel_gates(parallel_circuit)
+
+print("Parallel Gate Analysis:")
+for i, layer in enumerate(layers):
+    gates_str = ", ".join(f"{g.name}{g.qubits}" for g in layer)
+    print(f"  Layer {i}: {gates_str}")
+
+print(f"\nCircuit depth: {len(layers)} (with parallelism)")
+print(f"Sequential depth: {len(parallel_circuit.gates)} (without parallelism)")
+```
+
+**Output:**
+```
+Parallel Gate Analysis:
+  Layer 0: H(0,), H(1,), H(2,)
+  Layer 1: CNOT(0, 1), CNOT(2, 3)
+
+Circuit depth: 2 (with parallelism)
+Sequential depth: 5 (without parallelism)
+```
+
+## Compilation Strategies
+
+Different strategies trade off resources vs. complexity:
+
+### Strategy 1: Gate-by-Gate (Current)
+
+```python
+# Simple but uses many qubits
+for gate in circuit.gates:
+    pattern = combine_patterns(pattern, compile_gate(gate))
+```
+
+**Pros:** Simple, always works
+**Cons:** High qubit count, no optimization
+
+### Strategy 2: Gate Fusion (Advanced)
+
+Combine adjacent single-qubit gates into one rotation:
+
+```python
+# H followed by S = specific rotation
+# Can be compiled to single measurement
+```
+
+**Pros:** Fewer measurements
+**Cons:** Complex to implement
+
+### Strategy 3: Pattern Rewriting (Advanced)
+
+Replace patterns with equivalent but more efficient ones:
+
+```python
+# H-CNOT-H on target = CZ (which is native!)
+```
+
+**Pros:** Significant resource reduction
+**Cons:** Requires pattern library, verification
+
+## What You Learned
+
+You now understand:
+
+- **Circuit representation** - Gates as data structures
+- **Compilation workflow** - Circuit to pattern translation
+- **Resource analysis** - Qubits, measurements, depth
+- **Efficiency tradeoffs** - Direct vs compiled patterns
+- **Parallelism** - Identifying parallel gate opportunities
+- **Compilation strategies** - Gate-by-gate vs optimized
+
+## Key Takeaways
+
+1. **Any circuit compiles to MBQC** but efficiency varies
+2. **Direct patterns beat naive compilation** for known states
+3. **Resource estimation** helps planning before compilation
+4. **Parallelism is natural** in MBQC - exploit it!
+5. **Optimization is an open research area** - many strategies exist
+
+## Exercises
+
+### Exercise 1: Compile a Swap Gate
+
+The SWAP gate exchanges two qubits. It can be built from 3 CNOTs:
+
+```
+SWAP = CNOT(0,1) - CNOT(1,0) - CNOT(0,1)
+```
+
+1. Create a circuit implementing SWAP
+2. Compile it to an MBQC pattern
+3. How many qubits does it need?
+4. What's the measurement depth?
+
+### Exercise 2: Resource Comparison
+
+Create circuits for:
+- 4-qubit GHZ state (H + 3 CNOTs)
+- 5-qubit GHZ state (H + 4 CNOTs)
+
+Compare compiled resources with `generate_ghz_state_pattern(n)`.
+
+### Exercise 3: Parallel Circuit
+
+Design a circuit with maximum parallelism:
+- 4 qubits
+- Apply H to all qubits (parallel)
+- Apply CZ between pairs (0,1) and (2,3) (parallel)
+- Apply CNOT(1,2) (sequential)
+
+What's the theoretical minimum depth?
+
+### Exercise 4: Rotation Circuit
+
+Create a circuit that applies:
+- $R_X(\pi/4)$ to qubit 0
+- $R_Y(\pi/3)$ to qubit 1
+- $R_Z(\pi/6)$ to qubit 2
+
+All in parallel. Compile and verify the measurement angles match the rotations.
+
+### Exercise 5: Teleportation Analysis
+
+Using the teleportation circuit:
+1. Compile it to a pattern
+2. Count the total resources
+3. Compare with the direct teleportation pattern from Chapter 11
+4. Identify which gates could be optimized away
+
+### Exercise 6: Gate Fusion
+
+Mathematically, $H \cdot S \cdot H = R_X(\pi/2)$ (up to global phase).
+
+1. Create a circuit with H-S-H
+2. Compile it (3 measurements)
+3. Create a circuit with just $R_X(\pi/2)$
+4. Compile it (1 measurement)
+5. Verify both produce equivalent patterns
+
+### Exercise 7: Depth Optimizer
+
+Write a function that reorders gates to minimize depth:
+
+```python
+def optimize_depth(circuit: QuantumCircuit) -> QuantumCircuit:
+    """Reorder gates to minimize circuit depth."""
+    # Your implementation here
+    pass
+```
+
+Test it on a circuit where gates can be reordered.
+
+### Exercise 8: Resource Predictor
+
+Extend `estimate_resources` to also predict:
+- Measurement depth (longest chain)
+- Memory usage (peak qubits alive)
+- Classical communication (for corrections)
+
+## Next Steps
+
+You've learned circuit compilation! Next chapters will cover:
+
+- **Chapter 13:** QPL language syntax and semantics
+- **Chapter 14:** Pattern execution and simulation
+- **Chapter 15:** Photonic backends and real hardware
+
+---
+
+**Next:** Chapter 13: QPL Language Syntax (coming soon)
+
+**See also:**
+- [Chapter 10: Pattern Generation](10-pattern-generation.qmd) - Individual gate patterns
+- [Chapter 11: Adaptive Corrections](11-adaptive-corrections.qmd) - Correction mechanics
