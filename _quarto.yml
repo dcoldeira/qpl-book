@@ -52,8 +52,8 @@ bibliography: references.bib
 format:
   html:
     theme:
-      light: [cosmo, custom.scss]
-      dark: [cosmo, custom.scss]
+      light: cosmo
+      dark: darkly
     code-copy: true
     code-fold: false
     number-sections: true
