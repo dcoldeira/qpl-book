@@ -63,6 +63,7 @@ X flips $|0\rangle \leftrightarrow |1\rangle$.
 
 ```{python}
 #| eval: false
+
 # |+⟩ = (|0⟩ + |1⟩)/√2
 state_plus = np.array([1, 1], dtype=complex) / np.sqrt(2)
 
@@ -225,6 +226,7 @@ Fidelity: 1.000000
 
 ```{python}
 #| eval: false
+
 # Teleport |+⟩ = (|0⟩ + |1⟩)/√2
 input_plus = np.array([1, 1], dtype=complex) / np.sqrt(2)
 output, outcomes, corrections = simulate_teleportation(input_plus)
@@ -347,6 +349,7 @@ Corrections can target specific qubits in multi-qubit systems:
 
 ```{python}
 #| eval: false
+
 # |00⟩ state
 state_00 = np.array([1, 0, 0, 0], dtype=complex)
 
