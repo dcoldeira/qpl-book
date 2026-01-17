@@ -45,6 +45,7 @@ book:
       chapters:
         - appendix/installation.qmd
         - appendix/api-reference.qmd
+        - appendix/solutions.qmd
         - references.qmd
 
 bibliography: references.bib

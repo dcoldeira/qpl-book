@@ -390,7 +390,7 @@ In this chapter, you learned:
 
 ## Exercises
 
-### Exercise 2.1: Identifying Entanglement
+### Exercise 2.1: Identifying Entanglement {#exercise-2.1-identifying-entanglement}
 
 Which of the following states are entangled? Prove your answer.
 
@@ -400,7 +400,9 @@ Which of the following states are entangled? Prove your answer.
 
 **(c)** $|\psi\rangle = \frac{1}{2}(|00\rangle + |01\rangle + |10\rangle + |11\rangle)$
 
-### Exercise 2.2: Schmidt Decomposition
+[Solution →](../appendix/solutions.qmd#solution-2-1)
+
+### Exercise 2.2: Schmidt Decomposition {#exercise-2.2-schmidt-decomposition}
 
 Find the Schmidt decomposition for:
 
@@ -410,7 +412,9 @@ $$
 
 Calculate the Schmidt rank and entanglement entropy.
 
-### Exercise 2.3: Entanglement Entropy
+[Solution →](../appendix/solutions.qmd#solution-2-2)
+
+### Exercise 2.3: Entanglement Entropy {#exercise-2.3-entanglement-entropy}
 
 Calculate the entanglement entropy for:
 
@@ -420,7 +424,9 @@ $$
 
 Is this state maximally entangled?
 
-### Exercise 2.4: Bell State Transformations
+[Solution →](../appendix/solutions.qmd#solution-2-3)
+
+### Exercise 2.4: Bell State Transformations {#exercise-2.4-bell-state-transformations}
 
 Prove that all four Bell states can be transformed into each other using single-qubit gates (Pauli gates):
 
@@ -433,7 +439,9 @@ $$
 
 **Hint:** Start with $|\Phi^+\rangle$ and apply $X$ or $Z$ gates to derive the others.
 
-### Exercise 2.5: Partial Measurement
+[Solution →](../appendix/solutions.qmd#solution-2-4)
+
+### Exercise 2.5: Partial Measurement {#exercise-2.5-partial-measurement}
 
 Given the state $|\Psi^+\rangle = \frac{1}{\sqrt{2}}(|01\rangle + |10\rangle)$:
 
@@ -441,7 +449,9 @@ Given the state $|\Psi^+\rangle = \frac{1}{\sqrt{2}}(|01\rangle + |10\rangle)$:
 
 **(b)** What is the probability of measuring qubit B as 1 after the measurement in part (a)?
 
-### Exercise 2.6: Creating Bell States
+[Solution →](../appendix/solutions.qmd#solution-2-5)
+
+### Exercise 2.6: Creating Bell States {#exercise-2.6-creating-bell-states}
 
 In a quantum circuit, a Bell state $|\Phi^+\rangle$ is created from $|00\rangle$ using:
 
@@ -449,6 +459,8 @@ In a quantum circuit, a Bell state $|\Phi^+\rangle$ is created from $|00\rangle$
 2. CNOT gate with A as control and B as target
 
 Verify that this produces $|\Phi^+\rangle = \frac{1}{\sqrt{2}}(|00\rangle + |11\rangle)$.
+
+[Solution →](../appendix/solutions.qmd#solution-2-6)
 
 ---
 

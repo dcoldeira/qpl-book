@@ -367,7 +367,7 @@ In this chapter, you learned:
 
 ## Exercises
 
-### Exercise 3.1: GHZ State Verification
+### Exercise 3.1: GHZ State Verification {#exercise-3.1-ghz-state-verification}
 
 For $|\text{GHZ}_4\rangle = \frac{1}{\sqrt{2}}(|0000\rangle + |1111\rangle)$:
 
@@ -375,7 +375,9 @@ For $|\text{GHZ}_4\rangle = \frac{1}{\sqrt{2}}(|0000\rangle + |1111\rangle)$:
 
 **(b)** If you measure qubits 1 and 2 and get outcomes 0 and 1 respectively, what is the state of qubits 3 and 4?
 
-### Exercise 3.2: W State Properties
+[Solution →](../appendix/solutions.qmd#solution-3-1)
+
+### Exercise 3.2: W State Properties {#exercise-3.2-w-state-properties}
 
 For $|W_4\rangle = \frac{1}{2}(|1000\rangle + |0100\rangle + |0010\rangle + |0001\rangle)$:
 
@@ -383,17 +385,23 @@ For $|W_4\rangle = \frac{1}{2}(|1000\rangle + |0100\rangle + |0010\rangle + |000
 
 **(b)** After measuring qubit 1 and getting 0, prove that qubits 2, 3, 4 are in state $|W_3\rangle$.
 
-### Exercise 3.3: Entanglement Entropy Calculation
+[Solution →](../appendix/solutions.qmd#solution-3-2)
+
+### Exercise 3.3: Entanglement Entropy Calculation {#exercise-3.3-entanglement-entropy-calculation}
 
 Calculate the bipartite entanglement entropy for $|W_3\rangle$ with partition $12|3$ (qubits 1-2 vs qubit 3).
 
 **Hint:** First find the Schmidt decomposition for this bipartition.
 
-### Exercise 3.4: LOCC Impossibility
+[Solution →](../appendix/solutions.qmd#solution-3-3)
+
+### Exercise 3.4: LOCC Impossibility {#exercise-3.4-locc-impossibility}
 
 Explain intuitively why you cannot convert $|\text{GHZ}_3\rangle$ to $|W_3\rangle$ using only local operations and classical communication.
 
-### Exercise 3.5: Multipartite Correlation
+[Solution →](../appendix/solutions.qmd#solution-3-4)
+
+### Exercise 3.5: Multipartite Correlation {#exercise-3.5-multipartite-correlation}
 
 Consider the state:
 
@@ -405,13 +413,19 @@ $$
 
 **(b)** Calculate the entanglement entropy for partition $1|23$.
 
-### Exercise 3.6: Fragility vs Robustness
+[Solution →](../appendix/solutions.qmd#solution-3-5)
+
+### Exercise 3.6: Fragility vs Robustness {#exercise-3.6-fragility-vs-robustness}
 
 Design an experiment (in words) that demonstrates the difference in robustness between GHZ and W states when qubits are lost.
 
-### Exercise 3.7: n-Qubit Generalization
+[Solution →](../appendix/solutions.qmd#solution-3-6)
+
+### Exercise 3.7: n-Qubit Generalization {#exercise-3.7-n-qubit-generalization}
 
 Generalize the formula for $|W_n\rangle$ and prove that measuring $k$ qubits (with all outcomes 0) leaves the remaining qubits in state $|W_{n-k}\rangle$ (properly normalized).
+
+[Solution →](../appendix/solutions.qmd#solution-3-7)
 
 ---
 

@@ -1,0 +1,730 @@
+# Exercise Solutions
+
+This appendix contains solutions to all exercises in the book.
+
+## Chapter 1: Quantum Mechanics Basics {#ch1-solutions}
+
+### Solution 1.1: Normalization {#solution-1-1}
+
+Given the unnormalized state $|\psi\rangle = 2|0\rangle + 2i|1\rangle$:
+
+**(a)** Calculate $\langle\psi|\psi\rangle$:
+
+$$
+\langle\psi|\psi\rangle = |2|^2 + |2i|^2 = 4 + 4 = 8
+$$
+
+**(b)** Normalize the state:
+
+$$
+|\psi_{\text{norm}}\rangle = \frac{|\psi\rangle}{\sqrt{\langle\psi|\psi\rangle}} = \frac{2|0\rangle + 2i|1\rangle}{\sqrt{8}} = \frac{2|0\rangle + 2i|1\rangle}{2\sqrt{2}} = \frac{1}{\sqrt{2}}|0\rangle + \frac{i}{\sqrt{2}}|1\rangle
+$$
+
+**(c)** Verify normalization:
+
+$$
+\langle\psi_{\text{norm}}|\psi_{\text{norm}}\rangle = \left|\frac{1}{\sqrt{2}}\right|^2 + \left|\frac{i}{\sqrt{2}}\right|^2 = \frac{1}{2} + \frac{1}{2} = 1 \quad \checkmark
+$$
+
+[← Back to Exercise 1.1](../chapters/01-quantum-basics.qmd#exercise-1.1-normalization)
+
+---
+
+### Solution 1.2: Measurement Probabilities {#solution-1-2}
+
+Given $|\psi\rangle = \frac{1}{2}|0\rangle + \frac{\sqrt{3}}{2}|1\rangle$:
+
+**(a)** Measurement probabilities in Z-basis:
+
+$$
+P(0) = \left|\frac{1}{2}\right|^2 = \frac{1}{4}
+$$
+
+$$
+P(1) = \left|\frac{\sqrt{3}}{2}\right|^2 = \frac{3}{4}
+$$
+
+**(b)** Verification:
+
+$$
+P(0) + P(1) = \frac{1}{4} + \frac{3}{4} = 1 \quad \checkmark
+$$
+
+**(c)** Post-measurement state after obtaining outcome 1:
+
+$$
+|\psi_{\text{post}}\rangle = |1\rangle
+$$
+
+The state collapses to the measured basis state.
+
+[← Back to Exercise 1.2](../chapters/01-quantum-basics.qmd#exercise-1.2-measurement-probabilities)
+
+---
+
+### Solution 1.3: Basis Transformation {#solution-1-3}
+
+Express $|1\rangle$ in the X-basis.
+
+Using the inverse relation from the hint:
+
+$$
+|1\rangle = \frac{1}{\sqrt{2}}(|+\rangle - |-\rangle)
+$$
+
+**Verification:** Substituting the definitions of $|+\rangle$ and $|-\rangle$:
+
+$$
+\frac{1}{\sqrt{2}}(|+\rangle - |-\rangle) = \frac{1}{\sqrt{2}}\left[\frac{1}{\sqrt{2}}(|0\rangle + |1\rangle) - \frac{1}{\sqrt{2}}(|0\rangle - |1\rangle)\right]
+$$
+
+$$
+= \frac{1}{2}[(|0\rangle + |1\rangle) - (|0\rangle - |1\rangle)] = \frac{1}{2}(2|1\rangle) = |1\rangle \quad \checkmark
+$$
+
+[← Back to Exercise 1.3](../chapters/01-quantum-basics.qmd#exercise-1.3-basis-transformation)
+
+---
+
+### Solution 1.4: Cross-Basis Measurement {#solution-1-4}
+
+Given $|+\rangle = \frac{1}{\sqrt{2}}(|0\rangle + |1\rangle)$:
+
+**(a)** Z-basis measurement probabilities:
+
+$$
+P(0) = \left|\frac{1}{\sqrt{2}}\right|^2 = \frac{1}{2}, \quad P(1) = \left|\frac{1}{\sqrt{2}}\right|^2 = \frac{1}{2}
+$$
+
+**(b)** X-basis measurement probabilities:
+
+Since $|+\rangle$ is itself a basis state of the X-basis:
+
+$$
+P(+) = 1, \quad P(-) = 0
+$$
+
+**(c)** Explanation:
+
+The state $|+\rangle$ is a **superposition** in the Z-basis, so measurements yield random outcomes (50/50). However, $|+\rangle$ is an **eigenstate** of the X-basis, so X-measurements always yield the same result with certainty.
+
+This illustrates **basis-dependent measurement**: the same quantum state appears "definite" in one basis but "random" in another. The choice of measurement basis determines whether we see quantum randomness or deterministic outcomes.
+
+[← Back to Exercise 1.4](../chapters/01-quantum-basics.qmd#exercise-1.4-cross-basis-measurement)
+
+---
+
+### Solution 1.5: Global Phase {#solution-1-5}
+
+Show that $|\psi\rangle = |0\rangle$ and $|\psi'\rangle = -|0\rangle = e^{i\pi}|0\rangle$ are physically equivalent.
+
+**Z-basis measurements:**
+
+For $|\psi\rangle = |0\rangle$:
+$$
+P(0) = |1|^2 = 1, \quad P(1) = |0|^2 = 0
+$$
+
+For $|\psi'\rangle = -|0\rangle$:
+$$
+P(0) = |-1|^2 = 1, \quad P(1) = |0|^2 = 0
+$$
+
+Identical probabilities. $\checkmark$
+
+**X-basis measurements:**
+
+Express both states in X-basis using $|0\rangle = \frac{1}{\sqrt{2}}(|+\rangle + |-\rangle)$:
+
+For $|\psi\rangle = |0\rangle = \frac{1}{\sqrt{2}}|+\rangle + \frac{1}{\sqrt{2}}|-\rangle$:
+$$
+P(+) = \frac{1}{2}, \quad P(-) = \frac{1}{2}
+$$
+
+For $|\psi'\rangle = -|0\rangle = -\frac{1}{\sqrt{2}}|+\rangle - \frac{1}{\sqrt{2}}|-\rangle$:
+$$
+P(+) = \left|-\frac{1}{\sqrt{2}}\right|^2 = \frac{1}{2}, \quad P(-) = \left|-\frac{1}{\sqrt{2}}\right|^2 = \frac{1}{2}
+$$
+
+Identical probabilities. $\checkmark$
+
+Since both states yield identical measurement probabilities in every basis, they are **physically indistinguishable**. The global phase factor $e^{i\pi} = -1$ has no observable effect.
+
+[← Back to Exercise 1.5](../chapters/01-quantum-basics.qmd#exercise-1.5-global-phase)
+
+---
+
+### Solution 1.6: Bloch Sphere Coordinates {#solution-1-6}
+
+Given $|\psi\rangle = \frac{1}{\sqrt{2}}|0\rangle + \frac{e^{i\pi/4}}{\sqrt{2}}|1\rangle$
+
+The general Bloch sphere parameterization is:
+
+$$
+|\psi\rangle = \cos\frac{\theta}{2}|0\rangle + e^{i\phi}\sin\frac{\theta}{2}|1\rangle
+$$
+
+Comparing coefficients:
+
+**For the $|0\rangle$ coefficient:**
+$$
+\cos\frac{\theta}{2} = \frac{1}{\sqrt{2}} \implies \frac{\theta}{2} = \frac{\pi}{4} \implies \theta = \frac{\pi}{2}
+$$
+
+**For the $|1\rangle$ coefficient:**
+$$
+e^{i\phi}\sin\frac{\theta}{2} = \frac{e^{i\pi/4}}{\sqrt{2}}
+$$
+
+Since $\sin\frac{\pi}{4} = \frac{1}{\sqrt{2}}$:
+$$
+e^{i\phi} \cdot \frac{1}{\sqrt{2}} = \frac{e^{i\pi/4}}{\sqrt{2}} \implies e^{i\phi} = e^{i\pi/4} \implies \phi = \frac{\pi}{4}
+$$
+
+**Answer:** $\theta = \frac{\pi}{2}$ (on the equator), $\phi = \frac{\pi}{4}$ (45° from the $|+\rangle$ state toward $|{+i}\rangle$)
+
+[← Back to Exercise 1.6](../chapters/01-quantum-basics.qmd#exercise-1.6-bloch-sphere-coordinates)
+
+---
+
+## Chapter 2: Entanglement {#ch2-solutions}
+
+### Solution 2.1: Identifying Entanglement {#solution-2-1}
+
+**(a)** $|\psi\rangle = \frac{1}{\sqrt{2}}(|00\rangle + |01\rangle)$
+
+Factor out the first qubit:
+$$
+|\psi\rangle = \frac{1}{\sqrt{2}}|0\rangle_A \otimes (|0\rangle + |1\rangle)_B = |0\rangle_A \otimes |+\rangle_B
+$$
+
+**Separable** - this is a product state.
+
+**(b)** $|\psi\rangle = \frac{1}{\sqrt{2}}(|00\rangle + |10\rangle)$
+
+Factor out the second qubit:
+$$
+|\psi\rangle = \frac{1}{\sqrt{2}}(|0\rangle + |1\rangle)_A \otimes |0\rangle_B = |+\rangle_A \otimes |0\rangle_B
+$$
+
+**Separable** - this is a product state.
+
+**(c)** $|\psi\rangle = \frac{1}{2}(|00\rangle + |01\rangle + |10\rangle + |11\rangle)$
+
+Factor:
+$$
+|\psi\rangle = \frac{1}{2}(|0\rangle + |1\rangle)_A \otimes (|0\rangle + |1\rangle)_B = |+\rangle_A \otimes |+\rangle_B
+$$
+
+**Separable** - this is a product state.
+
+**Conclusion:** None of these states are entangled. All three can be factored into tensor products of single-qubit states.
+
+[← Back to Exercise 2.1](../chapters/02-entanglement.qmd#exercise-2.1-identifying-entanglement)
+
+---
+
+### Solution 2.2: Schmidt Decomposition {#solution-2-2}
+
+Given: $|\psi\rangle = \frac{1}{2}(|00\rangle + |01\rangle + |10\rangle + |11\rangle)$
+
+From Exercise 2.1(c), we showed this factors as:
+$$
+|\psi\rangle = |+\rangle_A \otimes |+\rangle_B
+$$
+
+**Schmidt decomposition:**
+$$
+|\psi\rangle = 1 \cdot |+\rangle_A \otimes |+\rangle_B
+$$
+
+**Schmidt rank:** $r = 1$
+
+**Entanglement entropy:**
+
+Since there's only one Schmidt coefficient ($\lambda_1 = 1$):
+$$
+S = -1^2 \log_2(1^2) = -1 \cdot 0 = 0
+$$
+
+**Result:** $S = 0$ bits, confirming the state is separable (not entangled).
+
+[← Back to Exercise 2.2](../chapters/02-entanglement.qmd#exercise-2.2-schmidt-decomposition)
+
+---
+
+### Solution 2.3: Entanglement Entropy {#solution-2-3}
+
+Given: $|\psi\rangle = \frac{2}{\sqrt{5}}|00\rangle + \frac{1}{\sqrt{5}}|11\rangle$
+
+This is already in Schmidt form with:
+$$
+\lambda_1 = \frac{2}{\sqrt{5}}, \quad \lambda_2 = \frac{1}{\sqrt{5}}
+$$
+
+**Verification of normalization:**
+$$
+\lambda_1^2 + \lambda_2^2 = \frac{4}{5} + \frac{1}{5} = 1 \quad \checkmark
+$$
+
+**Entanglement entropy:**
+$$
+S = -\lambda_1^2 \log_2(\lambda_1^2) - \lambda_2^2 \log_2(\lambda_2^2)
+$$
+
+$$
+S = -\frac{4}{5}\log_2\left(\frac{4}{5}\right) - \frac{1}{5}\log_2\left(\frac{1}{5}\right)
+$$
+
+$$
+S = -0.8 \log_2(0.8) - 0.2 \log_2(0.2)
+$$
+
+$$
+S = -0.8 \times (-0.322) - 0.2 \times (-2.322)
+$$
+
+$$
+S = 0.258 + 0.464 = 0.722 \text{ bits}
+$$
+
+**Is it maximally entangled?**
+
+No. For 2 qubits, maximal entanglement gives $S = 1$ bit (achieved by Bell states with equal Schmidt coefficients $\lambda_1 = \lambda_2 = \frac{1}{\sqrt{2}}$).
+
+This state has $S \approx 0.722$ bits, so it is **partially entangled**.
+
+[← Back to Exercise 2.3](../chapters/02-entanglement.qmd#exercise-2.3-entanglement-entropy)
+
+---
+
+### Solution 2.4: Bell State Transformations {#solution-2-4}
+
+Starting with $|\Phi^+\rangle = \frac{1}{\sqrt{2}}(|00\rangle + |11\rangle)$:
+
+**To get $|\Phi^-\rangle$:** Apply $Z$ to qubit B
+
+$$
+(I \otimes Z)|\Phi^+\rangle = \frac{1}{\sqrt{2}}(|0\rangle Z|0\rangle + |1\rangle Z|1\rangle)
+$$
+
+$$
+= \frac{1}{\sqrt{2}}(|0\rangle|0\rangle + |1\rangle(-|1\rangle)) = \frac{1}{\sqrt{2}}(|00\rangle - |11\rangle) = |\Phi^-\rangle \quad \checkmark
+$$
+
+**To get $|\Psi^+\rangle$:** Apply $X$ to qubit B
+
+$$
+(I \otimes X)|\Phi^+\rangle = \frac{1}{\sqrt{2}}(|0\rangle X|0\rangle + |1\rangle X|1\rangle)
+$$
+
+$$
+= \frac{1}{\sqrt{2}}(|0\rangle|1\rangle + |1\rangle|0\rangle) = \frac{1}{\sqrt{2}}(|01\rangle + |10\rangle) = |\Psi^+\rangle \quad \checkmark
+$$
+
+**To get $|\Psi^-\rangle$:** Apply $Z$ then $X$ to qubit B (or $X$ then $Z$)
+
+$$
+(I \otimes Z)|\Psi^+\rangle = \frac{1}{\sqrt{2}}(|0\rangle Z|1\rangle + |1\rangle Z|0\rangle)
+$$
+
+$$
+= \frac{1}{\sqrt{2}}(|0\rangle(-|1\rangle) + |1\rangle|0\rangle) = \frac{1}{\sqrt{2}}(-|01\rangle + |10\rangle)
+$$
+
+$$
+= -\frac{1}{\sqrt{2}}(|01\rangle - |10\rangle) = -|\Psi^-\rangle
+$$
+
+The global phase $-1$ is physically irrelevant, so this equals $|\Psi^-\rangle$. $\checkmark$
+
+**Summary:**
+
+| Target State | Gate on B |
+|-------------|-----------|
+| $\|\Phi^+\rangle$ | $I$ (identity) |
+| $\|\Phi^-\rangle$ | $Z$ |
+| $\|\Psi^+\rangle$ | $X$ |
+| $\|\Psi^-\rangle$ | $XZ$ (or $ZX$) |
+
+[← Back to Exercise 2.4](../chapters/02-entanglement.qmd#exercise-2.4-bell-state-transformations)
+
+---
+
+### Solution 2.5: Partial Measurement {#solution-2-5}
+
+Given: $|\Psi^+\rangle = \frac{1}{\sqrt{2}}(|01\rangle + |10\rangle)$
+
+**(a)** Measure qubit A in Z-basis, outcome 0:
+
+The state has two terms:
+- $|01\rangle$: qubit A is in $|0\rangle$ ✓ (matches outcome)
+- $|10\rangle$: qubit A is in $|1\rangle$ ✗ (doesn't match)
+
+Only the $|01\rangle$ term survives. The post-measurement state is:
+
+$$
+|\psi_{\text{post}}\rangle = |01\rangle = |0\rangle_A \otimes |1\rangle_B
+$$
+
+**(b)** Probability of measuring qubit B as 1:
+
+After the measurement in part (a), qubit B is in state $|1\rangle$ with certainty.
+
+$$
+P(B = 1) = 1
+$$
+
+This demonstrates the perfect anti-correlation in $|\Psi^+\rangle$: if A is measured as 0, B must be 1, and vice versa.
+
+[← Back to Exercise 2.5](../chapters/02-entanglement.qmd#exercise-2.5-partial-measurement)
+
+---
+
+### Solution 2.6: Creating Bell States {#solution-2-6}
+
+**Initial state:** $|00\rangle$
+
+**Step 1:** Apply Hadamard gate $H$ to qubit A
+
+$$
+H|0\rangle_A \otimes |0\rangle_B = \frac{1}{\sqrt{2}}(|0\rangle + |1\rangle)_A \otimes |0\rangle_B
+$$
+
+$$
+= \frac{1}{\sqrt{2}}(|00\rangle + |10\rangle)
+$$
+
+**Step 2:** Apply CNOT gate (A = control, B = target)
+
+The CNOT gate flips qubit B if qubit A is $|1\rangle$:
+- $\text{CNOT}|00\rangle = |00\rangle$ (A=0, B unchanged)
+- $\text{CNOT}|10\rangle = |11\rangle$ (A=1, B flipped)
+
+Applying to our state:
+$$
+\text{CNOT}\left[\frac{1}{\sqrt{2}}(|00\rangle + |10\rangle)\right] = \frac{1}{\sqrt{2}}(|00\rangle + |11\rangle) = |\Phi^+\rangle \quad \checkmark
+$$
+
+**Circuit diagram:**
+
+```
+|0⟩ ─────[H]─────●─────
+                 │
+|0⟩ ─────────────⊕─────
+```
+
+This is the standard Bell state preparation circuit, producing $|\Phi^+\rangle$.
+
+[← Back to Exercise 2.6](../chapters/02-entanglement.qmd#exercise-2.6-creating-bell-states)
+
+---
+
+## Chapter 3: n-Qubit Systems {#ch3-solutions}
+
+### Solution 3.1: GHZ State Verification {#solution-3-1}
+
+For $|\text{GHZ}_4\rangle = \frac{1}{\sqrt{2}}(|0000\rangle + |1111\rangle)$:
+
+**(a)** Probability of measuring outcome $|0101\rangle$:
+
+The GHZ state only contains the basis states $|0000\rangle$ and $|1111\rangle$. The state $|0101\rangle$ has zero amplitude:
+
+$$
+P(0101) = |\langle 0101 | \text{GHZ}_4 \rangle|^2 = 0
+$$
+
+This is a key feature of GHZ states: only "all-zeros" or "all-ones" outcomes are possible.
+
+**(b)** Measuring qubits 1 and 2 with outcomes 0 and 1:
+
+Check which terms in the GHZ state match this outcome:
+- $|0000\rangle$: qubit 1 = 0 ✓, qubit 2 = 0 ✗
+- $|1111\rangle$: qubit 1 = 1 ✗, qubit 2 = 1 ✓
+
+**Neither term matches!** This measurement outcome is impossible for a GHZ state.
+
+$$
+P(\text{qubit 1} = 0, \text{qubit 2} = 1) = 0
+$$
+
+This demonstrates the perfect correlation in GHZ states: all qubits must have the same value.
+
+[← Back to Exercise 3.1](../chapters/03-n-qubit-systems.qmd#exercise-3.1-ghz-state-verification)
+
+---
+
+### Solution 3.2: W State Properties {#solution-3-2}
+
+For $|W_4\rangle = \frac{1}{2}(|1000\rangle + |0100\rangle + |0010\rangle + |0001\rangle)$:
+
+**(a)** Probability of measuring $|1000\rangle$:
+
+$$
+P(1000) = \left|\frac{1}{2}\right|^2 = \frac{1}{4}
+$$
+
+By symmetry, each of the four basis states has probability $\frac{1}{4}$.
+
+**(b)** After measuring qubit 1 and getting 0:
+
+Terms with qubit 1 = 0: $|0100\rangle$, $|0010\rangle$, $|0001\rangle$
+
+Probability of outcome 0:
+$$
+P(\text{qubit 1} = 0) = 3 \times \left|\frac{1}{2}\right|^2 = \frac{3}{4}
+$$
+
+Unnormalized post-measurement state:
+$$
+\frac{1}{2}(|0100\rangle + |0010\rangle + |0001\rangle)
+$$
+
+Normalizing (divide by $\sqrt{P(0)} = \sqrt{3/4} = \frac{\sqrt{3}}{2}$):
+
+$$
+|\psi_{\text{post}}\rangle = \frac{1}{\sqrt{3}}(|0100\rangle + |0010\rangle + |0001\rangle)
+$$
+
+$$
+= |0\rangle_1 \otimes \frac{1}{\sqrt{3}}(|100\rangle + |010\rangle + |001\rangle)_{234}
+$$
+
+$$
+= |0\rangle_1 \otimes |W_3\rangle_{234} \quad \checkmark
+$$
+
+This demonstrates the robustness of W states: losing one qubit (with outcome 0) preserves W-type entanglement in the remaining qubits.
+
+[← Back to Exercise 3.2](../chapters/03-n-qubit-systems.qmd#exercise-3.2-w-state-properties)
+
+---
+
+### Solution 3.3: Entanglement Entropy Calculation {#solution-3-3}
+
+For $|W_3\rangle = \frac{1}{\sqrt{3}}(|100\rangle + |010\rangle + |001\rangle)$ with partition $12|3$:
+
+**Step 1: Rewrite in terms of the bipartition**
+
+Group by qubit 3's value:
+$$
+|W_3\rangle = \frac{1}{\sqrt{3}}|10\rangle_{12}|0\rangle_3 + \frac{1}{\sqrt{3}}|01\rangle_{12}|0\rangle_3 + \frac{1}{\sqrt{3}}|00\rangle_{12}|1\rangle_3
+$$
+
+$$
+= \frac{1}{\sqrt{3}}(|10\rangle + |01\rangle)_{12} \otimes |0\rangle_3 + \frac{1}{\sqrt{3}}|00\rangle_{12} \otimes |1\rangle_3
+$$
+
+**Step 2: Find Schmidt decomposition**
+
+Normalize the first term's coefficient on system 12:
+$$
+|W_3\rangle = \sqrt{\frac{2}{3}} \cdot \frac{1}{\sqrt{2}}(|10\rangle + |01\rangle)_{12} \otimes |0\rangle_3 + \frac{1}{\sqrt{3}}|00\rangle_{12} \otimes |1\rangle_3
+$$
+
+Schmidt coefficients:
+$$
+\lambda_1 = \sqrt{\frac{2}{3}}, \quad \lambda_2 = \frac{1}{\sqrt{3}} = \sqrt{\frac{1}{3}}
+$$
+
+**Step 3: Calculate entropy**
+
+$$
+\lambda_1^2 = \frac{2}{3}, \quad \lambda_2^2 = \frac{1}{3}
+$$
+
+$$
+S = -\frac{2}{3}\log_2\left(\frac{2}{3}\right) - \frac{1}{3}\log_2\left(\frac{1}{3}\right)
+$$
+
+$$
+S = -\frac{2}{3}(\log_2 2 - \log_2 3) - \frac{1}{3}(-\log_2 3)
+$$
+
+$$
+S = -\frac{2}{3}(1 - 1.585) + \frac{1}{3}(1.585)
+$$
+
+$$
+S = -\frac{2}{3}(-0.585) + 0.528 = 0.390 + 0.528 \approx 0.918 \text{ bits}
+$$
+
+**Result:** $S \approx 0.918$ bits, which is less than 1 bit (not maximally entangled).
+
+[← Back to Exercise 3.3](../chapters/03-n-qubit-systems.qmd#exercise-3.3-entanglement-entropy-calculation)
+
+---
+
+### Solution 3.4: LOCC Impossibility {#solution-3-4}
+
+**Why can't we convert $|\text{GHZ}_3\rangle$ to $|W_3\rangle$ using LOCC?**
+
+**Key insight:** LOCC operations can only *decrease* (or preserve) entanglement measures, never increase them.
+
+**Argument 1: Different bipartite entanglement structure**
+
+- GHZ has $S = 1$ bit for *all* bipartitions (1|23, 2|13, 3|12)
+- W has $S \approx 0.918$ bits for all bipartitions
+
+If we could convert GHZ → W via LOCC, we would be *decreasing* entropy, which is allowed. But we also cannot convert W → GHZ, because that would require *increasing* entropy.
+
+**Argument 2: Robustness under qubit loss**
+
+- GHZ: Losing any qubit leaves the other two in a *product state* (zero entanglement)
+- W: Losing any qubit (with outcome 0) leaves the other two in a *Bell state* (maximal 2-qubit entanglement)
+
+LOCC cannot change this fundamental behavior. If GHZ could become W, then losing a qubit from the "converted" state should behave like W, but it doesn't.
+
+**Argument 3: Genuine vs distributed entanglement**
+
+GHZ has "all-or-nothing" correlations: measuring any qubit determines all others. W has "distributed" correlations: information is spread across all qubits. These are fundamentally incompatible structures that LOCC cannot interconvert.
+
+**Conclusion:** GHZ and W represent different *entanglement classes* that are LOCC-inequivalent.
+
+[← Back to Exercise 3.4](../chapters/03-n-qubit-systems.qmd#exercise-3.4-locc-impossibility)
+
+---
+
+### Solution 3.5: Multipartite Correlation {#solution-3-5}
+
+For $|\psi\rangle = \frac{1}{2}(|000\rangle + |011\rangle + |101\rangle + |110\rangle)$:
+
+**(a)** Check all bipartitions for entanglement:
+
+**Partition 1|23:**
+$$
+|\psi\rangle = \frac{1}{2}|0\rangle(|00\rangle + |11\rangle) + \frac{1}{2}|1\rangle(|01\rangle + |10\rangle)
+$$
+
+$$
+= \frac{1}{\sqrt{2}}|0\rangle \cdot \frac{1}{\sqrt{2}}(|00\rangle + |11\rangle) + \frac{1}{\sqrt{2}}|1\rangle \cdot \frac{1}{\sqrt{2}}(|01\rangle + |10\rangle)
+$$
+
+$$
+= \frac{1}{\sqrt{2}}|0\rangle|\Phi^+\rangle + \frac{1}{\sqrt{2}}|1\rangle|\Psi^+\rangle
+$$
+
+Schmidt rank = 2 → **Entangled** ✓
+
+**Partition 2|13:**
+
+Grouping by qubit 2:
+- Qubit 2 = 0: $|000\rangle, |101\rangle$ → qubits 1,3 in $(|00\rangle + |11\rangle)$
+- Qubit 2 = 1: $|011\rangle, |110\rangle$ → qubits 1,3 in $(|01\rangle + |10\rangle)$
+
+$$
+|\psi\rangle = \frac{1}{\sqrt{2}}|0\rangle_2|\Phi^+\rangle_{13} + \frac{1}{\sqrt{2}}|1\rangle_2|\Psi^+\rangle_{13}
+$$
+
+Schmidt rank = 2 → **Entangled** ✓
+
+**Partition 3|12:**
+
+Grouping by qubit 3:
+- Qubit 3 = 0: $|000\rangle, |110\rangle$ → qubits 1,2 in $(|00\rangle + |11\rangle)$
+- Qubit 3 = 1: $|011\rangle, |101\rangle$ → qubits 1,2 in $(|01\rangle + |10\rangle)$
+
+$$
+|\psi\rangle = \frac{1}{\sqrt{2}}|0\rangle_3|\Phi^+\rangle_{12} + \frac{1}{\sqrt{2}}|1\rangle_3|\Psi^+\rangle_{12}
+$$
+
+Schmidt rank = 2 → **Entangled** ✓
+
+**Conclusion:** Yes, $|\psi\rangle$ is **genuinely tripartite entangled** (entangled across all bipartitions).
+
+**(b)** Entanglement entropy for partition 1|23:
+
+From part (a), the Schmidt coefficients are $\lambda_1 = \lambda_2 = \frac{1}{\sqrt{2}}$.
+
+$$
+S = -\frac{1}{2}\log_2\frac{1}{2} - \frac{1}{2}\log_2\frac{1}{2} = 1 \text{ bit}
+$$
+
+This state has **maximal bipartite entanglement** for partition 1|23.
+
+[← Back to Exercise 3.5](../chapters/03-n-qubit-systems.qmd#exercise-3.5-multipartite-correlation)
+
+---
+
+### Solution 3.6: Fragility vs Robustness {#solution-3-6}
+
+**Experimental Design: Comparing GHZ and W State Robustness**
+
+**Setup:**
+1. Prepare many copies of $|\text{GHZ}_3\rangle = \frac{1}{\sqrt{2}}(|000\rangle + |111\rangle)$
+2. Prepare many copies of $|W_3\rangle = \frac{1}{\sqrt{3}}(|100\rangle + |010\rangle + |001\rangle)$
+3. Distribute qubits to three parties: Alice (qubit 1), Bob (qubit 2), Charlie (qubit 3)
+
+**Experiment: Simulate qubit loss by measuring qubit 1**
+
+Alice measures her qubit in the Z-basis, then Bob and Charlie test whether their qubits are still entangled.
+
+**For GHZ states:**
+- Alice measures 0 → Bob and Charlie have $|00\rangle$ (product state)
+- Alice measures 1 → Bob and Charlie have $|11\rangle$ (product state)
+- **Result:** Bob and Charlie share NO entanglement, regardless of Alice's outcome
+
+**For W states:**
+- Alice measures 1 (prob. 1/3) → Bob and Charlie have $|00\rangle$ (product state)
+- Alice measures 0 (prob. 2/3) → Bob and Charlie have $\frac{1}{\sqrt{2}}(|10\rangle + |01\rangle) = |\Psi^+\rangle$ (Bell state!)
+- **Result:** With probability 2/3, Bob and Charlie still share maximal entanglement
+
+**Verification:**
+
+Bob and Charlie perform Bell inequality tests (CHSH) on their remaining qubits:
+- GHZ remnants: Always satisfy classical bounds (no entanglement)
+- W remnants: Violate Bell inequality 2/3 of the time (quantum entanglement preserved)
+
+**Conclusion:** This experiment directly demonstrates that W states are robust to qubit loss while GHZ states are fragile.
+
+[← Back to Exercise 3.6](../chapters/03-n-qubit-systems.qmd#exercise-3.6-fragility-vs-robustness)
+
+---
+
+### Solution 3.7: n-Qubit Generalization {#solution-3-7}
+
+**General W state formula:**
+
+$$
+|W_n\rangle = \frac{1}{\sqrt{n}}\sum_{i=1}^{n} |0\cdots 0 \underbrace{1}_{i\text{-th position}} 0 \cdots 0\rangle
+$$
+
+This is an equal superposition of all $n$ basis states with exactly one qubit in $|1\rangle$.
+
+**Claim:** Measuring $k$ qubits and getting all outcomes 0 leaves the remaining $n-k$ qubits in state $|W_{n-k}\rangle$.
+
+**Proof:**
+
+Let qubits $1, 2, \ldots, k$ be measured, and qubits $k+1, \ldots, n$ remain.
+
+The $|W_n\rangle$ state has $n$ terms. Each term has exactly one qubit in state $|1\rangle$:
+- Terms where the $|1\rangle$ is in positions $1, 2, \ldots, k$: These have at least one measured qubit = 1, so they don't survive the "all zeros" measurement.
+- Terms where the $|1\rangle$ is in positions $k+1, \ldots, n$: These have all measured qubits = 0, so they survive.
+
+Number of surviving terms: $n - k$
+
+Unnormalized post-measurement state:
+$$
+\frac{1}{\sqrt{n}} \sum_{i=k+1}^{n} |0\rangle^{\otimes k} \otimes |0\cdots 1_i \cdots 0\rangle
+$$
+
+Probability of all-zeros outcome:
+$$
+P(0^k) = \frac{n-k}{n}
+$$
+
+Normalized post-measurement state:
+$$
+|\psi_{\text{post}}\rangle = \frac{1}{\sqrt{n-k}} \sum_{i=k+1}^{n} |0\cdots 1_i \cdots 0\rangle = |W_{n-k}\rangle \quad \square
+$$
+
+**Physical interpretation:** The W state "stores" one unit of excitation distributed across $n$ qubits. Measuring $k$ qubits and finding them all in $|0\rangle$ confirms the excitation is among the remaining $n-k$ qubits, which are now in $|W_{n-k}\rangle$.
+
+**Corollary:** This process can continue until only 2 qubits remain, yielding:
+$$
+|W_2\rangle = \frac{1}{\sqrt{2}}(|10\rangle + |01\rangle) = |\Psi^+\rangle
+$$
+
+A Bell state! This is why W states are robust: entanglement persists down to the last pair.
+
+[← Back to Exercise 3.7](../chapters/03-n-qubit-systems.qmd#exercise-3.7-n-qubit-generalization)

@@ -290,7 +290,7 @@ In this chapter, you learned:
 
 ## Exercises
 
-### Exercise 1.1: Normalization
+### Exercise 1.1: Normalization {#exercise-1.1-normalization}
 
 Given the (unnormalized) state:
 
@@ -304,7 +304,9 @@ $$
 
 **(c)** Verify that $\langle\psi_{\text{norm}}|\psi_{\text{norm}}\rangle = 1$.
 
-### Exercise 1.2: Measurement Probabilities
+[Solution →](../appendix/solutions.qmd#solution-1-1)
+
+### Exercise 1.2: Measurement Probabilities {#exercise-1.2-measurement-probabilities}
 
 Consider the state:
 
@@ -318,7 +320,9 @@ $$
 
 **(c)** After measuring and obtaining outcome 1, what is the post-measurement state?
 
-### Exercise 1.3: Basis Transformation
+[Solution →](../appendix/solutions.qmd#solution-1-2)
+
+### Exercise 1.3: Basis Transformation {#exercise-1.3-basis-transformation}
 
 Express the state $|1\rangle$ in the X-basis (i.e., as a linear combination of $|+\rangle$ and $|-\rangle$).
 
@@ -327,7 +331,9 @@ $$
 |0\rangle = \frac{1}{\sqrt{2}}(|+\rangle + |-\rangle), \quad |1\rangle = \frac{1}{\sqrt{2}}(|+\rangle - |-\rangle)
 $$
 
-### Exercise 1.4: Cross-Basis Measurement
+[Solution →](../appendix/solutions.qmd#solution-1-3)
+
+### Exercise 1.4: Cross-Basis Measurement {#exercise-1.4-cross-basis-measurement}
 
 Consider the state $|+\rangle = \frac{1}{\sqrt{2}}(|0\rangle + |1\rangle)$.
 
@@ -337,11 +343,15 @@ Consider the state $|+\rangle = \frac{1}{\sqrt{2}}(|0\rangle + |1\rangle)$.
 
 **(c)** Explain why the probabilities differ between the two bases.
 
-### Exercise 1.5: Global Phase
+[Solution →](../appendix/solutions.qmd#solution-1-4)
+
+### Exercise 1.5: Global Phase {#exercise-1.5-global-phase}
 
 Show that the states $|\psi\rangle = |0\rangle$ and $|\psi'\rangle = -|0\rangle = e^{i\pi}|0\rangle$ are physically equivalent by proving they yield identical measurement probabilities in both Z-basis and X-basis.
 
-### Exercise 1.6: Bloch Sphere Coordinates
+[Solution →](../appendix/solutions.qmd#solution-1-5)
+
+### Exercise 1.6: Bloch Sphere Coordinates {#exercise-1.6-bloch-sphere-coordinates}
 
 A qubit is in the state:
 
@@ -350,6 +360,8 @@ $$
 $$
 
 Determine the Bloch sphere angles $\theta$ and $\phi$ for this state.
+
+[Solution →](../appendix/solutions.qmd#solution-1-6)
 
 ---
 
