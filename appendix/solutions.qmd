@@ -728,3 +728,302 @@ $$
 A Bell state! This is why W states are robust: entanglement persists down to the last pair.
 
 [← Back to Exercise 3.7](../chapters/03-n-qubit-systems.qmd#exercise-3.7-n-qubit-generalization)
+
+---
+
+## Chapter 4: MBQC Foundations {#ch4-solutions}
+
+### Solution 4.1: Cluster State Preparation {#solution-4-1}
+
+For a 2-qubit cluster state on graph $1 — 2$:
+
+**(a)** Initial state $|+\rangle^{\otimes 2}$:
+
+$$
+|+\rangle^{\otimes 2} = \frac{1}{\sqrt{2}}(|0\rangle + |1\rangle) \otimes \frac{1}{\sqrt{2}}(|0\rangle + |1\rangle)
+$$
+
+$$
+= \frac{1}{2}(|00\rangle + |01\rangle + |10\rangle + |11\rangle)
+$$
+
+**(b)** Apply $CZ_{12}$:
+
+The controlled-Z gate acts as: $CZ|ab\rangle = (-1)^{a \cdot b}|ab\rangle$
+
+- $CZ|00\rangle = (-1)^0|00\rangle = |00\rangle$
+- $CZ|01\rangle = (-1)^0|01\rangle = |01\rangle$
+- $CZ|10\rangle = (-1)^0|10\rangle = |10\rangle$
+- $CZ|11\rangle = (-1)^1|11\rangle = -|11\rangle$
+
+Resulting cluster state:
+$$
+|\text{Cluster}\rangle = \frac{1}{2}(|00\rangle + |01\rangle + |10\rangle - |11\rangle)
+$$
+
+**(c)** Verify entanglement by attempting to factor:
+
+Assume $|\text{Cluster}\rangle = (\alpha|0\rangle + \beta|1\rangle) \otimes (\gamma|0\rangle + \delta|1\rangle)$
+
+Expanding: $\alpha\gamma|00\rangle + \alpha\delta|01\rangle + \beta\gamma|10\rangle + \beta\delta|11\rangle$
+
+Comparing coefficients with $\frac{1}{2}(|00\rangle + |01\rangle + |10\rangle - |11\rangle)$:
+
+$$
+\alpha\gamma = \frac{1}{2}, \quad \alpha\delta = \frac{1}{2}, \quad \beta\gamma = \frac{1}{2}, \quad \beta\delta = -\frac{1}{2}
+$$
+
+From the first three equations: $\alpha\gamma = \alpha\delta$ implies $\gamma = \delta$, and $\alpha\gamma = \beta\gamma$ implies $\alpha = \beta$.
+
+But if $\alpha = \beta$ and $\gamma = \delta$, then:
+$$
+\beta\delta = \alpha\gamma = \frac{1}{2} \neq -\frac{1}{2} \quad \text{⚡ Contradiction!}
+$$
+
+Therefore, the state **cannot be factored** and is **entangled**. $\square$
+
+[← Back to Exercise 4.1](../chapters/04-mbqc-foundations.qmd#exercise-4.1-cluster-state-preparation)
+
+---
+
+### Solution 4.2: Measurement Outcomes {#solution-4-2}
+
+For the 3-qubit chain cluster state, we first derive its explicit form.
+
+**Cluster state preparation:**
+
+Starting with $|+\rangle^{\otimes 3}$ and applying $CZ_{12}$ then $CZ_{23}$:
+
+The coefficient of $|abc\rangle$ becomes $\frac{1}{2\sqrt{2}}(-1)^{ab + bc}$
+
+Computing each term:
+
+| $\|abc\rangle$ | $ab + bc$ | $(-1)^{ab+bc}$ |
+|---------------|-----------|----------------|
+| $\|000\rangle$ | 0 | +1 |
+| $\|001\rangle$ | 0 | +1 |
+| $\|010\rangle$ | 0 | +1 |
+| $\|011\rangle$ | 1 | -1 |
+| $\|100\rangle$ | 0 | +1 |
+| $\|101\rangle$ | 0 | +1 |
+| $\|110\rangle$ | 1 | -1 |
+| $\|111\rangle$ | 2 | +1 |
+
+$$
+|\text{Cluster}\rangle = \frac{1}{2\sqrt{2}}(|000\rangle + |001\rangle + |010\rangle - |011\rangle + |100\rangle + |101\rangle - |110\rangle + |111\rangle)
+$$
+
+**Grouping by qubit 1:**
+
+$$
+|\text{Cluster}\rangle = \frac{1}{2\sqrt{2}}\left[|0\rangle(|00\rangle + |01\rangle + |10\rangle - |11\rangle) + |1\rangle(|00\rangle + |01\rangle - |10\rangle + |11\rangle)\right]
+$$
+
+**Measuring qubit 1 in X-basis, outcome 0 (i.e., $|+\rangle$):**
+
+Project onto $|+\rangle = \frac{1}{\sqrt{2}}(|0\rangle + |1\rangle)$:
+
+$$
+\langle +|_1 |\text{Cluster}\rangle \propto (|00\rangle + |01\rangle + |10\rangle - |11\rangle) + (|00\rangle + |01\rangle - |10\rangle + |11\rangle)
+$$
+
+$$
+= 2|00\rangle + 2|01\rangle = 2(|00\rangle + |01\rangle)
+$$
+
+Normalizing:
+$$
+|\psi\rangle_{23} = \frac{1}{\sqrt{2}}(|00\rangle + |01\rangle) = |0\rangle_2 \otimes \frac{1}{\sqrt{2}}(|0\rangle + |1\rangle)_3 = |0\rangle_2 |+\rangle_3
+$$
+
+**Answer:** After measuring qubit 1 in X-basis with outcome 0, qubits 2-3 are in state $|0\rangle|+\rangle$.
+
+[← Back to Exercise 4.2](../chapters/04-mbqc-foundations.qmd#exercise-4.2-measurement-outcomes)
+
+---
+
+### Solution 4.3: Gate Teleportation {#solution-4-3}
+
+**Standard teleportation:**
+
+1. Alice has state $|\psi\rangle$ on qubit 1
+2. Bell pair $|\Phi^+\rangle$ shared on qubits 2 (Alice) and 3 (Bob)
+3. Alice performs Bell measurement on qubits 1-2, getting outcome $(a, b)$
+4. Bob applies $X^a Z^b$ to qubit 3
+5. Result: $|\psi\rangle$ appears on qubit 3
+
+**How Hadamard-basis measurement applies H:**
+
+The key insight is that a Bell measurement can be decomposed as:
+- Apply $CNOT_{12}$ (qubit 1 controls qubit 2)
+- Apply $H$ to qubit 1
+- Measure both qubits in computational (Z) basis
+
+If Alice instead measures qubit 1 in the Hadamard basis (while still doing the CNOT), the sequence becomes:
+
+1. $CNOT_{12}$
+2. Measure qubit 1 in X-basis (equivalent to: $H$, then measure in Z-basis)
+3. Measure qubit 2 in Z-basis
+
+The change in measurement basis propagates through the teleportation protocol. Since $H^2 = I$, measuring in the $H$-rotated basis effectively "inserts" an $H$ gate into the teleported state.
+
+**Mathematical explanation:**
+
+In standard teleportation, the combined state before measurement is:
+$$
+|\psi\rangle_1 |\Phi^+\rangle_{23} = |\psi\rangle_1 \cdot \frac{1}{\sqrt{2}}(|00\rangle + |11\rangle)_{23}
+$$
+
+After CNOT and measuring qubit 1 in X-basis instead of Z-basis, the effective operation on Bob's qubit includes an additional Hadamard:
+
+$$
+|\psi\rangle \xrightarrow{\text{teleport with H-basis}} H|\psi\rangle \text{ (up to Pauli corrections)}
+$$
+
+**Physical intuition:** The measurement basis choice determines which "frame" we observe the quantum information in. Rotating the measurement basis by $H$ rotates the output by $H$.
+
+[← Back to Exercise 4.3](../chapters/04-mbqc-foundations.qmd#exercise-4.3-gate-teleportation)
+
+---
+
+### Solution 4.4: Pattern Design {#solution-4-4}
+
+**Goal:** Implement Hadamard gate $H$ on a 3-qubit chain cluster state.
+
+**Pattern specification:**
+
+**Graph:** Linear chain $1 — 2 — 3$
+
+**Protocol:**
+
+1. **Prepare** 3-qubit cluster state with input encoded on qubit 1
+
+2. **Measure qubit 1** in X-basis ($\theta_1 = 0$):
+   - Outcome: $s_1 \in \{0, 1\}$
+
+3. **Measure qubit 2** in X-basis ($\theta_2 = 0$):
+   - No adaptation needed for Hadamard
+   - Outcome: $s_2 \in \{0, 1\}$
+
+4. **Apply corrections to qubit 3:**
+   $$
+   X^{s_2} Z^{s_1}
+   $$
+
+**Result:** Qubit 3 contains $H|\psi_{\text{in}}\rangle$
+
+**Explanation:**
+
+For a 3-qubit chain with both measurements in X-basis:
+- The first measurement "teleports" the input through the cluster
+- The second measurement applies the Hadamard transformation
+- The byproduct operators $X$ and $Z$ depend on measurement outcomes
+
+**Alternative (2-qubit pattern):**
+
+Hadamard can also be implemented on just 2 qubits:
+
+1. Prepare 2-qubit cluster $|+\rangle|+\rangle$ with $CZ$
+2. Encode input on qubit 1
+3. Measure qubit 1 in Y-basis ($\theta = \pi/2$), outcome $s$
+4. Apply $Z^s$ to qubit 2
+
+Result: $H|\psi\rangle$ on qubit 2
+
+[← Back to Exercise 4.4](../chapters/04-mbqc-foundations.qmd#exercise-4.4-pattern-design)
+
+---
+
+### Solution 4.5: Resource Scaling {#solution-4-5}
+
+**Given:**
+- Circuit with depth $d$ and width $n$ requires approximately $d \cdot n$ qubits in MBQC
+- Grover's algorithm on $n$ qubits with $O(\sqrt{2^n})$ gates
+
+**Analysis:**
+
+Grover's algorithm parameters:
+- **Width:** $n$ qubits (the search space has $2^n$ elements)
+- **Total gates:** $O(\sqrt{2^n}) = O(2^{n/2})$
+
+To estimate depth, we need to consider parallelization:
+- Each Grover iteration applies an oracle and a diffusion operator
+- Number of iterations: $O(\sqrt{2^n})$
+- Gates per iteration: $O(n)$ (oracle and diffusion each use $O(n)$ gates)
+- But wait, the problem states total gates is $O(\sqrt{2^n})$, which suggests:
+  - Either very few iterations, or
+  - The oracle is very simple (constant-depth)
+
+**Case 1: If depth $\approx$ total gates (sequential)**
+
+Cluster size $\approx n \cdot O(2^{n/2}) = O(n \cdot 2^{n/2})$
+
+**Case 2: If maximally parallelized**
+
+With $n$ qubits and $O(2^{n/2})$ gates, minimum depth is:
+$$
+d \geq \frac{O(2^{n/2})}{n}
+$$
+
+Cluster size $\approx n \cdot \frac{2^{n/2}}{n} = O(2^{n/2}) = O(\sqrt{2^n})$
+
+**Practical estimate:**
+
+For typical Grover implementations:
+- $O(\sqrt{2^n})$ iterations
+- Each iteration has $O(\log n)$ to $O(n)$ depth
+
+**Answer:** The cluster state size is approximately:
+$$
+\boxed{O(n \cdot 2^{n/2})} \text{ to } \boxed{O(n^2 \cdot 2^{n/2})}
+$$
+
+depending on the oracle complexity. For a simple oracle, the lower bound $O(2^{n/2})$ qubits may suffice.
+
+[← Back to Exercise 4.5](../chapters/04-mbqc-foundations.qmd#exercise-4.5-resource-scaling)
+
+---
+
+### Solution 4.6: Advantage Analysis {#solution-4-6}
+
+**Three scenarios where MBQC has advantages:**
+
+1. **Photonic quantum computing**
+   - Photons are easy to entangle (beam splitters, parametric down-conversion)
+   - Direct photon-photon gates are extremely difficult
+   - MBQC only requires single-photon measurements, which are routine
+   - Companies like PsiQuantum and Xanadu use MBQC for this reason
+
+2. **Fault-tolerant quantum computing with surface codes**
+   - Surface codes are naturally implemented as MBQC on a 2D cluster
+   - Syndrome extraction maps to measurements on the cluster
+   - Topological protection emerges from the cluster state structure
+   - This is the leading approach for large-scale fault-tolerant QC
+
+3. **Blind quantum computing**
+   - Client can delegate computation to a server without revealing the algorithm
+   - Client only needs to prepare single qubits and specify measurement angles
+   - Server prepares cluster state and measures, but learns nothing about the computation
+   - MBQC naturally separates "resource preparation" from "computation specification"
+
+**Three scenarios where the circuit model is preferable:**
+
+1. **Superconducting and trapped-ion hardware**
+   - These platforms have excellent two-qubit gates (99%+ fidelity)
+   - Preparing large cluster states requires many gates anyway
+   - Circuit model avoids the qubit overhead of MBQC (~5x more qubits)
+   - Most current quantum computers (IBM, Google, IonQ) use circuit model
+
+2. **Near-term (NISQ) algorithms**
+   - Variational algorithms (VQE, QAOA) need parameter updates
+   - Circuit model allows direct gate parameter optimization
+   - MBQC would require recomputing measurement patterns each iteration
+   - Classical-quantum hybrid loops are simpler in circuit model
+
+3. **Algorithm development and simulation**
+   - Circuit model has mature software ecosystem (Qiskit, Cirq, etc.)
+   - Quantum algorithms are typically designed in gate language
+   - Classical simulation of circuits is well-understood
+   - Educational resources predominantly use circuit model
+
+[← Back to Exercise 4.6](../chapters/04-mbqc-foundations.qmd#exercise-4.6-advantage-analysis)

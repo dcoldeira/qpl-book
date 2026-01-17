@@ -322,7 +322,7 @@ In this chapter, you learned:
 
 ## Exercises
 
-### Exercise 4.1: Cluster State Preparation
+### Exercise 4.1: Cluster State Preparation {#exercise-4.1-cluster-state-preparation}
 
 For a 2-qubit cluster state on graph $1 — 2$:
 
@@ -332,28 +332,40 @@ For a 2-qubit cluster state on graph $1 — 2$:
 
 **(c)** Verify this state is entangled by attempting to factor it.
 
-### Exercise 4.2: Measurement Outcomes
+[Solution →](../appendix/solutions.qmd#solution-4-1)
+
+### Exercise 4.2: Measurement Outcomes {#exercise-4.2-measurement-outcomes}
 
 For the 3-qubit chain cluster state, if you measure qubit 1 in the X-basis and get outcome 0, what is the state of qubits 2-3?
 
-### Exercise 4.3: Gate Teleportation
+[Solution →](../appendix/solutions.qmd#solution-4-2)
+
+### Exercise 4.3: Gate Teleportation {#exercise-4.3-gate-teleportation}
 
 Explain how measuring Alice's qubit in the Hadamard basis (instead of computational basis) during teleportation effectively applies a Hadamard gate to the teleported state.
 
-### Exercise 4.4: Pattern Design
+[Solution →](../appendix/solutions.qmd#solution-4-3)
+
+### Exercise 4.4: Pattern Design {#exercise-4.4-pattern-design}
 
 Design a measurement pattern to implement a Hadamard gate on a 3-qubit chain cluster state. Specify:
 - Which qubit to measure first
 - Measurement basis
 - Any corrections needed
 
-### Exercise 4.5: Resource Scaling
+[Solution →](../appendix/solutions.qmd#solution-4-4)
+
+### Exercise 4.5: Resource Scaling {#exercise-4.5-resource-scaling}
 
 A circuit with depth $d$ and width $n$ requires approximately $d \cdot n$ qubits in MBQC (due to ancillas). For Grover's algorithm on $n$ qubits with $O(\sqrt{2^n})$ gates, estimate the cluster state size needed.
 
-### Exercise 4.6: Advantage Analysis
+[Solution →](../appendix/solutions.qmd#solution-4-5)
+
+### Exercise 4.6: Advantage Analysis {#exercise-4.6-advantage-analysis}
 
 List three scenarios where MBQC might have a practical advantage over the circuit model, and three where the circuit model might be preferable.
+
+[Solution →](../appendix/solutions.qmd#solution-4-6)
 
 ---
 
