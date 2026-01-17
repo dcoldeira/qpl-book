@@ -444,18 +444,22 @@ In this chapter, you learned:
 
 ## Exercises
 
-### Exercise 6.1: Hadamard Compilation
+### Exercise 6.1: Hadamard Compilation {#exercise-6.1-hadamard-compilation}
 
 Write out the complete measurement pattern for implementing a Hadamard gate, including:
 - Cluster preparation commands
 - Measurement command with basis
 - Correction commands
 
-### Exercise 6.2: Rotation Angle
+[Solution →](../appendix/solutions.qmd#solution-6-1)
+
+### Exercise 6.2: Rotation Angle {#exercise-6.2-rotation-angle}
 
 A rotation $R_Z(\theta)$ is implemented by measuring in basis $|\pm_\alpha\rangle$. What is the relationship between $\theta$ and $\alpha$?
 
-### Exercise 6.3: CNOT Pattern
+[Solution →](../appendix/solutions.qmd#solution-6-2)
+
+### Exercise 6.3: CNOT Pattern {#exercise-6.3-cnot-pattern}
 
 Draw the cluster graph for implementing $CNOT$ followed by Hadamard on the target qubit:
 ```
@@ -466,19 +470,27 @@ Draw the cluster graph for implementing $CNOT$ followed by Hadamard on the targe
 
 Specify all measurement bases.
 
-### Exercise 6.4: Adaptive Measurement
+[Solution →](../appendix/solutions.qmd#solution-6-3)
+
+### Exercise 6.4: Adaptive Measurement {#exercise-6.4-adaptive-measurement}
 
 For a circuit with gates $H$, then $R_Z(\theta)$, if the first measurement (for $H$) gives outcome $s_1 = 1$, should the second measurement angle be $\theta$ or $\theta + \pi$? Justify your answer.
 
-### Exercise 6.5: Pattern Optimization
+[Solution →](../appendix/solutions.qmd#solution-6-4)
+
+### Exercise 6.5: Pattern Optimization {#exercise-6.5-pattern-optimization}
 
 A depth-10 circuit on 5 qubits would naively compile to a $5 \times 11 = 55$ qubit cluster. Describe two techniques to reduce this cluster size.
 
-### Exercise 6.6: Deterministic Gates
+[Solution →](../appendix/solutions.qmd#solution-6-5)
+
+### Exercise 6.6: Deterministic Gates {#exercise-6.6-deterministic-gates}
 
 Prove that the Pauli $X$ gate can be implemented deterministically in MBQC (meaning the correction is always the same, independent of measurement outcome).
 
-### Exercise 6.7: Circuit to Pattern
+[Solution →](../appendix/solutions.qmd#solution-6-6)
+
+### Exercise 6.7: Circuit to Pattern {#exercise-6.7-circuit-to-pattern}
 
 Compile this circuit to a measurement pattern:
 ```
@@ -488,6 +500,8 @@ Compile this circuit to a measurement pattern:
 ```
 
 where $S = R_Z(\pi/2)$ is the phase gate.
+
+[Solution →](../appendix/solutions.qmd#solution-6-7)
 
 ---
 

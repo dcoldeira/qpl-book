@@ -1027,3 +1027,649 @@ depending on the oracle complexity. For a simple oracle, the lower bound $O(2^{n
    - Educational resources predominantly use circuit model
 
 [← Back to Exercise 4.6](../chapters/04-mbqc-foundations.qmd#exercise-4.6-advantage-analysis)
+
+---
+
+## Chapter 5: Cluster States {#ch5-solutions}
+
+### Solution 5.1: Stabilizer Verification {#solution-5-1}
+
+Verify that $K_2 = Z_1 X_2$ stabilizes $|G\rangle = \frac{1}{2}(|00\rangle + |01\rangle + |10\rangle - |11\rangle)$.
+
+**Step 1: Apply $X_2$ first**
+
+$X_2$ flips the second qubit:
+- $X_2|00\rangle = |01\rangle$
+- $X_2|01\rangle = |00\rangle$
+- $X_2|10\rangle = |11\rangle$
+- $X_2|11\rangle = |10\rangle$
+
+$$
+X_2|G\rangle = \frac{1}{2}(|01\rangle + |00\rangle + |11\rangle - |10\rangle)
+$$
+
+**Step 2: Apply $Z_1$**
+
+$Z_1$ applies phase $-1$ when qubit 1 is $|1\rangle$:
+- $Z_1|00\rangle = |00\rangle$
+- $Z_1|01\rangle = |01\rangle$
+- $Z_1|10\rangle = -|10\rangle$
+- $Z_1|11\rangle = -|11\rangle$
+
+$$
+Z_1 X_2|G\rangle = \frac{1}{2}(|01\rangle + |00\rangle - |11\rangle + |10\rangle)
+$$
+
+**Step 3: Reorder terms**
+
+$$
+K_2|G\rangle = \frac{1}{2}(|00\rangle + |01\rangle + |10\rangle - |11\rangle) = |G\rangle \quad \checkmark
+$$
+
+[← Back to Exercise 5.1](../chapters/05-cluster-states.qmd#exercise-5.1-stabilizer-verification)
+
+---
+
+### Solution 5.2: 4-Qubit Chain Stabilizers {#solution-5-2}
+
+For the 4-qubit linear cluster state $1 — 2 — 3 — 4$:
+
+**Neighbors:**
+- $N(1) = \{2\}$
+- $N(2) = \{1, 3\}$
+- $N(3) = \{2, 4\}$
+- $N(4) = \{3\}$
+
+**Stabilizer generators** using the formula $K_i = X_i \prod_{j \in N(i)} Z_j$:
+
+$$
+\begin{align*}
+K_1 &= X_1 Z_2 \\
+K_2 &= Z_1 X_2 Z_3 \\
+K_3 &= Z_2 X_3 Z_4 \\
+K_4 &= Z_3 X_4
+\end{align*}
+$$
+
+**Verification:** These four operators:
+- Are all Hermitian (equal to their conjugate transpose)
+- Square to identity: $K_i^2 = I$
+- Mutually commute: $K_i K_j = K_j K_i$ for all $i, j$
+- Uniquely determine the 4-qubit cluster state
+
+[← Back to Exercise 5.2](../chapters/05-cluster-states.qmd#exercise-5.2-4-qubit-chain-stabilizers)
+
+---
+
+### Solution 5.3: Stabilizer Commutation {#solution-5-3}
+
+Prove that $K_1 = X_1 Z_2$ and $K_2 = Z_1 X_2 Z_3$ commute.
+
+**Method: Count anticommuting pairs**
+
+Two Pauli operators commute if they share an even number of positions where they anticommute.
+
+Writing out the operators on each qubit:
+
+| Qubit | $K_1$ | $K_2$ | Commute? |
+|-------|-------|-------|----------|
+| 1 | $X$ | $Z$ | No (anticommute) |
+| 2 | $Z$ | $X$ | No (anticommute) |
+| 3 | $I$ | $Z$ | Yes (commute) |
+
+**Number of anticommuting positions:** 2 (even)
+
+**Therefore:** $K_1$ and $K_2$ commute: $K_1 K_2 = K_2 K_1$ $\checkmark$
+
+**Alternative verification via direct calculation:**
+
+$$
+K_1 K_2 = (X_1 Z_2)(Z_1 X_2 Z_3) = (X_1 Z_1)(Z_2 X_2)(Z_3)
+$$
+
+Using $XZ = -ZX$ (anticommutation):
+- $X_1 Z_1 = iY_1$
+- $Z_2 X_2 = -iY_2$
+
+$$
+K_1 K_2 = (iY_1)(-iY_2)(Z_3) = Y_1 Y_2 Z_3
+$$
+
+$$
+K_2 K_1 = (Z_1 X_2 Z_3)(X_1 Z_2) = (Z_1 X_1)(X_2 Z_2)(Z_3)
+$$
+
+- $Z_1 X_1 = -iY_1$
+- $X_2 Z_2 = iY_2$
+
+$$
+K_2 K_1 = (-iY_1)(iY_2)(Z_3) = Y_1 Y_2 Z_3
+$$
+
+**Result:** $K_1 K_2 = K_2 K_1 = Y_1 Y_2 Z_3$ $\checkmark$
+
+[← Back to Exercise 5.3](../chapters/05-cluster-states.qmd#exercise-5.3-stabilizer-commutation)
+
+---
+
+### Solution 5.4: Local Complementation {#solution-5-4}
+
+Starting with path graph $1 — 2 — 3 — 4$, apply Hadamard to qubit 3.
+
+**Step 1: Identify neighbors of qubit 3**
+
+$$
+N(3) = \{2, 4\}
+$$
+
+**Step 2: Find induced subgraph on $N(3)$**
+
+The induced subgraph on vertices $\{2, 4\}$ contains only those two vertices. In the original graph, there is **no edge** between 2 and 4.
+
+**Step 3: Complement the induced subgraph**
+
+Complement rule: toggle each edge (add if absent, remove if present).
+
+Since $(2, 4)$ is absent → **add edge** $(2, 4)$
+
+**Step 4: Resulting graph**
+
+```
+1 — 2 — 3 — 4
+    |       |
+    +———————+
+```
+
+Or equivalently:
+
+```
+1 — 2 ——— 3 — 4
+     \   /
+      \ /
+       ×
+```
+
+The new graph has edges: $(1,2), (2,3), (3,4), (2,4)$
+
+**State transformation:** $H_3|G\rangle = |G'\rangle$ where $G'$ is the new graph.
+
+[← Back to Exercise 5.4](../chapters/05-cluster-states.qmd#exercise-5.4-local-complementation)
+
+---
+
+### Solution 5.5: Measurement Update {#solution-5-5}
+
+For 3-qubit chain $1 — 2 — 3$ with stabilizers:
+$$
+K_1 = X_1 Z_2, \quad K_2 = Z_1 X_2 Z_3, \quad K_3 = Z_2 X_3
+$$
+
+Measure qubit 1 in X-basis with outcome 0.
+
+**Step 1: Understand the measurement**
+
+X-basis measurement with outcome 0 means qubit 1 is projected to $|+\rangle$.
+
+This implies $X_1 = +1$ (eigenvalue of $|+\rangle$).
+
+**Step 2: Update stabilizers**
+
+From $K_1 = X_1 Z_2$ with $X_1 \to +1$:
+- New stabilizer: $Z_2$
+
+From $K_3 = Z_2 X_3$ (doesn't involve qubit 1):
+- Remains: $Z_2 X_3$
+
+**Step 3: Handle $K_2 = Z_1 X_2 Z_3$**
+
+Since qubit 1 is measured in X-basis, $Z_1$ becomes indeterminate. We multiply $K_2$ by $K_1$ to eliminate qubit 1:
+
+$$
+K_2 \cdot K_1 = (Z_1 X_2 Z_3)(X_1 Z_2) = Z_1 X_1 \cdot X_2 Z_2 \cdot Z_3
+$$
+
+After measuring with $X_1 = +1$, the qubit-1 part contributes only a phase. The remaining stabilizer on qubits 2-3 is:
+
+$$
+X_2 Z_3 \quad \text{(up to sign depending on outcome)}
+$$
+
+**Final stabilizers for qubits 2-3:**
+
+$$
+K'_2 = X_2 Z_3, \quad K'_3 = Z_2 X_3
+$$
+
+These are exactly the stabilizers of a 2-qubit cluster state $2 — 3$, which makes sense: measuring out qubit 1 in X-basis leaves the remaining qubits in a 2-qubit cluster state.
+
+[← Back to Exercise 5.5](../chapters/05-cluster-states.qmd#exercise-5.5-measurement-update)
+
+---
+
+### Solution 5.6: Graph State Entanglement {#solution-5-6}
+
+For a star graph with central qubit 0 connected to $n$ outer qubits $\{1, 2, \ldots, n\}$.
+
+**Step 1: Derive the star graph state**
+
+$$
+|\text{star}\rangle = CZ_{01} CZ_{02} \cdots CZ_{0n} |+\rangle^{\otimes (n+1)}
+$$
+
+The central qubit starts in $|+\rangle = \frac{1}{\sqrt{2}}(|0\rangle + |1\rangle)$.
+
+When the center is $|0\rangle$: all CZ gates act as identity on outer qubits → outer qubits stay $|+\rangle^{\otimes n}$
+
+When the center is $|1\rangle$: each CZ applies $Z$ to the corresponding outer qubit → $|+\rangle \xrightarrow{Z} |-\rangle$
+
+**Result:**
+$$
+|\text{star}\rangle = \frac{1}{\sqrt{2}}\left(|0\rangle |+\rangle^{\otimes n} + |1\rangle |-\rangle^{\otimes n}\right)
+$$
+
+**Step 2: Find Schmidt decomposition**
+
+This is already in Schmidt form with partition (central qubit) | (outer qubits):
+
+$$
+|\text{star}\rangle = \frac{1}{\sqrt{2}}|0\rangle|\phi_0\rangle + \frac{1}{\sqrt{2}}|1\rangle|\phi_1\rangle
+$$
+
+where $|\phi_0\rangle = |+\rangle^{\otimes n}$ and $|\phi_1\rangle = |-\rangle^{\otimes n}$ are orthogonal.
+
+Schmidt coefficients: $\lambda_1 = \lambda_2 = \frac{1}{\sqrt{2}}$
+
+**Step 3: Calculate entanglement entropy**
+
+$$
+S = -\sum_i \lambda_i^2 \log_2 \lambda_i^2 = -\frac{1}{2}\log_2\frac{1}{2} - \frac{1}{2}\log_2\frac{1}{2} = 1 \text{ bit}
+$$
+
+**Answer:** The entanglement entropy between the central qubit and all outer qubits is **1 bit**, regardless of $n$.
+
+**Physical interpretation:** The star graph state is essentially a GHZ-like state where the central qubit is maximally entangled with the collective state of all outer qubits.
+
+[← Back to Exercise 5.6](../chapters/05-cluster-states.qmd#exercise-5.6-graph-state-entanglement)
+
+---
+
+### Solution 5.7: Resource Comparison {#solution-5-7}
+
+For a 2D cluster state simulating a circuit of depth $d$ on $n$ qubits, the cluster size is approximately $O(d \times n)$.
+
+**(a) Grover's algorithm on 10 qubits**
+
+**Parameters:**
+- Search space: $2^{10} = 1024$ elements
+- Number of Grover iterations: $O(\sqrt{2^{10}}) = O(32)$
+- Gates per iteration: $O(n) = O(10)$ (oracle + diffusion)
+- Total depth: $d \approx 32 \times 10 = 320$
+- Width: $n = 10$ qubits
+
+**2D cluster size:**
+$$
+\text{Cluster qubits} \approx d \times n = 320 \times 10 = 3{,}200 \text{ qubits}
+$$
+
+**(b) Quantum Fourier Transform on 20 qubits**
+
+**Parameters:**
+- Width: $n = 20$ qubits
+- Sequential depth: $O(n^2) = O(400)$ (naive implementation)
+- Parallelized depth: $O(n) = O(20)$ (with sufficient ancillas)
+
+**2D cluster size (sequential):**
+$$
+\text{Cluster qubits} \approx 400 \times 20 = 8{,}000 \text{ qubits}
+$$
+
+**2D cluster size (parallelized):**
+$$
+\text{Cluster qubits} \approx 20 \times 20 = 400 \text{ qubits}
+$$
+
+**Summary:**
+
+| Algorithm | Qubits | Depth | Cluster Size |
+|-----------|--------|-------|--------------|
+| Grover (10 qubits) | 10 | ~320 | ~3,200 |
+| QFT (20 qubits, sequential) | 20 | ~400 | ~8,000 |
+| QFT (20 qubits, parallel) | 20 | ~20 | ~400 |
+
+**Note:** These are rough estimates. Actual implementations may have constant-factor overhead for error correction, gate decomposition, and MBQC-specific requirements.
+
+[← Back to Exercise 5.7](../chapters/05-cluster-states.qmd#exercise-5.7-resource-comparison)
+
+---
+
+## Chapter 6: Measurement Patterns {#ch6-solutions}
+
+### Solution 6.1: Hadamard Compilation {#solution-6-1}
+
+**Complete measurement pattern for the Hadamard gate:**
+
+**Cluster preparation:**
+```
+N_1        # Create qubit 1 in state |+⟩ (this will hold input)
+N_2        # Create qubit 2 in state |+⟩ (this will be output)
+E_12       # Entangle qubits 1 and 2 with CZ
+```
+
+**Measurement:**
+```
+M_1^0 → s  # Measure qubit 1 in X-basis (θ = 0), outcome s ∈ {0,1}
+```
+
+**Correction:**
+```
+Z_2^s      # Apply Z to qubit 2 if s = 1
+```
+
+**Summary:**
+
+| Step | Command | Description |
+|------|---------|-------------|
+| 1 | $N_1, N_2$ | Create two qubits in $\|+\rangle$ |
+| 2 | $E_{12}$ | Apply $CZ$ to create cluster |
+| 3 | $M_1^0 \to s$ | Measure qubit 1 in X-basis |
+| 4 | $Z_2^s$ | Apply $Z$ correction if $s=1$ |
+
+**Result:** Qubit 2 contains $H|\psi\rangle$ where $|\psi\rangle$ was encoded in qubit 1.
+
+**Verification:** This works because measuring in the X-basis ($|+\rangle, |-\rangle$) on a cluster state effectively applies a Hadamard transformation to the information as it "flows" through the cluster.
+
+[← Back to Exercise 6.1](../chapters/06-measurement-patterns.qmd#exercise-6.1-hadamard-compilation)
+
+---
+
+### Solution 6.2: Rotation Angle {#solution-6-2}
+
+**Question:** For rotation $R_Z(\theta)$ implemented by measuring in basis $|\pm_\alpha\rangle$, what is the relationship between $\theta$ and $\alpha$?
+
+**Answer:** The measurement angle equals the rotation angle:
+
+$$
+\boxed{\alpha = \theta}
+$$
+
+**Explanation:**
+
+The measurement basis states are:
+$$
+|\pm_\alpha\rangle = \frac{1}{\sqrt{2}}(|0\rangle \pm e^{i\alpha}|1\rangle)
+$$
+
+When measuring in this basis on a cluster state, the gate applied is:
+$$
+R_Z(\alpha) = e^{-i\alpha Z/2} = \begin{pmatrix} e^{-i\alpha/2} & 0 \\ 0 & e^{i\alpha/2} \end{pmatrix}
+$$
+
+**Key insight:** The phase factor $e^{i\alpha}$ in the measurement basis directly translates to the rotation angle in the implemented gate.
+
+**Special cases:**
+- $\alpha = 0$: X-basis measurement → $R_Z(0) = I$ (identity, but with Hadamard effect from cluster)
+- $\alpha = \pi/2$: Y-basis measurement → $R_Z(\pi/2) = S$ (phase gate)
+- $\alpha = \pi$: $-X$-basis measurement → $R_Z(\pi) = Z$
+
+[← Back to Exercise 6.2](../chapters/06-measurement-patterns.qmd#exercise-6.2-rotation-angle)
+
+---
+
+### Solution 6.3: CNOT Pattern {#solution-6-3}
+
+**Circuit:**
+```
+|ψ⟩ ——●——— (output)
+      |
+|0⟩ ——⊕—[H]— (output)
+```
+
+This is CNOT followed by Hadamard on the target qubit.
+
+**Cluster graph:**
+
+```
+1 ——— 2 ——— 3        (control path)
+      |
+      4 ——— 5        (target path with H)
+```
+
+Where:
+- Qubit 1: Control input (encoded with $|\psi\rangle$)
+- Qubit 4: Target input (initialized to $|+\rangle$, represents $|0\rangle$ in computational basis)
+- Qubit 2: CNOT interaction ancilla
+- Qubit 3: Control output
+- Qubit 5: Target output (after CNOT and H)
+
+**Measurement pattern:**
+
+| Qubit | Measurement Basis | Outcome |
+|-------|-------------------|---------|
+| 1 | X-basis ($\theta = 0$) | $s_1$ |
+| 2 | X-basis ($\theta = 0$) | $s_2$ |
+| 4 | X-basis ($\theta = 0$) | $s_4$ |
+
+**Corrections:**
+- On qubit 3 (control output): $Z^{s_1}$
+- On qubit 5 (target output): $X^{s_2} Z^{s_4}$
+
+**Pattern commands:**
+```
+N_1  N_2  N_3  N_4  N_5    # Create 5 qubits
+E_12  E_23  E_24  E_45     # Create cluster structure
+M_1^0 → s_1                # Measure control input
+M_2^0 → s_2                # Measure CNOT ancilla
+M_4^0 → s_4                # Measure target input (also implements H)
+Z_3^{s_1}                  # Correct control output
+X_5^{s_2} Z_5^{s_4}        # Correct target output
+```
+
+**Note:** The H gate on the target is "absorbed" into the measurement of qubit 4 - measuring in X-basis naturally applies H to the information flow.
+
+[← Back to Exercise 6.3](../chapters/06-measurement-patterns.qmd#exercise-6.3-cnot-pattern)
+
+---
+
+### Solution 6.4: Adaptive Measurement {#solution-6-4}
+
+**Circuit:** $H$ followed by $R_Z(\theta)$
+
+**Question:** If the first measurement (for $H$) gives outcome $s_1 = 1$, should the second measurement angle be $\theta$ or $\theta + \pi$?
+
+**Answer:** The second measurement angle should be $\theta + \pi$.
+
+$$
+\boxed{\theta' = \theta + \pi \cdot s_1 = \theta + \pi}
+$$
+
+**Justification:**
+
+When the first measurement gives outcome $s_1 = 1$, there is a **byproduct operator** that propagates through the computation. Specifically:
+
+1. **After first measurement ($s_1 = 1$):** The state acquires an $X$ byproduct operator.
+
+2. **Commutation relation:** When $X$ commutes past $R_Z(\theta)$:
+$$
+X \cdot R_Z(\theta) = R_Z(-\theta) \cdot X
+$$
+This is because $X Z X = -Z$, so the rotation direction flips.
+
+3. **Compensation:** To get the correct $R_Z(\theta)$ instead of $R_Z(-\theta)$, we need to change our measurement angle. Since:
+$$
+R_Z(\theta + \pi) = -R_Z(\theta) \cdot Z
+$$
+and the sign and $Z$ can be absorbed into later corrections, measuring at $\theta + \pi$ effectively compensates for the sign flip.
+
+4. **Adaptation rule:**
+$$
+\theta_{\text{actual}} = \theta + \pi \cdot s_1
+$$
+- If $s_1 = 0$: measure at $\theta$ (no adaptation needed)
+- If $s_1 = 1$: measure at $\theta + \pi$ (flip the angle)
+
+This is the essence of **feed-forward** in MBQC: measurement outcomes from earlier qubits determine the measurement bases for later qubits.
+
+[← Back to Exercise 6.4](../chapters/06-measurement-patterns.qmd#exercise-6.4-adaptive-measurement)
+
+---
+
+### Solution 6.5: Pattern Optimization {#solution-6-5}
+
+**Problem:** A depth-10 circuit on 5 qubits naively compiles to a $5 \times 11 = 55$ qubit cluster. Describe two techniques to reduce this.
+
+**Technique 1: Gate Cancellation**
+
+Simplify the circuit *before* compiling to MBQC:
+
+- **Adjacent inverse gates:** $H \cdot H = I$, $CNOT \cdot CNOT = I$, $S \cdot S^\dagger = I$
+- **Commutation:** Reorder gates that commute to enable more cancellations
+- **Gate synthesis:** Replace sequences with equivalent shorter sequences
+
+**Example:** If the circuit contains $H \cdot H$ on some qubit, removing these saves 2 layers → cluster reduced by $5 \times 2 = 10$ qubits.
+
+**Technique 2: Using Native CZ Gates**
+
+Replace $CNOT$ with $CZ$ where possible:
+
+- $CNOT = (I \otimes H) \cdot CZ \cdot (I \otimes H)$
+- But if there are adjacent $H$ gates, they may cancel
+- $CZ$ is **native** to cluster states (no ancilla needed for the entangling operation itself)
+
+**Savings:** Each $CNOT$ replaced by $CZ$ can save 1-2 ancilla qubits.
+
+**Additional techniques:**
+
+3. **Parallel measurement:** Gates on different qubits can share cluster layers
+4. **Signal shifting:** Track Pauli corrections classically rather than implementing physically
+5. **Lazy correction:** Defer corrections to the end, absorbing them into the final measurement interpretation
+
+**Estimated savings:** With aggressive optimization, a 55-qubit naive cluster can often be reduced to **25-35 qubits** for typical circuits.
+
+[← Back to Exercise 6.5](../chapters/06-measurement-patterns.qmd#exercise-6.5-pattern-optimization)
+
+---
+
+### Solution 6.6: Deterministic Gates {#solution-6-6}
+
+**Claim:** The Pauli $X$ gate can be implemented deterministically in MBQC.
+
+**Proof:**
+
+In MBQC, Pauli gates ($X$, $Y$, $Z$) are special because they are **byproduct operators** - they arise naturally from measurement outcomes and are tracked classically rather than implemented physically.
+
+**Method 1: Classical tracking**
+
+The $X$ gate doesn't require any measurement to implement. Instead:
+
+1. When compiling, note that $X$ should be applied
+2. Track this as a "pending $X$ correction" on that qubit
+3. At the end of computation, either:
+   - Apply the physical $X$ gate, or
+   - Flip the interpretation of the final measurement outcome
+
+This is **deterministic** because no probabilistic measurement is involved.
+
+**Method 2: Measurement-based implementation**
+
+If we insist on using measurements:
+
+1. **Prepare:** 2-qubit cluster with input $|\psi\rangle$ on qubit 1
+2. **Measure:** Qubit 1 in the $Z$-basis
+3. **Result:**
+   - Outcome 0: Qubit 2 is in state $H|\psi\rangle \cdot |+\rangle$ projection
+   - Outcome 1: Qubit 2 is in state $H X|\psi\rangle \cdot |-\rangle$ projection
+
+The key insight: although the outcome is random, the **correction needed is always the same up to the known measurement result**. We can predict exactly what correction is needed.
+
+**Why this is "deterministic":**
+
+The term "deterministic" here means:
+- The correction formula is **fixed** (not dependent on the outcome in a complicated way)
+- The final state after correction is **always** $X|\psi\rangle$
+- There's no adaptation or feed-forward uncertainty
+
+$$
+\text{Final state} = X|\psi\rangle \quad \text{(always, regardless of measurement outcome)}
+$$
+
+[← Back to Exercise 6.6](../chapters/06-measurement-patterns.qmd#exercise-6.6-deterministic-gates)
+
+---
+
+### Solution 6.7: Circuit to Pattern {#solution-6-7}
+
+**Circuit:**
+```
+|ψ⟩ —[H]—●—[S]— (output 1)
+         |
+|0⟩ ————⊕———— (output 2)
+```
+
+where $S = R_Z(\pi/2)$ is the phase gate.
+
+**Step 1: Identify gates**
+- $H$ on qubit 1
+- $CNOT$ with qubit 1 as control, qubit 2 as target
+- $S = R_Z(\pi/2)$ on qubit 1
+
+**Step 2: Cluster graph**
+
+```
+1 — 2 — 3 — 4     (qubit 1: input → H → CNOT_ctrl → S → output)
+        |
+5 ————— 6         (qubit 2: input → CNOT_tgt → output)
+```
+
+**Vertex roles:**
+- 1: Input qubit 1 (holds $|\psi\rangle$)
+- 2: Ancilla for $H$ gate
+- 3: CNOT interaction vertex (connects control and target paths)
+- 4: Output qubit 1 (also implements $S$ via measurement of vertex 3)
+- 5: Input qubit 2 (initialized in cluster as $|+\rangle$)
+- 6: Output qubit 2
+
+**Step 3: Measurement pattern**
+
+| Qubit | Role | Measurement Basis | Outcome |
+|-------|------|-------------------|---------|
+| 1 | H gate | X-basis ($\theta = 0$) | $s_1$ |
+| 2 | Flow | X-basis ($\theta = 0$), adapted | $s_2$ |
+| 3 | CNOT + S | $\theta = \pi/4$ (for $S$), adapted | $s_3$ |
+| 5 | CNOT target | X-basis ($\theta = 0$) | $s_5$ |
+
+**Adaptive angles:**
+- $\theta_2' = 0 + \pi \cdot s_1$
+- $\theta_3' = \pi/4 + \pi \cdot s_2$
+
+**Step 4: Corrections**
+
+On output qubit 4:
+$$
+X^{s_2} Z^{s_1 \oplus s_3}
+$$
+
+On output qubit 6:
+$$
+X^{s_3} Z^{s_5}
+$$
+
+**Complete pattern:**
+```
+# Preparation
+N_1  N_2  N_3  N_4  N_5  N_6      # Create 6 qubits in |+⟩
+E_12  E_23  E_34  E_35  E_56      # Create cluster edges
+
+# Measurements (in order)
+M_1^0 → s_1                       # H gate
+M_5^0 → s_5                       # CNOT target input
+[M_2^0]^{s_1} → s_2               # Adapted by s_1
+[M_3^{π/4}]^{s_2} → s_3           # S gate, adapted by s_2
+
+# Corrections
+X_4^{s_2} Z_4^{s_1 ⊕ s_3}         # Output qubit 1
+X_6^{s_3} Z_6^{s_5}               # Output qubit 2
+```
+
+**Output:** Qubits 4 and 6 contain the circuit output state.
+
+[← Back to Exercise 6.7](../chapters/06-measurement-patterns.qmd#exercise-6.7-circuit-to-pattern)

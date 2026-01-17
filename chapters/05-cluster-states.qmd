@@ -386,32 +386,40 @@ In this chapter, you learned:
 
 ## Exercises
 
-### Exercise 5.1: Stabilizer Verification
+### Exercise 5.1: Stabilizer Verification {#exercise-5.1-stabilizer-verification}
 
 For the 2-qubit graph state on $1 — 2$, verify that $K_2 = Z_1 X_2$ stabilizes:
 $$
 |G\rangle = \frac{1}{2}(|00\rangle + |01\rangle + |10\rangle - |11\rangle)
 $$
 
-### Exercise 5.2: 4-Qubit Chain Stabilizers
+[Solution →](../appendix/solutions.qmd#solution-5-1)
+
+### Exercise 5.2: 4-Qubit Chain Stabilizers {#exercise-5.2-4-qubit-chain-stabilizers}
 
 Write down the four stabilizer generators for a 4-qubit linear cluster state:
 $$
 1 — 2 — 3 — 4
 $$
 
-### Exercise 5.3: Stabilizer Commutation
+[Solution →](../appendix/solutions.qmd#solution-5-2)
+
+### Exercise 5.3: Stabilizer Commutation {#exercise-5.3-stabilizer-commutation}
 
 Prove that the stabilizers $K_1 = X_1 Z_2$ and $K_2 = Z_1 X_2 Z_3$ commute:
 $$
 K_1 K_2 = K_2 K_1
 $$
 
-### Exercise 5.4: Local Complementation
+[Solution →](../appendix/solutions.qmd#solution-5-3)
+
+### Exercise 5.4: Local Complementation {#exercise-5.4-local-complementation}
 
 Starting with a 4-qubit path graph $1 — 2 — 3 — 4$, apply Hadamard to qubit 3 using local complementation rules. Draw the resulting graph.
 
-### Exercise 5.5: Measurement Update
+[Solution →](../appendix/solutions.qmd#solution-5-4)
+
+### Exercise 5.5: Measurement Update {#exercise-5.5-measurement-update}
 
 For a 3-qubit chain $1 — 2 — 3$ with stabilizers:
 $$
@@ -420,15 +428,21 @@ $$
 
 If qubit 1 is measured in the X-basis with outcome 0, what are the stabilizers for the remaining 2-qubit state?
 
-### Exercise 5.6: Graph State Entanglement
+[Solution →](../appendix/solutions.qmd#solution-5-5)
+
+### Exercise 5.6: Graph State Entanglement {#exercise-5.6-graph-state-entanglement}
 
 For a star graph (one central qubit connected to $n$ outer qubits), calculate the entanglement entropy between the central qubit and the rest.
 
-### Exercise 5.7: Resource Comparison
+[Solution →](../appendix/solutions.qmd#solution-5-6)
+
+### Exercise 5.7: Resource Comparison {#exercise-5.7-resource-comparison}
 
 Estimate the number of qubits needed in a 2D cluster state to simulate:
 **(a)** Grover's algorithm on 10 qubits
 **(b)** Quantum Fourier Transform on 20 qubits
+
+[Solution →](../appendix/solutions.qmd#solution-5-7)
 
 ---
 
