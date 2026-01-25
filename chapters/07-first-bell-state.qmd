@@ -1,6 +1,6 @@
 # Your First Bell State
 
-Welcome to your first hands-on QPL tutorial! In this chapter, you'll create your first quantum program: a Bell state - one of the most fundamental entangled quantum states.
+Welcome to your first hands-on QRL tutorial! In this chapter, you'll create your first quantum program: a Bell state - one of the most fundamental entangled quantum states.
 
 ## What is a Bell State?
 
@@ -17,25 +17,25 @@ This state has fascinating properties:
 
 ## Setting Up
 
-First, make sure QPL is installed:
+First, make sure QRL is installed:
 
 ```bash
-pip install quantum-process-language
+pip install quantum-relational-language
 ```
 
 Create a new Python file `my_first_bell_state.py`:
 
 ```{python}
 #| eval: false
-from qpl import QPLProgram, create_question, QuestionType
+from qrl import QRLProgram, create_question, QuestionType
 
 # Create a quantum program
-program = QPLProgram("My First Bell State")
+program = QRLProgram("My First Bell State")
 ```
 
 ## Creating Quantum Systems
 
-In QPL, you don't create individual "qubits" - you create **quantum systems** that can then be entangled into **relations**:
+In QRL, you don't create individual "qubits" - you create **quantum systems** that can then be entangled into **relations**:
 
 ```{python}
 #| eval: false
@@ -50,7 +50,7 @@ Each system gets a unique ID. At this point, they're independent - not yet entan
 
 ## Entangling Systems
 
-Here's where QPL's philosophy shines. Instead of applying gates like `CNOT`, you directly express the **relationship** you want:
+Here's where QRL's philosophy shines. Instead of applying gates like `CNOT`, you directly express the **relationship** you want:
 
 ```{python}
 #| eval: false
@@ -109,11 +109,11 @@ Here's the complete program you can run:
 
 ```{python}
 #| eval: false
-from qpl import QPLProgram, create_question, QuestionType
+from qrl import QRLProgram, create_question, QuestionType
 
 def main():
     # Create program
-    program = QPLProgram("Complete Bell State Example")
+    program = QRLProgram("Complete Bell State Example")
 
     # Create quantum systems
     qubit_a = program.create_system()
@@ -138,7 +138,7 @@ if __name__ == "__main__":
 
 Congratulations! You've just:
 
-✅ Created your first quantum program in QPL
+✅ Created your first quantum program in QRL
 ✅ Generated a maximally entangled Bell state
 ✅ Understood entanglement entropy
 ✅ Explored the quantum state vector

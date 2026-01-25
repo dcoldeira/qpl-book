@@ -1,6 +1,6 @@
 # Graph Extraction for MBQC
 
-Now that you've created Bell states and GHZ states, it's time to see how QPL converts these quantum relations into **graph states** for measurement-based quantum computing (MBQC). This is the first step in the MBQC compilation pipeline!
+Now that you've created Bell states and GHZ states, it's time to see how QRL converts these quantum relations into **graph states** for measurement-based quantum computing (MBQC). This is the first step in the MBQC compilation pipeline!
 
 ## What is Graph Extraction?
 
@@ -9,7 +9,7 @@ In MBQC, quantum computations are performed by:
 2. Measuring qubits in specific bases
 3. Applying corrections based on measurement outcomes
 
-**Graph extraction** is the process of converting a QPL `QuantumRelation` into a graph representation where:
+**Graph extraction** is the process of converting a QRL `QuantumRelation` into a graph representation where:
 - **Nodes** represent qubits (prepared in $|+\rangle$ state)
 - **Edges** represent CZ (controlled-Z) entangling gates
 
@@ -56,12 +56,12 @@ W State:        0 ━━━ 1
 
 ## The Graph Extraction API
 
-QPL provides three main functions in the `qpl.mbqc` module:
+QRL provides three main functions in the `qrl.mbqc` module:
 
 ### 1. `extract_graph()` - Convert Relation to Graph
 
 ```python
-from qpl.mbqc import extract_graph
+from qrl.mbqc import extract_graph
 
 graph = extract_graph(relation)
 ```
@@ -74,7 +74,7 @@ graph = extract_graph(relation)
 ### 2. `analyze_entanglement_structure()` - Detect State Type
 
 ```python
-from qpl.mbqc import analyze_entanglement_structure
+from qrl.mbqc import analyze_entanglement_structure
 
 info = analyze_entanglement_structure(relation)
 # Returns: {
@@ -90,7 +90,7 @@ This function automatically detects whether you have a Bell state, GHZ state, W 
 ### 3. `visualize_graph()` - Display Graph Structure
 
 ```python
-from qpl.mbqc import visualize_graph
+from qrl.mbqc import visualize_graph
 
 print(visualize_graph(graph))
 # Shows nodes, edges, and adjacency information
@@ -102,11 +102,11 @@ Let's start with the simplest case - extracting a graph from a Bell state:
 
 ```{python}
 #| eval: false
-from qpl import QPLProgram
-from qpl.mbqc import extract_graph, analyze_entanglement_structure, visualize_graph
+from qrl import QRLProgram
+from qrl.mbqc import extract_graph, analyze_entanglement_structure, visualize_graph
 
 # Create Bell state
-program = QPLProgram("Bell State Graph Extraction")
+program = QRLProgram("Bell State Graph Extraction")
 q0 = program.create_system()
 q1 = program.create_system()
 bell = program.entangle(q0, q1)
@@ -178,7 +178,7 @@ Now let's try a more complex state - a 3-qubit GHZ state:
 ```{python}
 #| eval: false
 # Create GHZ₃ state
-program = QPLProgram("GHZ Graph Extraction")
+program = QRLProgram("GHZ Graph Extraction")
 q0 = program.create_system()
 q1 = program.create_system()
 q2 = program.create_system()
@@ -215,7 +215,7 @@ Let's verify that GHZ₄ also produces a star graph:
 ```{python}
 #| eval: false
 # Create GHZ₄ state
-program = QPLProgram("GHZ4 Graph")
+program = QRLProgram("GHZ4 Graph")
 qubits = [program.create_system() for _ in range(4)]
 ghz4 = program.entangle(*qubits)
 
@@ -317,8 +317,8 @@ This creates edges (0,1) and (0,2) - exactly the star graph!
 
 ```{python}
 #| eval: false
-from qpl import QPLProgram
-from qpl.mbqc import extract_graph, visualize_graph
+from qrl import QRLProgram
+from qrl.mbqc import extract_graph, visualize_graph
 
 def analyze_state(program, name, *qubits):
     """Helper to analyze any quantum state."""
@@ -332,7 +332,7 @@ def analyze_state(program, name, *qubits):
     print(f"Graph density: {len(graph.edges()) / (len(graph.nodes()) * (len(graph.nodes())-1) / 2):.2f}")
 
 # Main program
-program = QPLProgram("Multi-State Analysis")
+program = QRLProgram("Multi-State Analysis")
 
 # Analyze Bell state
 q0, q1 = program.create_system(), program.create_system()
@@ -351,7 +351,7 @@ analyze_state(program, "GHZ₄ State", *qubits)
 
 Congratulations! You now understand:
 
-✅ **Graph extraction** - Converting QPL relations to graph states
+✅ **Graph extraction** - Converting QRL relations to graph states
 ✅ **State detection** - Automatic identification of Bell/GHZ/W states
 ✅ **Graph topologies** - Edge graphs, star graphs, and their meaning
 ✅ **MBQC connection** - How graphs represent cluster state preparation
@@ -370,7 +370,7 @@ Congratulations! You now understand:
    - Creates the desired entanglement
 
 3. **Automatic detection:**
-   - QPL analyzes the state vector
+   - QRL analyzes the state vector
    - Detects the state type
    - Suggests appropriate topology
 
@@ -431,7 +431,7 @@ Test it on Bell, GHZ₃, and W states.
 You've mastered graph extraction! Next, you'll learn how to:
 - Generate **measurement patterns** from graphs (Phase 2)
 - Understand **adaptive corrections** for measurement outcomes
-- Compile complete QPL programs to MBQC
+- Compile complete QRL programs to MBQC
 
 ---
 

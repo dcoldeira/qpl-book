@@ -3,12 +3,12 @@ project:
   output-dir: _book
 
 book:
-  title: "The QPL Book"
-  subtitle: "Learn Quantum Computing and MBQC with the Quantum Process Language"
+  title: "The QRL Book"
+  subtitle: "Learn Quantum Computing and MBQC with the Quantum Relational Language"
   author: "David Coldeira"
   date: today
 
-  repo-url: https://github.com/dcoldeira/qpl-book
+  repo-url: https://github.com/dcoldeira/qrl-book
   repo-actions: [edit, issue]
 
   chapters:
@@ -26,7 +26,7 @@ book:
         - chapters/05-cluster-states.qmd
         - chapters/06-measurement-patterns.qmd
 
-    - part: "Part III: QPL Programming"
+    - part: "Part III: QRL Programming"
       chapters:
         - chapters/07-first-bell-state.qmd
         - chapters/08-ghz-states.qmd
@@ -41,12 +41,11 @@ book:
         - chapters/14-placeholder.qmd
         - chapters/15-placeholder.qmd
 
-    - part: "Appendices"
-      chapters:
-        - appendix/installation.qmd
-        - appendix/api-reference.qmd
-        - appendix/solutions.qmd
-        - references.qmd
+  appendices:
+    - appendix/installation.qmd
+    - appendix/api-reference.qmd
+    - appendix/solutions.qmd
+    - references.qmd
 
 bibliography: references.bib
 
@@ -66,6 +65,15 @@ format:
     toc: true
     number-sections: true
     colorlinks: true
+
+  epub:
+    toc: true
+    toc-depth: 2
+    number-sections: true
+    chapter-level: 1
+    html-math-method:
+      method: webtex
+      url: "https://latex.codecogs.com/png.image?\\dpi{150}\\fg{black}"
 
 execute:
   enabled: false  # Disable execution for now - just show code

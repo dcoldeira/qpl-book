@@ -19,7 +19,7 @@ This is why MBQC requires **classical communication** alongside quantum operatio
 
 ## The Adaptive Corrections API
 
-QPL provides functions for working with corrections:
+QRL provides functions for working with corrections:
 
 | Function | Purpose |
 |----------|---------|
@@ -39,7 +39,7 @@ The three Pauli operators form the basis of all corrections:
 ```{python}
 #| eval: false
 import numpy as np
-from qpl.mbqc import apply_pauli_correction
+from qrl.mbqc import apply_pauli_correction
 
 # |0⟩ state
 state_0 = np.array([1, 0], dtype=complex)
@@ -138,7 +138,7 @@ Alice                           Bob
 
 ```{python}
 #| eval: false
-from qpl.mbqc import generate_teleportation_pattern
+from qrl.mbqc import generate_teleportation_pattern
 
 pattern = generate_teleportation_pattern()
 
@@ -198,7 +198,7 @@ Let's teleport actual quantum states!
 
 ```{python}
 #| eval: false
-from qpl.mbqc import simulate_teleportation, verify_teleportation_fidelity
+from qrl.mbqc import simulate_teleportation, verify_teleportation_fidelity
 
 # Teleport |0⟩
 input_state = np.array([1, 0], dtype=complex)
@@ -271,7 +271,7 @@ Different measurement outcomes require different corrections:
 
 ```{python}
 #| eval: false
-from qpl.mbqc import correction_truth_table
+from qrl.mbqc import correction_truth_table
 
 table = correction_truth_table(n_measurements=2)
 
@@ -317,7 +317,7 @@ Use `compute_corrections` to determine what corrections to apply:
 
 ```{python}
 #| eval: false
-from qpl.mbqc import generate_teleportation_pattern, compute_corrections
+from qrl.mbqc import generate_teleportation_pattern, compute_corrections
 
 pattern = generate_teleportation_pattern()
 
@@ -371,7 +371,7 @@ After:  [0.+0.j 1.+0.j 0.+0.j 0.+0.j]  (|01⟩)
 ```{python}
 #| eval: false
 import numpy as np
-from qpl.mbqc import (
+from qrl.mbqc import (
     simulate_teleportation,
     verify_teleportation_fidelity,
     generate_teleportation_pattern

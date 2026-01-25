@@ -342,32 +342,32 @@ Some gates can be implemented **deterministically** (no corrections needed):
 
 Maximizing deterministic gates reduces classical processing overhead.
 
-## From Patterns to QPL
+## From Patterns to QRL
 
-In the Quantum Process Language, these patterns are **automatically generated** from high-level relational specifications.
+In the Quantum Relational Language, these patterns are **automatically generated** from high-level relational specifications.
 
-### QPL Abstraction Levels
+### QRL Abstraction Levels
 
 **Level 1: Relations** (user writes this)
 ```python
 ghz = program.entangle(q0, q1, q2)  # GHZ relation
 ```
 
-**Level 2: Graph Extraction** (QPL infers)
+**Level 2: Graph Extraction** (QRL infers)
 ```
 Graph: q0 — ancilla1 — ancilla2
              |         |
             q1        q2
 ```
 
-**Level 3: Measurement Pattern** (QPL compiles)
+**Level 3: Measurement Pattern** (QRL compiles)
 ```
 Measure ancilla1 at θ=0 → s1
 Measure ancilla2 at θ=π/4 → s2
 Correct q0 with X^s1 Z^s2
 ```
 
-**Level 4: Photonic Backend** (QPL targets)
+**Level 4: Photonic Backend** (QRL targets)
 ```
 Strawberry Fields operations:
 - Fusion gates to create cluster
@@ -375,7 +375,7 @@ Strawberry Fields operations:
 - Classical feed-forward
 ```
 
-This **layered compilation** is the essence of QPL's design.
+This **layered compilation** is the essence of QRL's design.
 
 ## Measurement Pattern Language
 
@@ -440,7 +440,7 @@ In this chapter, you learned:
 ✅ Optimization reduces cluster size and measurement depth
 ✅ MBQC and circuits are computationally equivalent
 
-**Part II complete!** You now understand the MBQC foundations that power QPL.
+**Part II complete!** You now understand the MBQC foundations that power QRL.
 
 ## Exercises
 
@@ -508,7 +508,7 @@ where $S = R_Z(\pi/2)$ is the phase gate.
 **Congratulations!** You've completed Parts I and II - the full theoretical foundation for quantum computing and MBQC.
 
 **Next steps:**
-- Revisit **[Part III: QPL Programming](../index.qmd#part-iii-qpl-programming)** with your new theoretical understanding
+- Revisit **[Part III: QRL Programming](../index.qmd#part-iii-qrl-programming)** with your new theoretical understanding
 - Explore **Part IV: Advanced Topics** (Chapters 12-15) when ready
 
-**You're now equipped to understand QPL's relations-first, MBQC-native approach to quantum programming!**
+**You're now equipped to understand QRL's relations-first, MBQC-native approach to quantum programming!**

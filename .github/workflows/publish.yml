@@ -1,4 +1,4 @@
-name: Publish QPL Book
+name: Publish QRL Book
 
 on:
   push:

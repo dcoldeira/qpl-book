@@ -15,7 +15,7 @@ A **measurement pattern** is a complete specification for executing quantum comp
 ### Pattern Structure
 
 ```python
-from qpl.mbqc import MeasurementPattern, Measurement, Correction
+from qrl.mbqc import MeasurementPattern, Measurement, Correction
 
 pattern = MeasurementPattern(
     preparation=[0, 1],           # Prepare qubits 0 and 1 in |+⟩
@@ -29,7 +29,7 @@ pattern = MeasurementPattern(
 
 ## The Pattern Generation API
 
-QPL provides several functions for generating measurement patterns:
+QRL provides several functions for generating measurement patterns:
 
 | Function | Purpose |
 |----------|---------|
@@ -48,7 +48,7 @@ The simplest pattern is Bell state preparation:
 
 ```{python}
 #| eval: false
-from qpl.mbqc import generate_bell_state_pattern
+from qrl.mbqc import generate_bell_state_pattern
 
 # Generate pattern for Bell state
 pattern = generate_bell_state_pattern()
@@ -87,7 +87,7 @@ Scaling to multiple qubits is straightforward:
 
 ```{python}
 #| eval: false
-from qpl.mbqc import generate_ghz_state_pattern
+from qrl.mbqc import generate_ghz_state_pattern
 
 # Generate GHZ₃ pattern
 ghz3_pattern = generate_ghz_state_pattern(3)
@@ -120,7 +120,7 @@ Now we enter the realm of actual computation! Single-qubit gates are implemented
 
 ```{python}
 #| eval: false
-from qpl.mbqc import generate_single_qubit_gate_pattern
+from qrl.mbqc import generate_single_qubit_gate_pattern
 
 # Generate pattern for H gate
 h_pattern = generate_single_qubit_gate_pattern("H", input_qubit=0)
@@ -192,7 +192,7 @@ For custom rotations, use `generate_rotation_pattern`:
 
 ```{python}
 #| eval: false
-from qpl.mbqc import generate_rotation_pattern
+from qrl.mbqc import generate_rotation_pattern
 import numpy as np
 
 # Rotation around X axis by π/4
@@ -226,7 +226,7 @@ The CZ gate is **native** to MBQC - it's simply an edge in the cluster state gra
 
 ```{python}
 #| eval: false
-from qpl.mbqc import generate_cz_pattern
+from qrl.mbqc import generate_cz_pattern
 
 # Generate CZ pattern
 cz_pattern = generate_cz_pattern()
@@ -259,7 +259,7 @@ CNOT is more complex - it requires a **4-qubit linear cluster** with measurement
 
 ```{python}
 #| eval: false
-from qpl.mbqc import generate_cnot_pattern
+from qrl.mbqc import generate_cnot_pattern
 
 # Generate CNOT pattern
 cnot_pattern = generate_cnot_pattern()
@@ -352,7 +352,7 @@ With CNOT and single-qubit rotations, you have a **universal gate set**! Any qua
 
 ```{python}
 #| eval: false
-from qpl.mbqc import (
+from qrl.mbqc import (
     generate_single_qubit_gate_pattern,
     generate_cnot_pattern,
     combine_patterns
@@ -377,11 +377,11 @@ You can generate patterns directly from existing quantum relations:
 
 ```{python}
 #| eval: false
-from qpl import QPLProgram
-from qpl.mbqc import generate_pattern_from_relation
+from qrl import QRLProgram
+from qrl.mbqc import generate_pattern_from_relation
 
 # Create a Bell state
-program = QPLProgram("Pattern from Relation")
+program = QRLProgram("Pattern from Relation")
 q0 = program.create_system()
 q1 = program.create_system()
 bell = program.entangle(q0, q1)
@@ -428,7 +428,7 @@ Combine patterns sequentially to build circuits:
 
 ```{python}
 #| eval: false
-from qpl.mbqc import combine_patterns
+from qrl.mbqc import combine_patterns
 
 # Create H gate followed by X gate
 h_pattern = generate_single_qubit_gate_pattern("H", 0)
@@ -475,7 +475,7 @@ print(f"H + X depth: {combined.measurement_depth}")  # 2
 
 ```{python}
 #| eval: false
-from qpl.mbqc import (
+from qrl.mbqc import (
     generate_bell_state_pattern,
     generate_ghz_state_pattern,
     generate_single_qubit_gate_pattern,
@@ -586,7 +586,7 @@ Write a function that checks if a pattern is valid:
 ### Exercise 7: CNOT Analysis
 Analyze the CNOT pattern in detail:
 ```python
-from qpl.mbqc import generate_cnot_pattern
+from qrl.mbqc import generate_cnot_pattern
 
 cnot = generate_cnot_pattern()
 ```

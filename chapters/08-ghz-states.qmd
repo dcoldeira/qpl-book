@@ -38,16 +38,16 @@ GHZ states are fundamental to quantum computing and quantum information:
 
 **Key difference:** GHZ states exhibit **genuine multipartite entanglement** - you can't decompose them into Bell pairs!
 
-## Creating a 3-Qubit GHZ State in QPL
+## Creating a 3-Qubit GHZ State in QRL
 
-In QPL, creating GHZ states is as simple as Bell states - just entangle more systems:
+In QRL, creating GHZ states is as simple as Bell states - just entangle more systems:
 
 ```{python}
 #| eval: false
-from qpl import QPLProgram
+from qrl import QRLProgram
 
 # Create program
-program = QPLProgram("GHZ State Tutorial")
+program = QRLProgram("GHZ State Tutorial")
 
 # Create 3 quantum systems
 q0 = program.create_system()
@@ -126,7 +126,7 @@ Let's verify:
 
 ```{python}
 #| eval: false
-from qpl import create_question, QuestionType
+from qrl import create_question, QuestionType
 
 def test_ghz_correlations(num_trials=100):
     """Verify GHZ state 3-way correlations."""
@@ -135,7 +135,7 @@ def test_ghz_correlations(num_trials=100):
 
     for trial in range(num_trials):
         # Create fresh GHZ state
-        program = QPLProgram(f"GHZ Trial {trial}")
+        program = QRLProgram(f"GHZ Trial {trial}")
         q0 = program.create_system()
         q1 = program.create_system()
         q2 = program.create_system()
@@ -175,12 +175,12 @@ Expected: 100% for GHZ state
 
 ## Scaling to 4+ Qubits
 
-QPL supports arbitrary n-qubit GHZ states. Let's create a 5-qubit GHZ:
+QRL supports arbitrary n-qubit GHZ states. Let's create a 5-qubit GHZ:
 
 ```{python}
 #| eval: false
 # Create 5-qubit GHZ state
-program = QPLProgram("5-Qubit GHZ")
+program = QRLProgram("5-Qubit GHZ")
 
 # Create 5 systems
 qubits = [program.create_system() for _ in range(5)]
@@ -220,7 +220,7 @@ What happens if you measure just **one** qubit from a GHZ state?
 ```{python}
 #| eval: false
 # Create GHZ state
-program = QPLProgram("Partial GHZ Measurement")
+program = QRLProgram("Partial GHZ Measurement")
 q0 = program.create_system()
 q1 = program.create_system()
 q2 = program.create_system()
@@ -280,7 +280,7 @@ Here's a complete program to explore GHZ states:
 
 ```{python}
 #| eval: false
-from qpl import QPLProgram, create_question, QuestionType
+from qrl import QRLProgram, create_question, QuestionType
 import numpy as np
 
 def main():
@@ -289,7 +289,7 @@ def main():
     print("=" * 60)
 
     # Create 3-qubit GHZ state
-    program = QPLProgram("GHZ Demo")
+    program = QRLProgram("GHZ Demo")
     q0 = program.create_system()
     q1 = program.create_system()
     q2 = program.create_system()
@@ -307,7 +307,7 @@ def main():
 
     for trial in range(10):
         # Create fresh GHZ state for each trial
-        p = QPLProgram(f"Trial {trial}")
+        p = QRLProgram(f"Trial {trial}")
         q0 = p.create_system()
         q1 = p.create_system()
         q2 = p.create_system()
@@ -363,7 +363,7 @@ Congratulations! You now understand:
 
 ✅ **GHZ states** - Maximally entangled n-qubit states
 ✅ **Multipartite entanglement** - Genuine n-way correlations
-✅ **Creating GHZ states** in QPL with `entangle(*qubits)`
+✅ **Creating GHZ states** in QRL with `entangle(*qubits)`
 ✅ **Perfect correlations** - All qubits measure the same
 ✅ **Partial measurements** - Measuring one collapses all
 ✅ **Quantum non-locality** - Stronger than Bell states
@@ -463,7 +463,7 @@ Want to compare GHZ with other entangled states?
 
 **GHZ states** are the gateway to multipartite quantum systems. You've learned:
 
-- How to create them in QPL (just `entangle(*qubits)`)
+- How to create them in QRL (just `entangle(*qubits)`)
 - Their perfect n-way correlations
 - How they differ from Bell states
 - Their role in quantum non-locality
@@ -473,4 +473,4 @@ GHZ states are fundamental to quantum computing, quantum communication, and quan
 
 ---
 
-**Next:** [Chapter 9: Measurement in QPL](09-placeholder.qmd) - Explore different measurement bases and contexts
+**Next:** [Chapter 9: Measurement in QRL](09-placeholder.qmd) - Explore different measurement bases and contexts

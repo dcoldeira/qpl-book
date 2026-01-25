@@ -328,14 +328,14 @@ For certain states (e.g., matrix product states), we can simulate efficiently us
 
 **Limitation:** Highly entangled states (like GHZ, W) require exponential resources even for tensor networks.
 
-## Creating n-Qubit States in QPL
+## Creating n-Qubit States in QRL
 
-In the Quantum Process Language, you can create GHZ and W states directly:
+In the Quantum Relational Language, you can create GHZ and W states directly:
 
 ```python
-from qpl import QPLProgram
+from qrl import QRLProgram
 
-program = QPLProgram("n-Qubit Entanglement")
+program = QRLProgram("n-Qubit Entanglement")
 
 # Create 4 qubits
 q0, q1, q2, q3 = [program.create_system() for _ in range(4)]
@@ -363,7 +363,7 @@ In this chapter, you learned:
 ✅ Partial measurements affect entanglement differently for GHZ vs W
 ✅ Classical simulation becomes intractable beyond ~45 qubits
 
-**Part I Complete!** You now have the quantum foundations needed to understand MBQC and QPL.
+**Part I Complete!** You now have the quantum foundations needed to understand MBQC and QRL.
 
 ## Exercises
 
@@ -431,4 +431,4 @@ Generalize the formula for $|W_n\rangle$ and prove that measuring $k$ qubits (wi
 
 **Next:** [Part II: Measurement-Based Quantum Computing](../index.qmd#part-ii-measurement-based-quantum-computing)
 
-*Part I complete! You're now ready to explore MBQC and QPL.*
+*Part I complete! You're now ready to explore MBQC and QRL.*

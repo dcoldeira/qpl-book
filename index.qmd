@@ -1,6 +1,6 @@
-# Welcome to The QPL Book {.unnumbered}
+# Welcome to The QRL Book {.unnumbered}
 
-Learn quantum computing and Measurement-Based Quantum Computing (MBQC) using the **Quantum Process Language** (QPL) - a relations-first approach to quantum programming.
+Learn quantum computing and Measurement-Based Quantum Computing (MBQC) using the **Quantum Relational Language** (QRL) - a relations-first approach to quantum programming.
 
 ## What You'll Learn
 
@@ -8,12 +8,12 @@ This book teaches quantum computing from first principles, building up to advanc
 
 - **Part I: Quantum Foundations** - Understand qubits, entanglement, and n-qubit systems
 - **Part II: MBQC Theory** - Learn cluster states, graph states, and measurement patterns
-- **Part III: QPL Programming** - Write quantum programs with hands-on tutorials
+- **Part III: QRL Programming** - Write quantum programs with hands-on tutorials
 - **Part IV: Advanced Topics** - Explore tensor networks, categorical quantum mechanics, and fault-tolerant QC
 
-## Why QPL?
+## Why QRL?
 
-Unlike gate-based quantum languages (Qiskit, Cirq, Q#), QPL treats **quantum entanglement as a first-class primitive**, making it natural to express:
+Unlike gate-based quantum languages (Qiskit, Cirq, Q#), QRL treats **quantum entanglement as a first-class primitive**, making it natural to express:
 
 - Cluster states for MBQC
 - Measurement patterns for photonic quantum computers
@@ -23,7 +23,7 @@ Unlike gate-based quantum languages (Qiskit, Cirq, Q#), QPL treats **quantum ent
 ## Prerequisites
 
 - **Mathematics**: Linear algebra, complex numbers, basic probability
-- **Programming**: Python basics (QPL is implemented in Python)
+- **Programming**: Python basics (QRL is implemented in Python)
 - **Physics**: Helpful but not required - we explain quantum mechanics from scratch
 
 ## How to Use This Book
@@ -35,12 +35,12 @@ Start with Part I to build quantum foundations, then move through hands-on tutor
 Jump to Part II for MBQC theory or Part IV for advanced topics like tensor networks.
 
 ### For Programmers
-Install QPL and dive into Part III tutorials - learn by doing!
+Install QRL and dive into Part III tutorials - learn by doing!
 
 ## Installation
 
 ```bash
-pip install quantum-process-language
+pip install quantum-relational-language
 ```
 
 See [Appendix: Installation](appendix/installation.qmd) for detailed setup instructions.
@@ -49,12 +49,12 @@ See [Appendix: Installation](appendix/installation.qmd) for detailed setup instr
 
 All code in this book is:
 - **Executable** - Run examples directly in your Python environment
-- **Open source** - Available at [github.com/dcoldeira/quantum-process-language](https://github.com/dcoldeira/quantum-process-language)
-- **Tested** - Every example is verified to work with the latest QPL release
+- **Open source** - Available at [github.com/dcoldeira/quantum-relational-language](https://github.com/dcoldeira/quantum-relational-language)
+- **Tested** - Every example is verified to work with the latest QRL release
 
 ## About the Author
 
-**David Coldeira** is a scientific software engineer with a BSc in Physics, specializing in quantum programming languages and MBQC. He developed QPL to explore relations-first approaches to quantum computing.
+**David Coldeira** is a scientific software engineer with a BSc in Physics, specializing in quantum programming languages and MBQC. He developed QRL to explore relations-first approaches to quantum computing.
 
 - Email: dcoldeira@gmail.com
 - GitHub: [dcoldeira](https://github.com/dcoldeira)
@@ -64,13 +64,13 @@ All code in this book is:
 
 Found a typo? Have a suggestion? Contributions are welcome!
 
-- **Issues**: [github.com/dcoldeira/qpl-book/issues](https://github.com/dcoldeira/qpl-book/issues)
-- **Pull requests**: [github.com/dcoldeira/qpl-book](https://github.com/dcoldeira/qpl-book)
+- **Issues**: [github.com/dcoldeira/qrl-book/issues](https://github.com/dcoldeira/qrl-book/issues)
+- **Pull requests**: [github.com/dcoldeira/qrl-book](https://github.com/dcoldeira/qrl-book)
 
 ## License
 
 - **Text**: Creative Commons BY-SA 4.0
-- **Code**: MIT License (same as QPL)
+- **Code**: MIT License (same as QRL)
 
 ---
 

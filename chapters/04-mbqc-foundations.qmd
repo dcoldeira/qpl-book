@@ -2,7 +2,7 @@
 
 Measurement-Based Quantum Computing (MBQC) represents a radical departure from the circuit model. Instead of applying gates to qubits, we prepare a highly entangled resource state and perform the computation entirely through **measurements**.
 
-This is not just a theoretical curiosity—it's the foundation of QPL's design philosophy and the native model for photonic quantum computers.
+This is not just a theoretical curiosity—it's the foundation of QRL's design philosophy and the native model for photonic quantum computers.
 
 ## The Circuit Model vs MBQC
 
@@ -193,7 +193,7 @@ More precisely: The one-way quantum computer is **computationally equivalent** t
 
 3. **Fault-tolerance:** Topological quantum computing (surface codes) is essentially MBQC
 
-4. **QPL foundation:** Relations-first programming maps naturally to MBQC
+4. **QRL foundation:** Relations-first programming maps naturally to MBQC
 
 ## Gate Teleportation
 
@@ -272,7 +272,7 @@ This is why companies like **PsiQuantum** and **Xanadu** are pursuing MBQC.
 
 ### For Quantum Programming
 
-**Why QPL uses MBQC:**
+**Why QRL uses MBQC:**
 
 1. **Relations-first:** Entanglement is prepared upfront, not derived from gates
 2. **Declarative:** Specify what you want, not how to implement it
@@ -318,7 +318,7 @@ In this chapter, you learned:
 ✅ Adaptive measurements enable universal quantum computation
 ✅ Gate teleportation is the key technique for implementing operations
 ✅ MBQC is the natural model for photonic quantum computers
-✅ QPL is built on MBQC principles (relations-first)
+✅ QRL is built on MBQC principles (relations-first)
 
 ## Exercises
 

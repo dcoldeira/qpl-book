@@ -1,6 +1,6 @@
 # Entanglement
 
-Entanglement is the most profoundly non-classical phenomenon in quantum mechanics. Einstein called it "spooky action at a distance." It's the foundation of quantum computing's power—and the core primitive in QPL.
+Entanglement is the most profoundly non-classical phenomenon in quantum mechanics. Einstein called it "spooky action at a distance." It's the foundation of quantum computing's power—and the core primitive in QRL.
 
 ## Two-Qubit Systems
 
@@ -340,7 +340,7 @@ Bell's theorem proves that quantum correlations are fundamentally different from
 
 - Quantum algorithms exploit entanglement for exponential speedups
 - Classical computers cannot efficiently simulate entangled systems
-- QPL makes entanglement a first-class primitive to harness this power
+- QRL makes entanglement a first-class primitive to harness this power
 :::
 
 ## Measurement of Entangled States

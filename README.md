@@ -1,18 +1,18 @@
-# The QPL Book
+# The QRL Book
 
-**Learn Quantum Computing and MBQC with the Quantum Process Language**
+**Learn Quantum Computing and MBQC with the Quantum Relational Language**
 
-📚 **Read online:** [dcoldeira.github.io/qpl-book](https://dcoldeira.github.io/qpl-book/)
+📚 **Read online:** [dcoldeira.github.io/qrl-book](https://dcoldeira.github.io/qrl-book/)
 
 ## About
 
-This book teaches quantum computing from first principles using QPL (Quantum Process Language) - a relations-first approach to quantum programming that compiles directly to Measurement-Based Quantum Computing (MBQC).
+This book teaches quantum computing from first principles using QRL (Quantum Relational Language) - a relations-first approach to quantum programming that compiles directly to Measurement-Based Quantum Computing (MBQC).
 
 ## Contents
 
 - **Part I: Quantum Foundations** - Qubits, entanglement, n-qubit systems
 - **Part II: MBQC Theory** - Cluster states, graph states, measurement patterns
-- **Part III: QPL Programming** - Hands-on tutorials with working code
+- **Part III: QRL Programming** - Hands-on tutorials with working code
 - **Part IV: Advanced Topics** - Tensor networks, categorical QM, fault-tolerance
 
 ## Building Locally
@@ -52,11 +52,11 @@ Contributions welcome! Please:
 3. Make your changes
 4. Submit a pull request
 
-Found a typo? [Open an issue](https://github.com/dcoldeira/qpl-book/issues)
+Found a typo? [Open an issue](https://github.com/dcoldeira/qrl-book/issues)
 
 ## Related Projects
 
-- [Quantum Process Language](https://github.com/dcoldeira/quantum-process-language) - The QPL implementation
+- [Quantum Relational Language](https://github.com/dcoldeira/quantum-relational-language) - The QRL implementation
 - [David's Blog](https://dcoldeira.github.io) - Development journey and technical posts
 
 ## Author
